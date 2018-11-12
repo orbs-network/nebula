@@ -1,0 +1,15 @@
+{
+  "name": "@orbs/nebula",
+  "version": "0.1.0",
+  "description": "Nebula is a tool to provision new Orbs Hybrid Blockchain Constellations",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/acceptance/*"
+  },
+  "author": "Itamar Arjuan",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
+  }
+}
