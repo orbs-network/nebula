@@ -7,7 +7,7 @@ const c = new CoreService({});
 
 describe('Nebula core', () => {
     it('should provision a new constellation', async () => {
-        const result = await c.createConstelltation({});
+        const result = await c.createConstellation({});
         expect(result.ok).to.equal(true);
-    });
+    }); 
 });
