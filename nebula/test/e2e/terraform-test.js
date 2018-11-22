@@ -1,12 +1,25 @@
-const { describe, it } = require('mocha');
-const { expect } = require('chai');
+const { describe, it, after } = require('mocha');
+const chai = require('chai');
+const asserttype = require('chai-asserttype');
+chai.use(asserttype);
+
+const { expect } = chai;
+
+const { exec } = require('child-process-promise');
+const path = require('path');
 
 const types = require('./../../constants/types');
 const { TerraformService } = require('./../../lib/services/terraform/terraform');
 const tf = new TerraformService({});
 
+const tmpPath = path.join(__dirname, '../../_terraform');
+
 describe('terraform service acceptance tests', () => {
-    it('should create AWS infra correctly', async () => {
+    // after(async () => {
+    //     await exec(`rm -rf ${tmpPath}`);
+    // });
+
+    it('should create & destroy AWS infra correctly', async () => {
         const cloud = {
             type: types.clouds.aws,
             region: 'us-east-1',
@@ -15,8 +28,8 @@ describe('terraform service acceptance tests', () => {
 
         const keys = {
             aws: {
-                accessKey: 'test-access-key',
-                secretKey: 'test-secret-key',
+                accessKey: process.env.AWS_ACCESS_KEY,
+                secretKey: process.env.AWS_SECRET_KEY,
             },
             ssh: {
                 path: '~/.ssh/id_rsa.pub',
@@ -33,7 +46,19 @@ describe('terraform service acceptance tests', () => {
         });
 
         expect(result.ok).to.equal(true);
-        expect('publicDns' in result).to.equal(true);
-        expect(result.publicDns).to.equal('some-aws-dns-resolvable.com');
+        expect(result.outputs).to.be.array();
+        console.log('the result outputs:', result.outputs);
+        const publicIpOutput = result.outputs.find(o => o.key === 'master.ip');
+        expect(publicIpOutput).to.be.object();
+
+        expect(publicIpOutput.value) // Expecting a valid IP supplied from Amazon
+            .to.match(new RegExp(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/),
+                `Expected the AWS supplied public IP to be valid (got: ${publicIpOutput.value})`);
+
+        const spinDownResult = await tf.spinDown({
+            spinContext: result.spinContext,
+        });
+
+        expect(spinDownResult.ok).to.equal(true);
     });
 });

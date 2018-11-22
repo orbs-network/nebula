@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  web:
+    image: itamararjuan/gorbs
+    ports:
+      - "8080:8080"

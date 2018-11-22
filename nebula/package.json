@@ -4,13 +4,16 @@
   "description": "Nebula is a tool to provision new Orbs Hybrid Blockchain Constellations",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/e2e/*"
+    "test:unit": "mocha test/unit/*",
+    "test": "mocha --no-timeouts test/e2e/*"
   },
   "author": "Itamar Arjuan",
   "license": "ISC",
   "dependencies": {
     "chai": "^4.2.0",
+    "chai-asserttype": "^1.0.5",
     "child-process-promise": "^2.2.1",
+    "lodash": "^4.17.11",
     "mocha": "^5.2.0",
     "uuid": "^3.3.2"
   }
