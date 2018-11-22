@@ -1,13 +1,11 @@
-const { describe, it, after } = require('mocha');
+const { describe, it } = require('mocha');
 const chai = require('chai');
 const asserttype = require('chai-asserttype');
 chai.use(asserttype);
 
 const { expect } = chai;
 
-const { exec } = require('child-process-promise');
 const path = require('path');
-
 const types = require('./../../constants/types');
 const { TerraformService } = require('./../../lib/services/terraform/terraform');
 const tf = new TerraformService({});
@@ -15,10 +13,6 @@ const tf = new TerraformService({});
 const tmpPath = path.join(__dirname, '../../_terraform');
 
 describe('terraform service acceptance tests', () => {
-    // after(async () => {
-    //     await exec(`rm -rf ${tmpPath}`);
-    // });
-
     it('should create & destroy AWS infra correctly', async () => {
         const cloud = {
             type: types.clouds.aws,
