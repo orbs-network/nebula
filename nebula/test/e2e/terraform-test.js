@@ -41,7 +41,7 @@ describe('terraform service acceptance tests', () => {
 
         expect(result.ok).to.equal(true);
         expect(result.outputs).to.be.array();
-        console.log('the result outputs:', result.outputs);
+
         const publicIpOutput = result.outputs.find(o => o.key === 'master.ip');
         expect(publicIpOutput).to.be.object();
 
