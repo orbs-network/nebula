@@ -1,6 +1,7 @@
 const { describe, it } = require('mocha');
 const { expect } = require('chai');
 const fetch = require('node-fetch');
+const { trim } = require('lodash');
 
 const types = require('./../../constants/types');
 const { CoreService } = require('./../../lib/services/core/core');
@@ -40,19 +41,19 @@ describe('Nebula core', () => {
             const pollResult = await fetch(`http://${result.master.dns}:8080`)
                 .catch(err => err);
 
-            const pollResultAsText = ('text' in pollResult) ?
-                await pollResult.text() : '';
+            const pollResultAsText = (pollResult.ok) ?
+                trim(await pollResult.text()) : '';
 
             console.log('polling result: ', pollResultAsText);
             if (pollResultAsText === 'Hello, Cruel World!') {
                 poll = false;
             } else {
                 pollCount++;
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+                await new Promise((resolve) => setTimeout(resolve, 1500));
             }
-        } while (poll && pollCount < 30);
+        } while (poll && pollCount < 60);
 
-        expect(pollCount).to.be.lessThan(30);
+        expect(pollCount).to.be.lessThan(60);
         expect(poll).to.equal(false);
 
         const destroyResult = await c.destroyConstellation({ spinContext: result.spinContext });
