@@ -114,7 +114,7 @@ describe('Nebula core', () => {
         const cloud = {
             type: types.clouds.aws,
             region: 'us-east-1',
-            instanceType: 't2.micro',
+            instanceType: 't2.medium',
             ip: preExistingElasticIp,
         };
 
