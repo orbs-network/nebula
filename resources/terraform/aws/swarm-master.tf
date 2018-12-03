@@ -3,7 +3,7 @@ resource "aws_instance" "master" {
   instance_type   = "${var.aws_orbs_master_instance_type}"
   security_groups = ["${aws_security_group.swarm.name}"]
   key_name        = "${aws_key_pair.deployer.key_name}"
-
+  iam_instance_profile = "orbs-network"
   provisioner "file" {
     source      = "bootstrap-master.sh"
     destination = "/tmp/bootstrap.sh"
