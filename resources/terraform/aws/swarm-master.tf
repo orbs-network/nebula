@@ -32,9 +32,10 @@ apt-get install -y python-pip && pip install awscli
 
 docker swarm init
 
-aws secretsmanager create-secret --region ${var.region} --name swarm-token-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
+mkdir -p /opt/orbs
+aws secretsmanager get-secret-value --region ${var.region} --secret-id orbs-network-node-keys-${var.context_id} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
 
-mkdir -p /opt/orbs && mv /tmp/keys.json /opt/orbs
+aws secretsmanager create-secret --region ${var.region} --name swarm-token-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
 
 $(aws ecr get-login --no-include-email --region us-west-2)
 
@@ -55,16 +56,5 @@ resource "aws_instance" "master" {
 
   tags = {
     Name = "constellation-swarm-master"
-  }
-
-  provisioner "file" {
-    source      = "~/gopath/src/github.com/orbs-network/boyarin/e2e-config/node2/keys.json"
-    destination = "/tmp/keys.json"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = "${file("~/.ssh/id_rsa")}"
-    }
   }
 }
