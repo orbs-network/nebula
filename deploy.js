@@ -2,31 +2,17 @@ const types = require('./constants/types');
 const { CoreService } = require('./lib/services/core/core');
 const readDir = require('fs').readdirSync;
 const readFileSync = require('fs').readFileSync;
+const existsSync = require('fs').existsSync;
+const removeSync = require('fs-extra').removeSync;
 const request = require("request-promise");
 const _ = require('lodash');
-
-// (async () => {
-//     const c = new CoreService({});
-
-//     await Promise.all(readDir("./_terraform").map(async (f) => {
-//         return c.destroyConstellation({
-//             spinContext: f
-//         })
-//     }));
-    
-//     const result = await c.createConstellation({ cloud, keys });
-
-//     console.log({
-//         spinContext: result.spinContext,
-//     });
-// })();
 
 async function getBlockHeight(endpoint) {
     try {
         const body = await request(`http://${endpoint}/metrics`);
         return JSON.parse(body)["BlockStorage.BlockHeight"].Value;    
     } catch (e) {
-        console.log(e)
+        console.log(`Error: ${e.message}`);
         return 0;
     }
 }
@@ -44,11 +30,13 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
         try {
           const newBlockHeight = await getBlockHeight(endpoint);
           console.log(`Waiting for the node ${endpoint} to sync...`);
+          console.log(`Synced ${newBlockHeight}/${targetBlockHeight}`);
   
           if (newBlockHeight >= targetBlockHeight) {
               clearInterval(interval);
               const diff = (Date.now() - start) / 1000;
-              resolve(`Sync finished successfully in ${diff}s`);
+              console.log(`Sync finished successfully in ${diff}s`);
+              resolve();
           }
         } catch (e) {
           console.log(`Error: ${e}`);
@@ -78,6 +66,7 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
             region: region,
             instanceType: 't3.medium',
             ip: ip,
+            spinContext: region
         };        
 
         const keys = {
@@ -93,12 +82,16 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
 
         const endpoint = `${region}.global.nodes.staging.orbs-test.com/vchains/42`
         const blockHeight = await getBlockHeight(endpoint);
+        console.log(`Current block height: ${blockHeight}`);
 
-        await Promise.all(readDir("./_terraform").map(async (f) => {
-            return c.destroyConstellation({
-                spinContext: f
+        const outputDir = `${__dirname}/_terraform/${region}`;
+        if (existsSync(outputDir)) {
+            await c.destroyConstellation({
+                spinContext: region,
             })
-        }));    
+
+            removeSync(outputDir);
+        }
 
         const result = await c.createConstellation({ cloud, keys });
 
