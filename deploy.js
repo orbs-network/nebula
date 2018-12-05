@@ -46,7 +46,11 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
   }
 
 (async () => {
-    const regions = ["eu-central-1"];
+    const regions = (process.env.REGIONS || "").split(",");
+    if (regions.length == 0) {
+        console.log("Specify a region or list or regions with REGIONS env variable");
+        process.exit(0);
+    }
 
     const nodeKeys = JSON.parse(readFileSync(`${__dirname}/testnet/keys.json`).toString());
     const ips = JSON.parse(readFileSync(`${__dirname}/testnet/ips.json`).toString());
@@ -54,6 +58,8 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
     const c = new CoreService({});
 
     for (const region of regions) {
+        console.log(`Deploying to ${region}`);
+
         const publicKey = nodeKeys[region][0];
         const privateKey = nodeKeys[region][1];
         const peerKeys = _.map(nodeKeys, (v, k) => v[0]);
