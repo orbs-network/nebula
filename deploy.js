@@ -101,7 +101,7 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
 
         const result = await c.createConstellation({ cloud, keys });
 
-        if (shouldSync || true) {
+        if (shouldSync) {
             await waitUntilSync(endpoint, blockHeight)
         }
 
