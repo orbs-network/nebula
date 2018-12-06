@@ -9,7 +9,9 @@ const _ = require('lodash');
 
 async function getBlockHeight(endpoint) {
     try {
-        const body = await request(`http://${endpoint}/metrics`);
+        const body = await request(`http://${endpoint}/metrics`, {
+            timeout: 2000,
+        });
         return JSON.parse(body)["BlockStorage.BlockHeight"].Value;    
     } catch (e) {
         console.log(`Error: ${e.message}`);
