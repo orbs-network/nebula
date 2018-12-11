@@ -56,6 +56,14 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
 
     const nodeKeys = JSON.parse(readFileSync(`${__dirname}/testnet/keys.json`).toString());
     const ips = JSON.parse(readFileSync(`${__dirname}/testnet/ips.json`).toString());
+    const boyarConfig = JSON.parse(readFileSync(`${__dirname}/testnet/boyar.json`).toString());
+
+    boyarConfig.network = _.map(nodeKeys, (keys, region) => {
+        return {
+            "Key": keys[0],
+            "IP": ips[region],
+        };
+    });
 
     const c = new CoreService({});
 
@@ -85,7 +93,10 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
             ssh: {
                 path: '~/.ssh/id_rsa.pub',
             },
-            orbs: { publicKey, privateKey, leader }
+            orbs: {
+                nodeKeys: { publicKey, privateKey, leader },
+                boyarConfig,
+            }
         };
 
         const endpoint = `${region}.global.nodes.staging.orbs-test.com/vchains/42`

@@ -27,3 +27,7 @@ variable "context_id" {}
 variable "node_key_pair" {
   default = "e30K"
 }
+
+variable "boyar_config_source" {
+  default = "e30K"
+}
