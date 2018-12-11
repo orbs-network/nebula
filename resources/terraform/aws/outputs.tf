@@ -5,3 +5,7 @@ output "master.ip" {
 output "master.dns" {
   value = "${aws_instance.master.public_dns}"
 }
+
+output "main_vpc_id" {
+  value = "${module.vpc.id}"
+}
