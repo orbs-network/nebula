@@ -2,9 +2,10 @@ resource "aws_instance" "slave" {
   count                = 2
   ami                  = "${var.aws_ami_id}"
   instance_type        = "${var.aws_orbs_slave_instance_type}"
-  security_groups      = ["${aws_security_group.swarm.name}"]
+  security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
   iam_instance_profile = "orbs-network"
+  subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
 
   provisioner "file" {
     source      = "~/.ssh/id_rsa"

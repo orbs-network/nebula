@@ -1,9 +1,11 @@
 resource "aws_instance" "master" {
-  ami             = "${var.aws_ami_id}"
-  instance_type   = "${var.aws_orbs_master_instance_type}"
-  security_groups = ["${aws_security_group.swarm.name}"]
-  key_name        = "${aws_key_pair.deployer.key_name}"
+  ami                  = "${var.aws_ami_id}"
+  instance_type        = "${var.aws_orbs_master_instance_type}"
+  security_groups      = ["${aws_security_group.swarm.id}"]
+  key_name             = "${aws_key_pair.deployer.key_name}"
   iam_instance_profile = "orbs-network"
+  subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
+
   provisioner "file" {
     source      = "bootstrap-master.sh"
     destination = "/tmp/bootstrap.sh"
@@ -30,8 +32,9 @@ resource "aws_instance" "master" {
     inline = [
       "chmod +x /tmp/bootstrap.sh",
       "/tmp/bootstrap.sh",
-      #"docker stack deploy --compose-file /home/ubuntu/docker-compose.yml helloworld"
     ]
+
+    #"docker stack deploy --compose-file /home/ubuntu/docker-compose.yml helloworld"
 
     connection {
       type        = "ssh"
