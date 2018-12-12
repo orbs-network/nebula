@@ -48,6 +48,7 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
   }
 
 (async () => {
+    const deployFromScratch = process.env.DEPLOY_FROM_SCRATCH == "true";
     const regions = (process.env.REGIONS || "").split(",");
     if (regions.length == 0) {
         console.log("Specify a region or list or regions with REGIONS env variable");
@@ -103,13 +104,15 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
         const blockHeight = await getBlockHeight(endpoint);
         console.log(`Current block height: ${blockHeight}`);
 
-        const outputDir = `${__dirname}/_terraform/${region}`;
-        if (existsSync(outputDir)) {
-            await c.destroyConstellation({
-                spinContext: region,
-            })
+        if (deployFromScratch) {
+            const outputDir = `${__dirname}/_terraform/${region}`;
+            if (existsSync(outputDir)) {
+                await c.destroyConstellation({
+                    spinContext: region,
+                })
 
-            removeSync(outputDir);
+                removeSync(outputDir);
+            }
         }
 
         const result = await c.createConstellation({ cloud, keys });
