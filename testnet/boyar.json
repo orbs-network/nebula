@@ -1,0 +1,39 @@
+{
+    "network": [
+    ],
+    "chains": [
+      {
+        "Id": 42,
+        "HttpPort": 8080,
+        "GossipPort": 4400,
+        "DockerConfig": {
+          "ContainerNamePrefix": "orbs-network",
+          "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
+          "Tag": "master",
+          "Pull": true
+        }
+      },
+      {
+        "Id": 1969,
+        "HttpPort": 8081,
+        "GossipPort": 4401,
+        "DockerConfig": {
+          "ContainerNamePrefix": "orbs-network",
+          "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
+          "Tag": "master",
+          "Pull": true
+        }
+      },
+      {
+        "Id": 2013,
+        "HttpPort": 8082,
+        "GossipPort": 4402,
+        "DockerConfig": {
+          "ContainerNamePrefix": "orbs-network",
+          "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
+          "Tag": "master",
+          "Pull": true
+        }
+      }
+    ]
+  }
