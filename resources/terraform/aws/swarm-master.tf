@@ -24,7 +24,7 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce
 
-export BOYAR_VERSION=e44569483b36914d2651ef65cede0730365d161c
+export BOYAR_VERSION=b16ce842bb514eb96a65973873e301ae6e0b1272
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
@@ -40,8 +40,12 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-worke
 $(aws ecr get-login --no-include-email --region us-west-2)
 
 while true; do
-    [ $(docker node ls -q | wc -l) -eq 3 ] && HOME=/root boyar --config-url ${local.s3_boyar_config_url} --orchestrator swarm --keys /opt/orbs/keys.json && sleep 15 && break;
+    [ $(docker node ls -q | wc -l) -eq 3 ] && break
+    sleep 15
 done
+
+HOME=/root nohup boyar --config-url ${local.s3_boyar_config_url} --orchestrator swarm --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
+
 TFEOF
 }
 
