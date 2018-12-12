@@ -1,11 +1,13 @@
 const types = require('./constants/types');
 const { CoreService } = require('./lib/services/core/core');
-const readDir = require('fs').readdirSync;
+const writeFile = require('fs').writeFileSync;
 const readFileSync = require('fs').readFileSync;
 const existsSync = require('fs').existsSync;
 const removeSync = require('fs-extra').removeSync;
 const request = require("request-promise");
 const _ = require('lodash');
+const nconf = require('nconf');
+const shell = require('shelljs');
 
 async function getBlockHeight(endpoint) {
     try {
@@ -45,11 +47,26 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
         }
       }, 5000);
     });
-  }
+}
+
+function getConfig() {
+    const argsConfig = {
+        parseValues: true
+      };
+
+    return nconf.env(argsConfig).argv(argsConfig);
+}
 
 (async () => {
-    const deployFromScratch = process.env.DEPLOY_FROM_SCRATCH == "true";
-    const regions = (process.env.REGIONS || "").split(",");
+    const config = getConfig();
+
+    const removeNode = config.get("remove-node");
+    const createNode = config.get("create-node");
+    const updateVchains = config.get("update-vchains");
+    const chainVersion = config.get("chain-version");
+
+    const regions = config.get("regions").split(",");
+
     if (regions.length == 0) {
         console.log("Specify a region or list or regions with REGIONS env variable");
         process.exit(0);
@@ -66,7 +83,13 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
         };
     });
 
-    const c = new CoreService({});
+    if (!_.isEmpty(chainVersion)) {
+        _.each(boyarConfig.chains, (chain) => {
+            chain.Tag = chainVersion
+        });
+
+        console.log(boyarConfig);
+    }
 
     for (const region of regions) {
         console.log(`Deploying to ${region}`);
@@ -104,7 +127,9 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
         const blockHeight = await getBlockHeight(endpoint);
         console.log(`Current block height: ${blockHeight}`);
 
-        if (deployFromScratch) {
+        const c = new CoreService({});
+
+        if (removeNode) {
             const outputDir = `${__dirname}/_terraform/${region}`;
             if (existsSync(outputDir)) {
                 await c.destroyConstellation({
@@ -115,14 +140,25 @@ async function waitUntilSync(endpoint, targetBlockHeight) {
             }
         }
 
-        const result = await c.createConstellation({ cloud, keys });
+        if (createNode) {
+            const result = await c.createConstellation({ cloud, keys });
+            console.log({
+                spinContext: result.spinContext,
+            });
+        }
+
+        if (updateVchains) {
+            const tmpPath = `/tmp/${region}.boyar.json`;
+            writeFile(tmpPath, JSON.stringify(boyarConfig));
+
+            const command = `aws s3 cp --acl public-read ${tmpPath} s3://orbs-network-config-staging-discovery-${region}/boyar/config.json`;
+            console.log(command);
+
+            shell.exec(command);
+        }
 
         if (shouldSync) {
             await waitUntilSync(endpoint, blockHeight)
         }
-
-        console.log({
-            spinContext: result.spinContext,
-        });
     }
 })();
