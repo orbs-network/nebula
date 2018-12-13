@@ -8,6 +8,7 @@ const request = require("request-promise");
 const _ = require('lodash');
 const nconf = require('nconf');
 const shell = require('shelljs');
+const Promise = require('bluebird');
 
 async function getBlockHeight(endpoint) {
     try {
@@ -85,10 +86,10 @@ async function deploy() {
 
     if (!_.isEmpty(chainVersion)) {
         _.each(boyarConfig.chains, (chain) => {
-            chain.Tag = chainVersion
+            chain.DockerConfig.Tag = chainVersion
         });
 
-        console.log(boyarConfig);
+        console.log(JSON.stringify(boyarConfig, 2, 2));
     }
 
     for (const region of regions) {
@@ -158,6 +159,12 @@ async function deploy() {
         }
 
         if (shouldSync) {
+            if (updateVchains) {
+                // wait for a minute until boyar config is updated and we start getting accurate information about metrics
+                console.log(`Waiting for boyar config to be refreshed by the constellation...`)
+                await Promise.delay(60000);
+            }
+
             await waitUntilSync(endpoint, blockHeight)
         }
     }
