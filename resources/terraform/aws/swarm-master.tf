@@ -2,6 +2,12 @@ locals {
   master_user_data = <<TFEOF
 #!/bin/sh
 
+# Mount external volume as docker lib
+
+mkfs.ext4 /dev/nvme1n1
+mkdir -p /var/lib/docker
+mount /dev/nvme1n1 /var/lib/docker
+
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
 
@@ -61,4 +67,19 @@ resource "aws_instance" "master" {
   tags = {
     Name = "constellation-swarm-master"
   }
+}
+
+resource "aws_ebs_volume" "master_storage" {
+  size              = 50
+  availability_zone = "${aws_instance.master.availability_zone}"
+
+  tags {
+    Name = "constellation-docker-storage"
+  }
+}
+
+resource "aws_volume_attachment" "master_storage_attachment" {
+  device_name = "/dev/sdh"
+  volume_id   = "${aws_ebs_volume.master_storage.id}"
+  instance_id = "${aws_instance.master.id}"
 }
