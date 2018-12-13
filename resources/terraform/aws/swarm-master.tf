@@ -44,7 +44,7 @@ while true; do
     sleep 15
 done
 
-HOME=/root nohup boyar --config-url ${local.s3_boyar_config_url} --orchestrator swarm --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --orchestrator swarm --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
 
 TFEOF
 }

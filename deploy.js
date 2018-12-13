@@ -57,7 +57,7 @@ function getConfig() {
     return nconf.env(argsConfig).argv(argsConfig);
 }
 
-(async () => {
+async function deploy() {
     const config = getConfig();
 
     const removeNode = config.get("remove-node");
@@ -160,5 +160,14 @@ function getConfig() {
         if (shouldSync) {
             await waitUntilSync(endpoint, blockHeight)
         }
+    }
+}
+
+(async () => {
+    try {
+        await deploy();
+    } catch (e) {
+        console.log(e);
+        process.exit(1);
     }
 })();
