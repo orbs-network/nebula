@@ -92,6 +92,8 @@ async function deploy() {
         console.log(JSON.stringify(boyarConfig, 2, 2));
     }
 
+    let returnValue = 0;
+
     for (const region of regions) {
         console.log(`Deploying to ${region}`);
 
@@ -155,7 +157,7 @@ async function deploy() {
             const command = `aws s3 cp --acl public-read ${tmpPath} s3://orbs-network-config-staging-discovery-${region}/boyar/config.json`;
             console.log(command);
 
-            shell.exec(command);
+            returnValue = returnValue || shell.exec(command);
         }
 
         if (shouldSync) {
@@ -168,11 +170,14 @@ async function deploy() {
             await waitUntilSync(endpoint, blockHeight)
         }
     }
+
+    return returnValue;
 }
 
 (async () => {
     try {
-        await deploy();
+        const returnValue = await deploy();
+        process.exit(returnValue);
     } catch (e) {
         console.log(e);
         process.exit(1);
