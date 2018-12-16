@@ -3,13 +3,18 @@ variable "application" {
 }
 
 variable "provisionersrc" {
-  default     = "orbs-network/nebula"
+  default = "orbs-network/nebula"
 }
 
 variable "vpc_cidr_block" {
-    description = "The VPC CIDR address range"
-    #https://docs.docker.com/docker-for-aws/faqs/#recommended-vpc-and-subnet-setup
-    default = "172.31.0.0/16"
+  description = "The VPC CIDR address range"
+
+  #https://docs.docker.com/docker-for-aws/faqs/#recommended-vpc-and-subnet-setup
+  default = "172.31.0.0/16"
+}
+
+variable "run_identifier" {
+  default = ""
 }
 
 variable "aws_ami_id" {

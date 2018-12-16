@@ -27,8 +27,8 @@ sudo apt-get install -y docker-ce
 apt-get install -y python-pip && pip install awscli
 
 while true; do
-    docker swarm join --token $(aws secretsmanager get-secret-value --region ${var.region} --secret-id swarm-token-worker-${var.region} --output text --query SecretString) ${aws_instance.master.private_ip} && break
-    sleep 15
+    docker swarm join --token $(aws secretsmanager get-secret-value --region ${var.region} --secret-id swarm-token-${var.run_identifier}-worker-${var.region} --output text --query SecretString) ${aws_instance.master.private_ip} && break
+    sleep 5
 done
 
 TFEOF
@@ -46,6 +46,6 @@ resource "aws_instance" "slave" {
   user_data = "${local.slave_user_data}"
 
   tags = {
-    Name = "constellation-swarm-worker-${count.index}"
+    Name = "constellation-${var.run_identifier}-swarm-worker-${count.index}"
   }
 }

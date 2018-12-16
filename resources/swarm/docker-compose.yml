@@ -4,6 +4,6 @@ services:
   web:
     image: itamararjuan/gorbs
     ports:
-      - "8080:8080"
+      - "9090:9090"
     environment:
-      - port=8080
+      - port=9090

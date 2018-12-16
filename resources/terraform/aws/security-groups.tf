@@ -1,6 +1,6 @@
 /* Default security group */
 resource "aws_security_group" "swarm" {
-  name        = "${var.application}-swarm-sg"
+  name        = "${var.application}-${var.run_identifier}-swarm-sg"
   description = "Default security group that allows inbound and outbound traffic from all instances in the VPC"
   vpc_id      = "${ module.vpc.id }"
 
