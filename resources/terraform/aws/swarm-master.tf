@@ -45,6 +45,9 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-worke
 
 $(aws ecr get-login --no-include-email --region us-west-2)
 
+echo '0 0 * * * $(aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
+crontab /tmp/crontab
+
 while true; do
     [ $(docker node ls -q | wc -l) -eq 3 ] && break
     sleep 15
