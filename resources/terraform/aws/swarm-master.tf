@@ -42,6 +42,7 @@ $(aws ecr get-login --no-include-email --region us-west-2)
 while true; do
     [ $(docker node ls -q | wc -l) -eq 3 ] && HOME=/root boyar --config-url https://s3-us-west-2.amazonaws.com/orbs-network-config-staging/discovery/config.json --orchestrator swarm --keys /opt/orbs/keys.json && sleep 15 && break;
 done
+
 TFEOF
 }
 
@@ -53,6 +54,17 @@ resource "aws_instance" "master" {
   iam_instance_profile = "orbs-network"
 
   user_data = "${local.master_user_data}"
+
+  provisioner "file" {
+    source      = "../../swarm/ethereum-node.yml"
+    destination = "/home/ubuntu/ethereum-node.yml"
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = "${file("~/.ssh/id_rsa")}"
+    }
+  }
 
   tags = {
     Name = "constellation-swarm-master"
