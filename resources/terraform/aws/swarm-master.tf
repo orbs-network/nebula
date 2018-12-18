@@ -2,6 +2,16 @@ locals {
   master_user_data = <<TFEOF
 #!/bin/sh
 
+# Mount external volume as docker lib
+
+mkfs.ext4 /dev/nvme1n1
+mkdir -p /var/lib/docker
+mount /dev/nvme1n1 /var/lib/docker
+
+# Sysctl
+
+sysctl -w net.core.somaxconn=128000
+
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
 
@@ -24,7 +34,7 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce
 
-export BOYAR_VERSION=e44569483b36914d2651ef65cede0730365d161c
+export BOYAR_VERSION=20638a0b3442df7f9bd315981aa1cd0e6fe14cfc
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
@@ -39,9 +49,15 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var
 
 $(aws ecr get-login --no-include-email --region us-west-2)
 
+echo '0 * * * * $(aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
+crontab /tmp/crontab
+
 while true; do
-    [ $(docker node ls -q | wc -l) -eq 3 ] && HOME=/root boyar --config-url https://s3-us-west-2.amazonaws.com/orbs-network-config-staging/discovery/config.json --orchestrator swarm --keys /opt/orbs/keys.json && sleep 5 && break;
+    [ $(docker node ls -q | wc -l) -eq 3 ] && break
+    sleep 15
 done
+
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --orchestrator swarm --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
 
 TFEOF
 }
@@ -53,10 +69,25 @@ resource "aws_instance" "master" {
   key_name             = "${aws_key_pair.deployer.key_name}"
   subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
   iam_instance_profile = "orbs-network"
-  
+
   user_data = "${local.master_user_data}"
 
   tags = {
     Name = "constellation-${var.run_identifier}-swarm-master"
   }
+}
+
+resource "aws_ebs_volume" "master_storage" {
+  size              = 50
+  availability_zone = "${aws_instance.master.availability_zone}"
+
+  tags {
+    Name = "constellation-docker-storage"
+  }
+}
+
+resource "aws_volume_attachment" "master_storage_attachment" {
+  device_name = "/dev/sdh"
+  volume_id   = "${aws_ebs_volume.master_storage.id}"
+  instance_id = "${aws_instance.master.id}"
 }
