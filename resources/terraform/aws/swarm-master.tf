@@ -34,7 +34,7 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce
 
-export BOYAR_VERSION=b16ce842bb514eb96a65973873e301ae6e0b1272
+export BOYAR_VERSION=ec142987fcfab518c0e5191c6b722f88562a6e5c
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
