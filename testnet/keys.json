@@ -1,26 +1,26 @@
 {
-    "us-east-1": [
-        "dfc06c5be24a67adee80b35ab4f147bb1a35c55ff85eda69f40ef827bddec173",
-        "93e919986a22477fda016789cca30cb841a135650938714f85f0000a65076bd4dfc06c5be24a67adee80b35ab4f147bb1a35c55ff85eda69f40ef827bddec173"
-    ],
-    "eu-central-1": [
-        "92d469d7c004cc0b24a192d9457836bf38effa27536627ef60718b00b0f33152",
-        "3b24b5f9e6b1371c3b5de2e402a96930eeafe52111bb4a1b003e5ecad3fab53892d469d7c004cc0b24a192d9457836bf38effa27536627ef60718b00b0f33152"
-    ],
-    "ca-central-1": [
-        "a899b318e65915aa2de02841eeb72fe51fddad96014b73800ca788a547f8cce0",
-        "2c72df84be2b994c32a3f4ded0eab901debd3f3e13721a59eed00fbd1da4cc00a899b318e65915aa2de02841eeb72fe51fddad96014b73800ca788a547f8cce0"
-    ],
-    "ap-northeast-1": [
-        "58e7ed8169a151602b1349c990c84ca2fb2f62eb17378f9a94e49552fbafb9d8",
-        "163987afcee69969cae3528161d84e32f76b09bbf0dd77dd704e5cb915c7d56f58e7ed8169a151602b1349c990c84ca2fb2f62eb17378f9a94e49552fbafb9d8"
-    ],
-    "ap-northeast-2": [
-        "23f97918acf48728d3f25a39a5f091a1a9574c52ccb20b9bad81306bd2af4631",
-        "74b63e4f6f908ac42c1b4c7b3b6028c7b665df4375c1acbf4dce2b1b91aefc5b23f97918acf48728d3f25a39a5f091a1a9574c52ccb20b9bad81306bd2af4631"
-    ],
-    "ap-southeast-2": [
-        "07492c6612f78a47d7b6a18a17792a01917dec7497bdac1a35c477fbccc3303b",
-        "d9fae84f80b842f57770a9ae67c7eb58ce502eb32502d43ddec5da115ccd2e2107492c6612f78a47d7b6a18a17792a01917dec7497bdac1a35c477fbccc3303b"
-    ]
+    "us-east-1": {
+        "address": "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
+        "privateKey": "901a1a0bfbe217593062a054e561e708707cb814a123474c25fd567a0fe088f8"
+    },
+    "eu-central-1": {
+        "address": "d27e2e7398e2582f63d0800330010b3e58952ff6",
+        "privateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253"
+    },
+    "ca-central-1": {
+        "address": "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
+        "privateKey": "426308c4d11a6348a62b4fdfb30e2cad70ab039174e2e8ea707895e4c644c4ec"
+    },
+    "ap-northeast-1": {
+        "address": "c056dfc0d1fbc7479db11e61d1b0b57612bf7f17",
+        "privateKey": "1e404ba4e421cedf58dcc3dddcee656569afc7904e209612f7de93e1ad710300"
+    },
+    "ap-northeast-2": {
+        "address": "fca8200d67df5d0180d47d7fda762f2f174bb7d0",
+        "privateKey": "0860f557af1b29639b680a5934e2080d204d08f753679e606f1bcb4b53d00efe"
+    },
+    "ap-southeast-2": {
+        "address": "d573cb6b168c5f4a22c0ed0863fa34a4a5ae0481",
+        "privateKey": "a8ca24ef5d3dc54df3a692ee5b27a9bfa06c4ae8ecf77e20db55acd7637087e1"
+    }
 }

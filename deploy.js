@@ -97,11 +97,11 @@ async function deploy() {
     for (const region of regions) {
         console.log(`Deploying to ${region}`);
 
-        const publicKey = nodeKeys[region][0];
-        const privateKey = nodeKeys[region][1];
-        const peerKeys = _.map(nodeKeys, (v, k) => v[0]);
-        const leader = peerKeys[0];
-        const shouldSync = leader == publicKey;
+        const address = nodeKeys[region].address;
+        const privateKey = nodeKeys[region].privateKey;
+        const nodeAddresses = _.map(nodeKeys, 'address');
+        const leader = nodeAddresses[0];
+        const shouldSync = leader == address;
         const ip = ips[region];
 
         const cloud = {
@@ -121,7 +121,7 @@ async function deploy() {
                 path: '~/.ssh/id_rsa.pub',
             },
             orbs: {
-                nodeKeys: { publicKey, privateKey, leader },
+                nodeKeys: { address, privateKey, leader },
                 boyarConfig,
             }
         };
