@@ -2,6 +2,17 @@ locals {
   slave_user_data = <<TFEOF
 #!/bin/sh
 
+# Mount external volume as docker lib
+
+mkfs.ext4 /dev/nvme1n1
+mkdir -p /var/lib/docker
+mount /dev/nvme1n1 /var/lib/docker
+
+# Sysctl
+
+sysctl -w net.core.somaxconn=128000
+
+
 # Remove old instances of Docker which might ship with ubuntu
 sudo apt-get remove docker docker-engine docker.io
 
@@ -48,4 +59,21 @@ resource "aws_instance" "slave" {
   tags = {
     Name = "constellation-${var.run_identifier}-swarm-worker-${count.index}"
   }
+}
+
+resource "aws_ebs_volume" "slave_storage" {
+  count             = 2
+  size              = 50
+  availability_zone = "${element(aws_instance.slave.*.availability_zone, count.index)}"
+
+  tags {
+    Name = "constellation-docker-storage"
+  }
+}
+
+resource "aws_volume_attachment" "slave_storage_attachment" {
+  count       = 2
+  device_name = "/dev/sdh"
+  volume_id   = "${element(aws_ebs_volume.slave_storage.*.id, count.index)}"
+  instance_id = "${element(aws_instance.slave.*.id, count.index)}"
 }
