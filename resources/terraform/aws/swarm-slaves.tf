@@ -8,6 +8,11 @@ mkfs.ext4 /dev/nvme1n1
 mkdir -p /var/lib/docker
 mount /dev/nvme1n1 /var/lib/docker
 
+# Sysctl
+
+sysctl -w net.core.somaxconn=128000
+
+
 # Remove old instances of Docker which might ship with ubuntu
 sudo apt-get remove docker docker-engine docker.io
 

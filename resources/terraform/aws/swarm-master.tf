@@ -8,6 +8,10 @@ mkfs.ext4 /dev/nvme1n1
 mkdir -p /var/lib/docker
 mount /dev/nvme1n1 /var/lib/docker
 
+# Sysctl
+
+sysctl -w net.core.somaxconn=128000
+
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
 
@@ -45,7 +49,7 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-worke
 
 $(aws ecr get-login --no-include-email --region us-west-2)
 
-echo '0 0 * * * $(aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
+echo '0 * * * * $(aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
 crontab /tmp/crontab
 
 while true; do
