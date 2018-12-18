@@ -11,9 +11,14 @@ const writeFile = util.promisify(fs.writeFile);
 const types = require('./../../constants/types');
 const { CoreService } = require('./../../lib/services/core/core');
 const { TerraformService } = require('./../../lib/services/terraform/terraform');
+const terraformProdAdapter = require('./../../lib/adapters/terraform/adapter');
+const { coreAdapter } = require('../../lib/adapters/core/adapter');
 
-const c = new CoreService({});
+const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
 const tf = new TerraformService({});
+
+const accessKey = process.env.AWS_ACCESS_KEY;
+const secretKey = process.env.AWS_SECRET_KEY;
 
 async function exec(cmd, opts) {
     console.log('[exec-call] $ ', cmd, opts);
@@ -22,6 +27,9 @@ async function exec(cmd, opts) {
     console.log('exit code: ', result.childProcess.exitCode);
     console.log('stdout: ', result.stdout);
     console.log('stderr: ', result.stderr);
+
+    result.exitCode = result.childProcess.exitCode;
+
     return result;
 }
 
@@ -29,17 +37,27 @@ async function eventuallyReady(ip) {
     let pollCount = 0;
     let poll = true;
 
+    let boyarFlag = false;
+    let swarmLeaderFlag = false;
+
     do {
         console.log(`polling the cluster deployed service... [${pollCount}]`);
         console.log('IP: ', ip);
 
-        const pollResultAsText = await rp(`http://${ip}:8080`)
-            .catch((err) => ''); // We silent the error since we don't care
-        // This is polling - remember!
+        // We test to see that Boyar is available in this manger node.
+        const boyarCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'test -e /usr/bin/boyar'`);
+        if (boyarCheck.exitCode === 0) {
+            console.log('Boyar check has passed! Boyar exists on the manager node!');
+            boyarFlag = true;
+        }
 
-        const strippedText = trim(pollResultAsText);
-        console.log('polling result: ', pollResultAsText);
-        if (strippedText === 'Hello, Cruel World!') {
+        const swarmLeaderCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'sudo docker node ls | grep Leader | wc -l'`);
+        if (trim(swarmLeaderCheck.stdout) === '1') {
+            console.log('Swarm check passed! Found 1 leader in the cluster!');
+            swarmLeaderFlag = true;
+        }
+
+        if (swarmLeaderFlag && boyarFlag) {
             return true;
         } else {
             pollCount++;
@@ -54,7 +72,7 @@ describe('Nebula core', () => {
     it('should provision a new constellation and destroy it', async () => {
         const cloud = {
             type: types.clouds.aws,
-            region: 'us-east-1',
+            region: 'sa-east-1',
             instanceType: 't2.micro',
         };
 
@@ -74,20 +92,22 @@ describe('Nebula core', () => {
 
         const result = await c.createConstellation({ cloud, keys });
         expect(result.ok).to.equal(true);
+        const { master: { ip } } = result;
 
-        const pollingResult = await eventuallyReady(preExistingElasticIp);
+        const pollingResult = await eventuallyReady(ip);
         expect(pollingResult).to.equal(true);
+
+        console.log('stopping here for now...');
+        process.exit(0);
 
         const destroyResult = await c.destroyConstellation({ spinContext: result.spinContext });
         expect(destroyResult.ok).to.equal(true);
     });
 
-    it.only('should provision a new constellation with a pre-existing Elastic IP and destroy it', async () => {
+    it('should provision a new constellation with a pre-existing Elastic IP and destroy it', async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
 
         const awsRegion = 'us-east-1';
-        const accessKey = process.env.AWS_ACCESS_KEY;
-        const secretKey = process.env.AWS_SECRET_KEY;
         const targetDir = path.join(__dirname, 'eip_tf_state');
 
         // Write the variables file into place

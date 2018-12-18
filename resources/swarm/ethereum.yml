@@ -1,0 +1,14 @@
+version: "3.2"
+
+services:
+  geth:
+    image: ethereum/client-go
+    volumes:
+      - type: volume
+        volume-driver: rexray/ebs
+        source: ebs_vol_geth
+        target: /root
+    entrypoint: geth --testnet
+
+volumes:
+  ebs_vol_geth:
