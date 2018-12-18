@@ -30,7 +30,7 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce
 
-docker run \
+docker run -d \
   -p "8545:8545" \
   --restart always \
   -v /mnt/data/ethereum-root:/root \

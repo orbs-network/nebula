@@ -1,5 +1,8 @@
 const types = require('./constants/types');
 const { CoreService } = require('./lib/services/core/core');
+const { TerraformService } = require('./lib/services/terraform/terraform');
+const terraformProdAdapter = require('./lib/adapters/terraform/adapter');
+const { coreAdapter } = require('./lib/adapters/core/adapter');
 const writeFile = require('fs').writeFileSync;
 const readFileSync = require('fs').readFileSync;
 const existsSync = require('fs').existsSync;
@@ -79,8 +82,8 @@ async function deploy() {
 
     boyarConfig.network = _.map(nodeKeys, (keys, region) => {
         return {
-            "Key": keys[0],
-            "IP": ips[region],
+            "address": keys.address,
+            "ip": ips[region],
         };
     });
 
@@ -130,7 +133,7 @@ async function deploy() {
         const blockHeight = await getBlockHeight(endpoint);
         console.log(`Current block height: ${blockHeight}`);
 
-        const c = new CoreService({});
+        const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
 
         if (removeNode) {
             const outputDir = `${__dirname}/_terraform/${region}`;
