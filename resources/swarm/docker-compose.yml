@@ -1,9 +1,0 @@
-version: '3'
-
-services:
-  web:
-    image: itamararjuan/gorbs
-    ports:
-      - "9090:9090"
-    environment:
-      - port=9090

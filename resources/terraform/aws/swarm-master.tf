@@ -72,17 +72,6 @@ resource "aws_instance" "master" {
 
   user_data = "${local.master_user_data}"
 
-  provisioner "file" {
-    source      = "docker-compose.yml"
-    destination = "/home/ubuntu/docker-compose.yml"
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = "${file("~/.ssh/id_rsa")}"
-    }
-  }
-
   tags = {
     Name = "constellation-${var.run_identifier}-swarm-master"
   }

@@ -12,8 +12,9 @@ const types = require('./../../constants/types');
 const { CoreService } = require('./../../lib/services/core/core');
 const { TerraformService } = require('./../../lib/services/terraform/terraform');
 const terraformProdAdapter = require('./../../lib/adapters/terraform/adapter');
+const { coreAdapter } = require('../../lib/adapters/core/adapter');
 
-const c = new CoreService(new TerraformService(terraformProdAdapter));
+const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
 const tf = new TerraformService({});
 
 const accessKey = process.env.AWS_ACCESS_KEY;
@@ -71,7 +72,7 @@ describe('Nebula core', () => {
     it('should provision a new constellation and destroy it', async () => {
         const cloud = {
             type: types.clouds.aws,
-            region: 'us-east-1',
+            region: 'sa-east-1',
             instanceType: 't2.micro',
         };
 
@@ -95,6 +96,9 @@ describe('Nebula core', () => {
 
         const pollingResult = await eventuallyReady(ip);
         expect(pollingResult).to.equal(true);
+
+        console.log('stopping here for now...');
+        process.exit(0);
 
         const destroyResult = await c.destroyConstellation({ spinContext: result.spinContext });
         expect(destroyResult.ok).to.equal(true);
