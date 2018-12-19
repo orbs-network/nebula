@@ -35,7 +35,7 @@ docker run -d \
   --restart always \
   -v /mnt/data/ethereum-root:/root \
   --name ethereum \
-  ethereum/client-go --testnet --rpcaddr 0.0.0.0
+  ethereum/client-go --testnet --rpc --rpcaddr 0.0.0.0
 
 TFEOF
 }
