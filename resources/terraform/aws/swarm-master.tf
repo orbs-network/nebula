@@ -49,7 +49,7 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var
 
 $(aws ecr get-login --no-include-email --region us-west-2)
 
-echo '0 * * * * $(aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
+echo '0 * * * * $(/usr/local/bin/aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
 crontab /tmp/crontab
 
 while true; do
