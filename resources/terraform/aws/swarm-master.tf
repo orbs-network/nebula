@@ -68,7 +68,7 @@ resource "aws_instance" "master" {
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
   subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
-  iam_instance_profile = "orbs-network"
+  iam_instance_profile = "${ aws_iam_instance_profile.swarm_master.name }"
 
   user_data = "${local.master_user_data}"
 

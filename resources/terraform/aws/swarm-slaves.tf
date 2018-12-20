@@ -51,7 +51,7 @@ resource "aws_instance" "slave" {
   instance_type        = "${var.aws_orbs_slave_instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
-  iam_instance_profile = "orbs-network"
+  iam_instance_profile = "${ aws_iam_instance_profile.swarm_slave.name }"
   subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
 
   user_data = "${local.slave_user_data}"

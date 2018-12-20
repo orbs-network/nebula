@@ -113,7 +113,7 @@ async function deploy() {
             instanceType: 't3.medium',
             ip: ip,
             spinContext: region
-        };        
+        };
 
         const keys = {
             aws: {

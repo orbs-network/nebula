@@ -80,6 +80,13 @@ resource "aws_security_group" "ethereum" {
     cidr_blocks = ["172.31.0.0/16"]
   }
 
+  ingress {
+    from_port   = 30303
+    to_port     = 30303
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = "0"
     to_port     = "0"

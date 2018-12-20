@@ -32,6 +32,7 @@ apt-get install -y docker-ce
 
 docker run -d \
   -p "8545:8545" \
+  -p "30303:30303" \
   --restart always \
   -v /mnt/data/ethereum-root:/root \
   --name ethereum \
@@ -42,7 +43,7 @@ TFEOF
 
 resource "aws_instance" "ethereum" {
   ami             = "${var.aws_ami_id}"
-  instance_type   = "t3.medium"
+  instance_type   = "${var.aws_ether_instance_type}"
   security_groups = ["${aws_security_group.ethereum.id}"]
   key_name        = "${aws_key_pair.deployer.key_name}"
   subnet_id       = "${ module.vpc.subnet-ids-public[0] }"

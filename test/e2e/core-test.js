@@ -14,11 +14,13 @@ const { TerraformService } = require('./../../lib/services/terraform/terraform')
 const terraformProdAdapter = require('./../../lib/adapters/terraform/adapter');
 const { coreAdapter } = require('../../lib/adapters/core/adapter');
 
+const boyarConfig = require('./../../testnet/boyar');
+
 const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
 const tf = new TerraformService({});
 
-const accessKey = process.env.AWS_ACCESS_KEY;
-const secretKey = process.env.AWS_SECRET_KEY;
+const accessKey = process.env.AWS_ACCESS_KEY_ID;
+const secretKey = process.env.AWS_SECRET_ACCESS_KEY;
 
 async function exec(cmd, opts) {
     console.log('[exec-call] $ ', cmd, opts);
@@ -69,7 +71,7 @@ async function eventuallyReady(ip) {
 }
 
 describe('Nebula core', () => {
-    it('should provision a new constellation and destroy it', async () => {
+    it.only('should provision a new constellation and destroy it', async () => {
         const cloud = {
             type: types.clouds.aws,
             region: 'sa-east-1',
@@ -85,8 +87,12 @@ describe('Nebula core', () => {
                 path: '~/.ssh/id_rsa.pub',
             },
             orbs: {
-                publicKey: 'dfc06c5be24a67adee80b35ab4f147bb1a35c55ff85eda69f40ef827bddec173',
-                privateKey: '93e919986a22477fda016789cca30cb841a135650938714f85f0000a65076bd4dfc06c5be24a67adee80b35ab4f147bb1a35c55ff85eda69f40ef827bddec173',
+                nodeKeys: {
+                    address: "d27e2e7398e2582f63d0800330010b3e58952ff6",
+                    privateKey: "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253",
+                    leader: "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
+                },
+                boyarConfig,
             }
         };
 
