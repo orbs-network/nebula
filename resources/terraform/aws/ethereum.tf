@@ -4,6 +4,11 @@ locals {
 
 # Mount external volume as docker lib
 
+while true; do
+  sleep 1
+  test -e /dev/nvme1n1 && break
+done
+
 mkfs.ext4 /dev/nvme1n1
 mkdir -p /mnt/data/
 mount /dev/nvme1n1 /mnt/data/
