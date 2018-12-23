@@ -133,7 +133,7 @@ async function deploy() {
             }
         };
 
-        const endpoint = `${region}.global.nodes.staging.orbs-test.com/vchains/42`
+        const endpoint = `${ip}/vchains/42`
         const blockHeight = await getBlockHeight(endpoint);
         console.log(`Current block height: ${blockHeight}`);
 
@@ -161,7 +161,7 @@ async function deploy() {
             const tmpPath = `/tmp/${region}.boyar.json`;
             writeFile(tmpPath, JSON.stringify(boyarConfig));
 
-            const command = `aws s3 cp --acl public-read ${tmpPath} s3://orbs-network-config-staging-discovery-${region}/boyar/config.json`;
+            const command = `aws s3 cp --acl public-read ${tmpPath} s3://${cloud.bucketPrefix}-${region}/boyar/config.json`;
             console.log(command);
 
             returnValue = returnValue || shell.exec(command);

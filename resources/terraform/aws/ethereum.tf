@@ -48,7 +48,7 @@ TFEOF
 
 resource "aws_instance" "ethereum" {
   ami             = "${var.aws_ami_id}"
-  instance_type   = "t3.large"
+  instance_type   = "${var.aws_ether_instance_type}"
   security_groups = ["${aws_security_group.ethereum.id}"]
   key_name        = "${aws_key_pair.deployer.key_name}"
   subnet_id       = "${ module.vpc.subnet-ids-public[0] }"
