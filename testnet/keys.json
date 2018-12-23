@@ -22,9 +22,5 @@
     "ap-southeast-2": {
         "address": "d573cb6b168c5f4a22c0ed0863fa34a4a5ae0481",
         "privateKey": "a8ca24ef5d3dc54df3a692ee5b27a9bfa06c4ae8ecf77e20db55acd7637087e1"
-    },
-    "sa-east-1": {
-        "address": "c4bc32b3f8c6adce24e0ab2f163cf8ccfabd2e2c",
-        "privateKey": "a414d64a2246e394019f37544c17a8cae94b8f2104b9a5957c7af8691cb3302c"
     }
 }
