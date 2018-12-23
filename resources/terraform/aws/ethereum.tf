@@ -61,7 +61,7 @@ resource "aws_instance" "ethereum" {
 }
 
 resource "aws_ebs_volume" "ethereum_storage" {
-  size              = 20
+  size              = 100
   availability_zone = "${aws_instance.ethereum.availability_zone}"
 
   tags = {
