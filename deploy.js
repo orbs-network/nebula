@@ -164,7 +164,7 @@ async function deploy() {
             const command = `aws s3 cp --acl public-read ${tmpPath} s3://${cloud.bucketPrefix}-${region}/boyar/config.json`;
             console.log(command);
 
-            returnValue = returnValue || shell.exec(command);
+            shell.exec(command);
         }
 
         if (shouldSync) {
