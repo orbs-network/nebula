@@ -35,13 +35,18 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce
 
-docker run -d \
-  -p 8545:8545 \
-  -p 30303:30303 \
-  --restart always \
-  -v /mnt/data/ethereum-root:/root \
-  --name ethereum \
-  ethereum/client-go --testnet --rpc --rpcaddr 0.0.0.0
+# Install parity
+
+mkdir -p /mnt/data/parity && chown 1000 /mnt/data/parity
+
+docker run -d --name ethereum \
+    -p 8545:8545 \
+    -p 8546:8546 \
+    -p 30303:30303 \
+    -p 30303:30303/udp \
+    -v /mnt/data/parity/:/home/parity/.local/share/io.parity.ethereum/ \
+    parity/parity:v2.1.3 \
+    --jsonrpc-interface all --chain ropsten
 
 TFEOF
 }
