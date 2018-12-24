@@ -83,6 +83,7 @@ async function deploy() {
     const ips = JSON.parse(readFileSync(`${pathToConfig}/ips.json`).toString());
     const boyarConfig = JSON.parse(readFileSync(`${pathToConfig}/boyar.json`).toString());
     const cloudConfig = JSON.parse(readFileSync(`${pathToConfig}/cloud.json`).toString());
+    const awsProfile = config.get("aws-profile"); // hack to help Tal deploy certain testnet
 
     boyarConfig.network = _.map(nodeKeys, (keys, region) => {
         return {
@@ -161,7 +162,8 @@ async function deploy() {
             const tmpPath = `/tmp/${region}.boyar.json`;
             writeFile(tmpPath, JSON.stringify(boyarConfig));
 
-            const command = `aws s3 cp --acl public-read ${tmpPath} s3://${cloud.bucketPrefix}-${region}/boyar/config.json`;
+            const profile = _.isEmpty(awsProfile) ? "" : `--profile ${awsProfile}`
+            const command = `aws s3 cp --acl public-read ${tmpPath} ${profile} s3://${cloud.bucketPrefix}-${region}/boyar/config.json`;
             console.log(command);
 
             shell.exec(command);
