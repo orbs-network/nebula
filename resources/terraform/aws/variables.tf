@@ -13,6 +13,8 @@ variable "vpc_cidr_block" {
   default = "172.31.0.0/16"
 }
 
+variable "aws_ether_instance_type" {}
+
 variable "run_identifier" {
   default = ""
 }

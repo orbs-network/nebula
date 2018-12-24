@@ -11,6 +11,9 @@
           "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
           "Tag": "master",
           "Pull": true
+        },
+        "Config": {
+          "ethereum-endpoint": "http://172.31.1.100:8545"
         }
       },
       {
@@ -22,6 +25,9 @@
           "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
           "Tag": "master",
           "Pull": true
+        },
+        "Config": {
+          "ethereum-endpoint": "http://172.31.1.100:8545"
         }
       },
       {
@@ -33,6 +39,9 @@
           "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
           "Tag": "master",
           "Pull": true
+        },
+        "Config": {
+          "ethereum-endpoint": "http://172.31.1.100:8545"
         }
       }
     ]

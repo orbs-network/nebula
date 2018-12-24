@@ -76,9 +76,14 @@ async function deploy() {
         process.exit(0);
     }
 
-    const nodeKeys = JSON.parse(readFileSync(`${__dirname}/testnet/keys.json`).toString());
-    const ips = JSON.parse(readFileSync(`${__dirname}/testnet/ips.json`).toString());
-    const boyarConfig = JSON.parse(readFileSync(`${__dirname}/testnet/boyar.json`).toString());
+    const pathToConfig = config.get("config") || `${__dirname}/testnet`;
+    const pathToCache = config.get("cache") || `${__dirname}/_terraform`;
+
+    const nodeKeys = JSON.parse(readFileSync(`${pathToConfig}/keys.json`).toString());
+    const ips = JSON.parse(readFileSync(`${pathToConfig}/ips.json`).toString());
+    const boyarConfig = JSON.parse(readFileSync(`${pathToConfig}/boyar.json`).toString());
+    const cloudConfig = JSON.parse(readFileSync(`${pathToConfig}/cloud.json`).toString());
+    const awsProfile = config.get("aws-profile"); // hack to help Tal deploy certain testnet
 
     boyarConfig.network = _.map(nodeKeys, (keys, region) => {
         return {
@@ -107,13 +112,13 @@ async function deploy() {
         const shouldSync = leader == address;
         const ip = ips[region];
 
-        const cloud = {
+        const cloud = _.merge(cloudConfig, {
             type: types.clouds.aws,
             region: region,
             instanceType: 't3.medium',
             ip: ip,
             spinContext: region
-        };        
+        });
 
         const keys = {
             aws: {
@@ -129,14 +134,14 @@ async function deploy() {
             }
         };
 
-        const endpoint = `${region}.global.nodes.staging.orbs-test.com/vchains/42`
+        const endpoint = `${ip}/vchains/42`
         const blockHeight = await getBlockHeight(endpoint);
         console.log(`Current block height: ${blockHeight}`);
 
         const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
 
         if (removeNode) {
-            const outputDir = `${__dirname}/_terraform/${region}`;
+            const outputDir = `${pathToCache}/${region}`;
             if (existsSync(outputDir)) {
                 await c.destroyConstellation({
                     spinContext: region,
@@ -157,10 +162,11 @@ async function deploy() {
             const tmpPath = `/tmp/${region}.boyar.json`;
             writeFile(tmpPath, JSON.stringify(boyarConfig));
 
-            const command = `aws s3 cp --acl public-read ${tmpPath} s3://orbs-network-config-staging-discovery-${region}/boyar/config.json`;
+            const profile = _.isEmpty(awsProfile) ? "" : `--profile ${awsProfile}`
+            const command = `aws s3 cp --acl public-read ${tmpPath} ${profile} s3://${cloud.bucketPrefix}-${region}/boyar/config.json`;
             console.log(command);
 
-            returnValue = returnValue || shell.exec(command);
+            shell.exec(command);
         }
 
         if (shouldSync) {

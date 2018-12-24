@@ -4,6 +4,11 @@ locals {
 
 # Mount external volume as docker lib
 
+while true; do
+  sleep 1
+  test -e /dev/nvme1n1 && break
+done
+
 mkfs.ext4 /dev/nvme1n1
 mkdir -p /var/lib/docker
 mount /dev/nvme1n1 /var/lib/docker
@@ -34,7 +39,7 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce
 
-export BOYAR_VERSION=20638a0b3442df7f9bd315981aa1cd0e6fe14cfc
+export BOYAR_VERSION=e092191aa787b21a2a78852ab7241ac6f60aa7e2
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
@@ -49,7 +54,7 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var
 
 $(aws ecr get-login --no-include-email --region us-west-2)
 
-echo '0 * * * * $(aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
+echo '0 * * * * $(/usr/local/bin/aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
 crontab /tmp/crontab
 
 while true; do
@@ -68,7 +73,7 @@ resource "aws_instance" "master" {
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
   subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
-  iam_instance_profile = "orbs-network"
+  iam_instance_profile = "${ aws_iam_instance_profile.swarm_master.name }"
 
   user_data = "${local.master_user_data}"
 

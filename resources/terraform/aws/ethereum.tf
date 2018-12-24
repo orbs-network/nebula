@@ -4,6 +4,11 @@ locals {
 
 # Mount external volume as docker lib
 
+while true; do
+  sleep 1
+  test -e /dev/nvme1n1 && break
+done
+
 mkfs.ext4 /dev/nvme1n1
 mkdir -p /mnt/data/
 mount /dev/nvme1n1 /mnt/data/
@@ -31,18 +36,19 @@ apt-get update
 apt-get install -y docker-ce
 
 docker run -d \
-  -p "8545:8545" \
+  -p 8545:8545 \
+  -p 30303:30303 \
   --restart always \
   -v /mnt/data/ethereum-root:/root \
   --name ethereum \
-  ethereum/client-go --testnet
+  ethereum/client-go --testnet --rpc --rpcaddr 0.0.0.0
 
 TFEOF
 }
 
 resource "aws_instance" "ethereum" {
   ami             = "${var.aws_ami_id}"
-  instance_type   = "t3.medium"
+  instance_type   = "${var.aws_ether_instance_type}"
   security_groups = ["${aws_security_group.ethereum.id}"]
   key_name        = "${aws_key_pair.deployer.key_name}"
   subnet_id       = "${ module.vpc.subnet-ids-public[0] }"
@@ -56,7 +62,7 @@ resource "aws_instance" "ethereum" {
 }
 
 resource "aws_ebs_volume" "ethereum_storage" {
-  size              = 20
+  size              = 100
   availability_zone = "${aws_instance.ethereum.availability_zone}"
 
   tags = {
