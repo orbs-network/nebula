@@ -1,5 +1,5 @@
 locals {
-  master_user_data = <<TFEOF
+  manager_user_data = <<TFEOF
 #!/bin/sh
 
 # Mount external volume as docker lib
@@ -67,32 +67,32 @@ HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --orchestrator sw
 TFEOF
 }
 
-resource "aws_instance" "master" {
+resource "aws_instance" "manager" {
   ami                  = "${var.aws_ami_id}"
-  instance_type        = "${var.aws_orbs_master_instance_type}"
+  instance_type        = "${var.aws_orbs_manager_instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
   subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
-  iam_instance_profile = "${ aws_iam_instance_profile.swarm_master.name }"
+  iam_instance_profile = "${ aws_iam_instance_profile.swarm_manager.name }"
 
-  user_data = "${local.master_user_data}"
+  user_data = "${local.manager_user_data}"
 
   tags = {
-    Name = "constellation-${var.run_identifier}-swarm-master"
+    Name = "constellation-${var.run_identifier}-swarm-manager"
   }
 }
 
-resource "aws_ebs_volume" "master_storage" {
+resource "aws_ebs_volume" "manager_storage" {
   size              = 50
-  availability_zone = "${aws_instance.master.availability_zone}"
+  availability_zone = "${aws_instance.manager.availability_zone}"
 
   tags {
     Name = "constellation-docker-storage"
   }
 }
 
-resource "aws_volume_attachment" "master_storage_attachment" {
+resource "aws_volume_attachment" "manager_storage_attachment" {
   device_name = "/dev/sdh"
-  volume_id   = "${aws_ebs_volume.master_storage.id}"
-  instance_id = "${aws_instance.master.id}"
+  volume_id   = "${aws_ebs_volume.manager_storage.id}"
+  instance_id = "${aws_instance.manager.id}"
 }

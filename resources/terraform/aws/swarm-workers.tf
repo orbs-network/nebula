@@ -1,5 +1,5 @@
 locals {
-  slave_user_data = <<TFEOF
+  worker_user_data = <<TFEOF
 #!/bin/sh
 
 # Mount external volume as docker lib
@@ -43,42 +43,42 @@ sudo apt-get install -y docker-ce
 apt-get install -y python-pip && pip install awscli
 
 while true; do
-    docker swarm join --token $(aws secretsmanager get-secret-value --region ${var.region} --secret-id swarm-token-${var.run_identifier}-worker-${var.region} --output text --query SecretString) ${aws_instance.master.private_ip} && break
+    docker swarm join --token $(aws secretsmanager get-secret-value --region ${var.region} --secret-id swarm-token-${var.run_identifier}-worker-${var.region} --output text --query SecretString) ${aws_instance.manager.private_ip} && break
     sleep 5
 done
 
 TFEOF
 }
 
-resource "aws_instance" "slave" {
+resource "aws_instance" "worker" {
   count                = 2
   ami                  = "${var.aws_ami_id}"
-  instance_type        = "${var.aws_orbs_slave_instance_type}"
+  instance_type        = "${var.aws_orbs_worker_instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
-  iam_instance_profile = "${ aws_iam_instance_profile.swarm_slave.name }"
+  iam_instance_profile = "${ aws_iam_instance_profile.swarm_worker.name }"
   subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
 
-  user_data = "${local.slave_user_data}"
+  user_data = "${local.worker_user_data}"
 
   tags = {
     Name = "constellation-${var.run_identifier}-swarm-worker-${count.index}"
   }
 }
 
-resource "aws_ebs_volume" "slave_storage" {
+resource "aws_ebs_volume" "worker_storage" {
   count             = 2
   size              = 50
-  availability_zone = "${element(aws_instance.slave.*.availability_zone, count.index)}"
+  availability_zone = "${element(aws_instance.worker.*.availability_zone, count.index)}"
 
   tags {
     Name = "constellation-docker-storage"
   }
 }
 
-resource "aws_volume_attachment" "slave_storage_attachment" {
+resource "aws_volume_attachment" "worker_storage_attachment" {
   count       = 2
   device_name = "/dev/sdh"
-  volume_id   = "${element(aws_ebs_volume.slave_storage.*.id, count.index)}"
-  instance_id = "${element(aws_instance.slave.*.id, count.index)}"
+  volume_id   = "${element(aws_ebs_volume.worker_storage.*.id, count.index)}"
+  instance_id = "${element(aws_instance.worker.*.id, count.index)}"
 }

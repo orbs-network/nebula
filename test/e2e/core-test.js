@@ -98,7 +98,7 @@ describe('Nebula core', () => {
 
         const result = await c.createConstellation({ cloud, keys });
         expect(result.ok).to.equal(true);
-        const { master: { ip } } = result;
+        const { manager: { ip } } = result;
 
         const pollingResult = await eventuallyReady(ip);
         expect(pollingResult).to.equal(true);

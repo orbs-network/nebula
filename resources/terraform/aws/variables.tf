@@ -23,11 +23,11 @@ variable "aws_ami_id" {
   default = "SOME_AMAZON_AMI_ID"
 }
 
-variable "aws_orbs_master_instance_type" {
+variable "aws_orbs_manager_instance_type" {
   default = "t2.micro"
 }
 
-variable "aws_orbs_slave_instance_type" {
+variable "aws_orbs_worker_instance_type" {
   default = "t2.micro"
 }
 
