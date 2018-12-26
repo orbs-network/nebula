@@ -140,7 +140,7 @@ async function deploy() {
         const blockHeight = await getBlockHeight(endpoint);
         console.log(`Current block height: ${blockHeight}`);
 
-        const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
+        const c = new CoreService(new TerraformService(terraformProdAdapter, pathToCache), coreAdapter);
 
         if (removeNode) {
             const outputDir = `${pathToCache}/${region}`;
