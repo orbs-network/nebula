@@ -68,6 +68,7 @@ async function deploy() {
     const createNode = config.get("create-node");
     const updateVchains = config.get("update-vchains");
     const chainVersion = config.get("chain-version");
+    const reset = config.get("reset");
 
     const regions = config.get("regions").split(",");
 
@@ -109,7 +110,8 @@ async function deploy() {
         const privateKey = nodeKeys[region].privateKey;
         const nodeAddresses = _.map(nodeKeys, 'address');
         const leader = nodeAddresses[0];
-        const shouldSync = leader == address;
+        const shouldSync = reset ? false : leader == address;
+
         const ip = ips[region];
 
         const cloud = _.merge(cloudConfig, {
