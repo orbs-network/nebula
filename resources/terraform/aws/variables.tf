@@ -35,13 +35,7 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "access_key" {
-  default = "SOME_AMAZON_ACCESS_KEY"
-}
-
-variable "secret_key" {
-  default = "SOME_AMAZON_SECRET_KEY"
-}
+variable "aws_profile" {}
 
 variable "context_id" {}
 

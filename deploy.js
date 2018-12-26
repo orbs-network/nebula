@@ -70,6 +70,7 @@ async function deploy() {
     const chainVersion = config.get("chain-version");
     const reset = config.get("reset");
     const sshPublicKey = config.get("ssh-public-key") || '~/.ssh/id_rsa.pub';
+    const awsProfile = config.get("aws-profile") || "default";
 
     const regions = config.get("regions").split(",");
 
@@ -85,7 +86,6 @@ async function deploy() {
     const ips = JSON.parse(readFileSync(`${pathToConfig}/ips.json`).toString());
     const boyarConfig = JSON.parse(readFileSync(`${pathToConfig}/boyar.json`).toString());
     const cloudConfig = JSON.parse(readFileSync(`${pathToConfig}/cloud.json`).toString());
-    const awsProfile = config.get("aws-profile"); // hack to help Tal deploy certain testnet
 
     boyarConfig.network = _.map(nodeKeys, (keys, region) => {
         return {
@@ -125,8 +125,7 @@ async function deploy() {
 
         const keys = {
             aws: {
-                accessKey: process.env.AWS_ACCESS_KEY_ID,
-                secretKey: process.env.AWS_SECRET_ACCESS_KEY,
+                profile: awsProfile,
             },
             ssh: {
                 path: sshPublicKey,
