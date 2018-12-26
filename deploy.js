@@ -69,6 +69,7 @@ async function deploy() {
     const updateVchains = config.get("update-vchains");
     const chainVersion = config.get("chain-version");
     const reset = config.get("reset");
+    const sshPublicKey = config.get("ssh-public-key") || '~/.ssh/id_rsa.pub';
 
     const regions = config.get("regions").split(",");
 
@@ -128,7 +129,7 @@ async function deploy() {
                 secretKey: process.env.AWS_SECRET_ACCESS_KEY,
             },
             ssh: {
-                path: '~/.ssh/id_rsa.pub',
+                path: sshPublicKey,
             },
             orbs: {
                 nodeKeys: { address, privateKey, leader },

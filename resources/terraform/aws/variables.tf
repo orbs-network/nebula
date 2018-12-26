@@ -58,3 +58,5 @@ variable "s3_bucket_name" {}
 variable "s3_boyar_key" {}
 
 variable "s3_boyar_config_url" {}
+
+variable "path_to_ssh_pubkey" {}
