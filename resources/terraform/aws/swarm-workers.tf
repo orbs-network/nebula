@@ -6,23 +6,24 @@ locals {
 
 while true; do
   sleep 1
-  test -e /dev/nvme1n1 && break
+  test -e /dev/xvdh && break
 done
 
-mkfs.ext4 /dev/nvme1n1
-mkdir -p /var/lib/docker
-mount /dev/nvme1n1 /var/lib/docker
+mkfs -t ext4 /dev/xvdh
+mkdir /var/lib/docker
+cp /etc/fstab /etc/fstab.bak
+echo '/dev/xvdh /var/lib/docker ext4 defaults,nofail 0 0' >> /etc/fstab
+mount -a
 
 # Sysctl
 
 sysctl -w net.core.somaxconn=128000
 
-
 # Remove old instances of Docker which might ship with ubuntu
-sudo apt-get remove docker docker-engine docker.io
+apt-get remove docker docker-engine docker.io
 
-sudo apt-get update
-sudo apt-get install \
+apt-get update && apt-get -y upgrade
+apt-get install \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -52,7 +53,7 @@ TFEOF
 
 resource "aws_instance" "worker" {
   count                = 2
-  ami                  = "${var.aws_ami_id}"
+  ami                  = "${data.aws_ami.ubuntu-18_04.id}"
   instance_type        = "${var.aws_orbs_worker_instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
@@ -77,8 +78,9 @@ resource "aws_ebs_volume" "worker_storage" {
 }
 
 resource "aws_volume_attachment" "worker_storage_attachment" {
-  count       = 2
-  device_name = "/dev/sdh"
-  volume_id   = "${element(aws_ebs_volume.worker_storage.*.id, count.index)}"
-  instance_id = "${element(aws_instance.worker.*.id, count.index)}"
+  count        = 2
+  device_name  = "/dev/sdh"
+  force_detach = true
+  volume_id    = "${element(aws_ebs_volume.worker_storage.*.id, count.index)}"
+  instance_id  = "${element(aws_instance.worker.*.id, count.index)}"
 }

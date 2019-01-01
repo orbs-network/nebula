@@ -2,21 +2,22 @@ locals {
   ethereum_user_data = <<TFEOF
 #! /bin/bash
 
-# Mount external volume as docker lib
-
 while true; do
   sleep 1
-  test -e /dev/nvme1n1 && break
+  test -e /dev/xvdh && break
 done
 
-mkfs.ext4 /dev/nvme1n1
-mkdir -p /mnt/data/
-mount /dev/nvme1n1 /mnt/data/
+mkfs -t ext4 /dev/xvdh
+mkdir /ethereum-persistency
+cp /etc/fstab etc/fstab.bak
+echo '/dev/xvdh /ethereum-persistency ext4 defaults,nofail 0 0' >> /etc/fstab
+mount -a
+chown -R ubuntu:ubuntu /ethereum-persistency/
 
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
 
-apt-get update
+apt-get update && apt-get -y upgrade
 apt-get install \
     apt-transport-https \
     ca-certificates \
@@ -37,20 +38,22 @@ apt-get install -y docker-ce
 
 docker run -d \
   -p 8545:8545 \
-  -p 8080:8080
+  -p 8546:8546 \
+  -p 8080:8080 \
   -p 30303:30303 \
   --restart always \
-  -v /mnt/data/ethereum-root:/home/parity \
   --name ethereum \
-  parity/parity:stable --chain ropsten
+  -v /ethereum-persistency:/home/parity/.local/share/io.parity.ethereum \
+  parity/parity:stable --chain ropsten --base-path /home/parity/.local/share/io.parity.ethereum
 
 TFEOF
 }
 
 resource "aws_subnet" "ethereum" {
-  vpc_id            = "${module.vpc.id}"
-  cidr_block        = "172.31.100.0/24"
-  availability_zone = "${aws_ebs_volume.ethereum.availability_zone}"
+  vpc_id                  = "${module.vpc.id}"
+  cidr_block              = "172.31.100.0/24"
+  availability_zone       = "${aws_ebs_volume.ethereum.availability_zone}"
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "constellation-${var.run_identifier}-ethereum-subnet"
@@ -58,7 +61,7 @@ resource "aws_subnet" "ethereum" {
 }
 
 resource "aws_instance" "ethereum" {
-  ami               = "${var.aws_ami_id}"
+  ami               = "${data.aws_ami.ubuntu-18_04.id}"
   availability_zone = "${aws_ebs_volume.ethereum.availability_zone}"
   instance_type     = "${var.aws_ether_instance_type}"
   security_groups   = ["${aws_security_group.ethereum.id}"]

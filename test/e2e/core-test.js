@@ -6,7 +6,7 @@ const { CoreService } = require('./../../lib/services/core/core');
 const { TerraformService } = require('./../../lib/services/terraform/terraform');
 const terraformProdAdapter = require('./../../lib/adapters/terraform/adapter');
 const { coreAdapter } = require('../../lib/adapters/core/adapter');
-const testUtils = require('./test.utils');
+const harness = require('./harness');
 
 const boyarConfig = require('./../../testnet/boyar');
 
@@ -16,6 +16,7 @@ const accessKey = process.env.AWS_ACCESS_KEY_ID;
 const secretKey = process.env.AWS_SECRET_ACCESS_KEY;
 const region = 'us-east-2';
 const ethereumAZ = 'us-east-2b';
+const bucketPrefix = 'boyar-discovery';
 
 const keys = {
     aws: {
@@ -37,43 +38,42 @@ const keys = {
 
 describe('Nebula core', () => {
     it.only('should provision a new constellation with existing ethereum volume and destroy it', async () => {
-        const { ethereumEbsVolumeId: volumeId } = await testUtils.createStandAloneIPAndVolume({
-            accessKey, secretKey, region, ethereumAZ
-        });
+        // const { ethereumEbsVolumeId: volumeId } = await harness.createStandAloneIPAndVolume({
+        //     accessKey, secretKey, region, ethereumAZ
+        // });
 
         const cloud = {
             type: types.clouds.aws,
             region,
             instanceType: 't2.micro',
-            ethereum: {
-                az: ethereumAZ,
-                volumeId,
-            }
+            bucketPrefix,
+            // ethereum: {
+            //     az: ethereumAZ,
+            //     volumeId,
+            // }
         };
 
         const result = await c.createConstellation({ cloud, keys });
         expect(result.ok).to.equal(true);
         const { manager: { ip } } = result;
 
-        const pollingResult = await eventuallyReady(ip);
+        const pollingResult = await harness.eventuallyReady(ip);
         expect(pollingResult).to.equal(true);
 
-        console.log('stopping here for now...');
-        process.exit(0);
-
         const destroyResult = await c.destroyConstellation({ spinContext: result.spinContext });
+        expect(destroyResult.error).to.equal(null);
         expect(destroyResult.ok).to.equal(true);
 
-        const standAlonePlanOutputAsString = await testUtils.checkPlanForStandAloneIPAndVolume();
-        const desiredMessageIndex = standAlonePlanOutputAsString.indexOf('No changes. Infrastructure is up-to-date');
-        expect(desiredMessageIndex, 'Expecting to see the IP/EBS are still alive after destroying infra').to.not.equal(-1);
+        // const standAlonePlanOutputAsString = await harness.checkPlanForStandAloneIPAndVolume();
+        // const desiredMessageIndex = standAlonePlanOutputAsString.indexOf('No changes. Infrastructure is up-to-date');
+        // expect(desiredMessageIndex, 'Expecting to see the IP/EBS are still alive after destroying infra').to.not.equal(-1);
 
-        await testUtils.destroyStandAloneInfra();
+        // await harness.destroyStandAloneInfra();
     });
 
     it('should provision a new constellation with a pre-existing Elastic IP and destroy it', async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
-        const { ethereumEbsVolumeId: volumeId, preExistingElasticIp } = await testUtils.createStandAloneIPAndVolume({
+        const { ethereumEbsVolumeId: volumeId, preExistingElasticIp } = await harness.createStandAloneIPAndVolume({
             accessKey, secretKey, region, ethereumAZ
         });
 
@@ -81,6 +81,7 @@ describe('Nebula core', () => {
             type: types.clouds.aws,
             region,
             instanceType: 't2.medium',
+            bucketPrefix,
             ip: preExistingElasticIp,
             ethereum: {
                 az: ethereumAZ,
@@ -97,10 +98,10 @@ describe('Nebula core', () => {
         const destroyResult = await c.destroyConstellation({ spinContext: result.spinContext });
         expect(destroyResult.ok).to.equal(true);
 
-        const standAlonePlanOutputAsString = await testUtils.checkPlanForStandAloneIPAndVolume();
+        const standAlonePlanOutputAsString = await harness.checkPlanForStandAloneIPAndVolume();
         const desiredMessageIndex = standAlonePlanOutputAsString.indexOf('No changes. Infrastructure is up-to-date');
         expect(desiredMessageIndex, 'Expecting to see the IP/EBS are still alive after destroying infra').to.not.equal(-1);
 
-        await testUtils.destroyStandAloneInfra();
+        await harness.destroyStandAloneInfra();
     });
 });

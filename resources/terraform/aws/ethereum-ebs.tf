@@ -1,4 +1,4 @@
-resource "aws_ebs_volume" "ethereum_storage" {
+resource "aws_ebs_volume" "ethereum" {
   size              = 100
   availability_zone = "${data.aws_availability_zones.available.names[0]}"
 
@@ -9,6 +9,6 @@ resource "aws_ebs_volume" "ethereum_storage" {
 
 resource "aws_volume_attachment" "ethereum_storage_attachment" {
   device_name = "/dev/sdh"
-  volume_id   = "${aws_ebs_volume.ethereum_storage.id}"
+  volume_id   = "${aws_ebs_volume.ethereum.id}"
   instance_id = "${aws_instance.ethereum.id}"
 }

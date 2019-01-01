@@ -11,7 +11,20 @@ const tf = new TerraformService({});
 
 async function exec(cmd, opts) {
     console.log('[exec-call] $ ', cmd, opts);
-    const result = await _exec(cmd, opts);
+    let result;
+
+    try {
+        // Contain fails within exec
+        result = await _exec(cmd, opts);
+    } catch (err) {
+        result = {
+            stderr: err,
+            stdout: '',
+            childProcess: {
+                exitCode: 9,
+            },
+        };
+    }
 
     console.log('exit code: ', result.childProcess.exitCode);
     console.log('stdout: ', result.stdout);
@@ -97,7 +110,9 @@ module.exports = {
 
         return eipPlanResult.stdout;
     },
-
+    async fingerprintEthereumPersistentDrive(fingerprint) {
+        const addFingerprintResult = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'echo "${fingerprint}" > /home/ubuntu/.fingerprint'`);
+    },
     async destroyStandAloneInfra() {
         console.log('cleaning up the stand alone infra..');
         await exec(`terraform destroy -var-file=terraform.tfvars -auto-approve`, {

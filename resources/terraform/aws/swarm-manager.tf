@@ -6,12 +6,14 @@ locals {
 
 while true; do
   sleep 1
-  test -e /dev/nvme1n1 && break
+  test -e /dev/xvdh && break
 done
 
-mkfs.ext4 /dev/nvme1n1
-mkdir -p /var/lib/docker
-mount /dev/nvme1n1 /var/lib/docker
+mkfs -t ext4 /dev/xvdh
+mkdir /var/lib/docker
+cp /etc/fstab /etc/fstab.bak
+echo '/dev/xvdh /var/lib/docker ext4 defaults,nofail 0 0' >> /etc/fstab
+mount -a
 
 # Sysctl
 
@@ -20,7 +22,7 @@ sysctl -w net.core.somaxconn=128000
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
 
-apt-get update
+apt-get update && apt-get -y upgrade
 apt-get install \
     apt-transport-https \
     ca-certificates \
@@ -68,7 +70,7 @@ TFEOF
 }
 
 resource "aws_instance" "manager" {
-  ami                  = "${var.aws_ami_id}"
+  ami                  = "${data.aws_ami.ubuntu-18_04.id}"
   instance_type        = "${var.aws_orbs_manager_instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
@@ -87,12 +89,12 @@ resource "aws_ebs_volume" "manager_storage" {
   availability_zone = "${aws_instance.manager.availability_zone}"
 
   tags {
-    Name = "constellation-docker-storage"
+    Name = "docker-storage-${var.run_identifier}-manager"
   }
 }
 
 resource "aws_volume_attachment" "manager_storage_attachment" {
-  device_name = "/dev/sdh"
-  volume_id   = "${aws_ebs_volume.manager_storage.id}"
-  instance_id = "${aws_instance.manager.id}"
+  device_name  = "/dev/sdh"
+  volume_id    = "${aws_ebs_volume.manager_storage.id}"
+  instance_id  = "${aws_instance.manager.id}"
 }

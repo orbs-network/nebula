@@ -13,7 +13,3 @@ output "main_vpc_id" {
 output "ethereum.public_ip" {
   value = "${aws_instance.ethereum.public_ip}"
 }
-
-output "ethereum.private_ip" {
-  value = "${aws_instance.ethereum.private_ip}"
-}
