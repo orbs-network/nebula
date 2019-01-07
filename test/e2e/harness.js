@@ -39,6 +39,9 @@ const targetDir = path.join(__dirname, 'eip_tf_state');
 
 module.exports = {
     exec,
+    remoteExec({ command, ip }) {
+        return exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} '${command}'`);
+    },
     async eventuallyReady(ip) {
         let pollCount = 0;
         let poll = true;
@@ -110,8 +113,42 @@ module.exports = {
 
         return eipPlanResult.stdout;
     },
-    async fingerprintEthereumPersistentDrive(fingerprint) {
-        const addFingerprintResult = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'echo "${fingerprint}" > /home/ubuntu/.fingerprint'`);
+    async createEBSFingerprint({ spinContext, outputs }) {
+        const ip = outputs.find(o => o.key === 'ethereum.public_ip').value;
+        const command = `echo "${spinContext}" > /ethereum-persistency/.fingerprint`;
+        const addFingerprintResult = await this.remoteExec({ command, ip });
+
+        if (addFingerprintResult.exitCode !== 0) {
+            return {
+                ok: false,
+                error: addFingerprintResult.stderr,
+            };
+        }
+
+        return {
+            ok: true,
+            error: null,
+            result: addFingerprintResult,
+        };
+    },
+    async checkEBSFingerprint({ outputs }) {
+        const ip = outputs.find(o => o.key === 'ethereum.public_ip').value;
+        const command = `cat /ethereum-persistency/.fingerprint`;
+        const checkFingerprintResult = await this.remoteExec({ command, ip });
+
+        if (checkFingerprintResult.exitCode !== 0) {
+            return {
+                ok: false,
+                fingerprint: null,
+                error: checkFingerprintResult.stderr,
+            };
+        }
+
+        return {
+            ok: true,
+            error: null,
+            fingerprint: trim(checkFingerprintResult.stdout),
+        };
     },
     async destroyStandAloneInfra() {
         console.log('cleaning up the stand alone infra..');

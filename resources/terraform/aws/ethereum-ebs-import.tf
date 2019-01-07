@@ -1,5 +1,6 @@
 resource "aws_ebs_volume" "ethereum" {
   availability_zone = "${var.aws_ether_az}"
+  size              = 100
 }
 
 resource "aws_volume_attachment" "ethereum_storage_attachment" {

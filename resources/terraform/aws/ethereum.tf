@@ -7,7 +7,7 @@ while true; do
   test -e /dev/xvdh && break
 done
 
-mkfs -t ext4 /dev/xvdh
+[[ $(sudo file -s /dev/xvdh) != *UUID* ]] && mkfs -t ext4 /dev/xvdh
 mkdir /ethereum-persistency
 cp /etc/fstab etc/fstab.bak
 echo '/dev/xvdh /ethereum-persistency ext4 defaults,nofail 0 0' >> /etc/fstab
