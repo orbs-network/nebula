@@ -37,56 +37,6 @@ const keys = {
 };
 
 describe('Nebula core', () => {
-    it('should provision a new constellation with existing ethereum volume and destroy it', async () => {
-        const cloud = {
-            type: types.clouds.aws,
-            region,
-            instanceType: 't2.micro',
-            bucketPrefix,
-        };
-
-        const result = await c.createConstellation({ cloud, keys });
-        expect(result.ok).to.equal(true);
-        const { manager: { ip } } = result;
-
-        const pollingResult = await harness.eventuallyReady(ip);
-        expect(pollingResult).to.equal(true);
-
-        const destroyResult = await c.destroyConstellation({ spinContext: result.spinContext });
-        expect(destroyResult.error).to.equal(null);
-        expect(destroyResult.ok).to.equal(true);
-    });
-
-    it('should provision a new constellation with a pre-existing Elastic IP and destroy it', async () => {
-        // First we will create an Elastic IP outside the scope of createConstellation()
-        const { preExistingElasticIp } = await harness.createStandAloneIPAndVolume({
-            accessKey, secretKey, region, ethereumAZ
-        });
-
-        const cloud = {
-            type: types.clouds.aws,
-            region,
-            instanceType: 't2.medium',
-            bucketPrefix,
-            ip: preExistingElasticIp,
-        };
-
-        const result = await c.createConstellation({ cloud, keys });
-        expect(result.ok).to.equal(true);
-
-        const pollingResult = await harness.eventuallyReady(preExistingElasticIp);
-        expect(pollingResult).to.equal(true);
-
-        const destroyResult = await c.destroyConstellation({ spinContext: result.spinContext });
-        expect(destroyResult.ok).to.equal(true);
-
-        const standAlonePlanOutputAsString = await harness.checkPlanForStandAloneIPAndVolume();
-        const desiredMessageIndex = standAlonePlanOutputAsString.indexOf('No changes. Infrastructure is up-to-date');
-        expect(desiredMessageIndex, 'Expecting to see the IP/EBS are still alive after destroying infra').to.not.equal(-1);
-
-        await harness.destroyStandAloneInfra();
-    });
-
     it('should provision a new constellation with a pre-existing EBS for ethereum persistency kept between destructions', async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         const { ethereumEbsVolumeId: volumeId, preExistingElasticIp } = await harness.createStandAloneIPAndVolume({
