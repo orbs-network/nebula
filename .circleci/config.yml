@@ -19,6 +19,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      - run: ./build/setup.sh
       # clean up run cache
       - run: rm -rf _terraform
       - run: yarn install
