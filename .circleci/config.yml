@@ -8,9 +8,6 @@ jobs:
 
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "d7:cb:f6:47:2c:68:d0:78:a6:a6:34:ef:dc:31:d5:9b"
 
       # Download and cache dependencies
       - restore_cache:
@@ -20,6 +17,7 @@ jobs:
           - v1-dependencies-
 
       - run: ./build/setup.sh
+      
       # clean up run cache
       - run: rm -rf _terraform
       - run: yarn install
@@ -30,5 +28,5 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
         
       # run tests!
-      - run: yarn test
-      - run: ./build/clean.sh
+      - run: ./build/test.sh
+      
