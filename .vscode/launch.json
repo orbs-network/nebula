@@ -27,8 +27,7 @@
             "args": [
                 "-u",
                 "tdd",
-                "--timeout",
-                "999999",
+                "--no-timeouts",
                 "--colors",
                 "${file}"
             ],

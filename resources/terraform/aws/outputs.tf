@@ -1,9 +1,9 @@
-output "master.ip" {
-  value = "${aws_instance.master.public_ip}"
+output "manager.ip" {
+  value = "${aws_instance.manager.public_ip}"
 }
 
-output "master.dns" {
-  value = "${aws_instance.master.public_dns}"
+output "manager.dns" {
+  value = "${aws_instance.manager.public_dns}"
 }
 
 output "main_vpc_id" {
@@ -12,8 +12,4 @@ output "main_vpc_id" {
 
 output "ethereum.public_ip" {
   value = "${aws_instance.ethereum.public_ip}"
-}
-
-output "ethereum.private_ip" {
-  value = "${aws_instance.ethereum.private_ip}"
 }
