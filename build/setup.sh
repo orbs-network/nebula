@@ -11,4 +11,6 @@ echo "Generating SSH key pair"
 sudo rm -f ~/.ssh/id_rsa*
 sudo ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
 eval `ssh-agent -s`
-sudo ssh-add ~/.ssh/id_rsa
+sleep 1
+cd ~/.ssh
+sudo ssh-add id_rsa
