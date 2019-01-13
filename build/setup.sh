@@ -8,9 +8,10 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 
 echo "Generating SSH key pair"
-sudo rm -f ~/.ssh/id_rsa*
-sudo ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
+echo ".ssh directory content before creating the key"
+ls -la ~/.ssh
+ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
+echo "the directory content after key generation:"
 eval `ssh-agent -s`
 sleep 1
-cd ~/.ssh
-sudo ssh-add id_rsa
+ssh-add
