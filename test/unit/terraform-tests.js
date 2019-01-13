@@ -12,11 +12,11 @@ describe('terraform service unit tests', () => {
     it('should parse terraform outputs correctly', () => {
         const cleanOutputs = [
             {
-                key: 'master.public_ip',
+                key: 'manager.public_ip',
                 value: '1.2.4.5',
             },
             {
-                key: 'master.public_dns',
+                key: 'manager.public_dns',
                 value: 'ec2-1-2-4-5.somezone.amazon.com',
             }
         ];
