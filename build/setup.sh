@@ -9,9 +9,11 @@ terraform --version
 
 echo "Generating SSH key pair"
 echo ".ssh directory content before creating the key"
+rm -f ~/.ssh/id_rsa
 ls -la ~/.ssh
 ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
 echo "the directory content after key generation:"
+ls -la ~/.ssh
 eval `ssh-agent -s`
 sleep 1
 ssh-add
