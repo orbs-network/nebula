@@ -1,8 +1,5 @@
 #!/bin/bash
 
-cd test/e2e/eip_tf_state && terraform destroy --var-file=terraform.tfvars -auto-approve
-cd ../../..
-
 for CTX in $(ls -lh _terraform | awk '{print $9}'); do
     cd _terraform/$CTX
     
@@ -12,3 +9,5 @@ for CTX in $(ls -lh _terraform | awk '{print $9}'); do
 
     cd ../..
 done
+
+cd test/e2e/eip_tf_state && terraform destroy --var-file=terraform.tfvars -auto-approve
