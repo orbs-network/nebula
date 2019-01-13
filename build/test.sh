@@ -1,7 +1,7 @@
 #!/bin/bash
 
 yarn test
-$SUCCESS = $?
+SUCCESS=$?
 
 echo "Running clean up!"
 ./build/clean.sh
