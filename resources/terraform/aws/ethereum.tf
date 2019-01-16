@@ -6,12 +6,12 @@ locals {
 
 while true; do
   sleep 1
-  test -e /dev/nvme1n1 && break
+  test -e /dev/xvdh && break
 done
 
-mkfs.ext4 /dev/nvme1n1
+mkfs.ext4 /dev/xvdh
 mkdir -p /mnt/data/
-mount /dev/nvme1n1 /mnt/data/
+mount /dev/xvdh /mnt/data/
 
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
@@ -67,7 +67,7 @@ resource "aws_instance" "ethereum" {
 }
 
 resource "aws_ebs_volume" "ethereum_storage" {
-  size              = 100
+  size              = 50
   availability_zone = "${aws_instance.ethereum.availability_zone}"
 
   tags = {
@@ -76,7 +76,8 @@ resource "aws_ebs_volume" "ethereum_storage" {
 }
 
 resource "aws_volume_attachment" "ethereum_storage_attachment" {
-  device_name = "/dev/sdh"
-  volume_id   = "${aws_ebs_volume.ethereum_storage.id}"
-  instance_id = "${aws_instance.ethereum.id}"
+  device_name  = "/dev/sdh"
+  volume_id    = "${aws_ebs_volume.ethereum_storage.id}"
+  instance_id  = "${aws_instance.ethereum.id}"
+  force_detach = true
 }

@@ -69,7 +69,7 @@ resource "aws_instance" "slave" {
 
 resource "aws_ebs_volume" "slave_storage" {
   count             = 2
-  size              = 50
+  size              = 20
   availability_zone = "${element(aws_instance.slave.*.availability_zone, count.index)}"
 
   tags {
@@ -78,8 +78,9 @@ resource "aws_ebs_volume" "slave_storage" {
 }
 
 resource "aws_volume_attachment" "slave_storage_attachment" {
-  count       = 2
-  device_name = "/dev/sdh"
-  volume_id   = "${element(aws_ebs_volume.slave_storage.*.id, count.index)}"
-  instance_id = "${element(aws_instance.slave.*.id, count.index)}"
+  count        = 2
+  device_name  = "/dev/sdh"
+  volume_id    = "${element(aws_ebs_volume.slave_storage.*.id, count.index)}"
+  instance_id  = "${element(aws_instance.slave.*.id, count.index)}"
+  force_detach = true
 }

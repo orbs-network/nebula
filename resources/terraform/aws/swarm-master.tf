@@ -84,7 +84,7 @@ resource "aws_instance" "master" {
 }
 
 resource "aws_ebs_volume" "master_storage" {
-  size              = 50
+  size              = 20
   availability_zone = "${aws_instance.master.availability_zone}"
 
   tags {
@@ -93,7 +93,8 @@ resource "aws_ebs_volume" "master_storage" {
 }
 
 resource "aws_volume_attachment" "master_storage_attachment" {
-  device_name = "/dev/sdh"
-  volume_id   = "${aws_ebs_volume.master_storage.id}"
-  instance_id = "${aws_instance.master.id}"
+  device_name  = "/dev/sdh"
+  volume_id    = "${aws_ebs_volume.master_storage.id}"
+  instance_id  = "${aws_instance.master.id}"
+  force_detach = true
 }
