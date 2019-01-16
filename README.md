@@ -112,19 +112,27 @@ nebulaSdk.createConstellation({ cloud, keys })
 
 * Running the tests require an active AWS credentials set appropriately in the following environment variables
 
-    $ export AWS_ACCESS_KEY_ID='YOUR_AWS_ACCESS_KEY'; export AWS_SECRET_ACCESS_KEY='YOUR_AWS_SECRET_KEY';
+```
+ $ export AWS_ACCESS_KEY_ID='YOUR_AWS_ACCESS_KEY'
+ $ export AWS_SECRET_ACCESS_KEY='YOUR_AWS_SECRET_KEY'
+```
 
 * Once that is inplace, and within the same terminal navigate you can clone this repository from GitHub by running the following
 
-    $ git clone https://github.com/orbs-network/nebula
+```
+ $ git clone https://github.com/orbs-network/nebula
+```
 
 * Install the project's dependencies
 
-    $ cd nebula && npm install
+```
+ $ cd nebula && npm install
+```
 
 * and finally, run the tests by running
-
-    $ npm test
+```
+  $ npm test
+```
 
 Please note that this command will run all of the provided tests which at the moment are end to end and unit tests.
 
