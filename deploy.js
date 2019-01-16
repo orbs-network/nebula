@@ -118,7 +118,7 @@ async function deploy() {
         const cloud = _.merge(cloudConfig, {
             type: types.clouds.aws,
             region: region,
-            instanceType: 't3.medium',
+            instanceType: 't2.medium',
             ip: ip,
             spinContext: region
         });

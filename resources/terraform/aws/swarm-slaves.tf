@@ -6,12 +6,12 @@ locals {
 
 while true; do
   sleep 1
-  test -e /dev/nvme1n1 && break
+  test -e /dev/xvdh && break
 done
 
-mkfs.ext4 /dev/nvme1n1
+mkfs.ext4 /dev/xvdh
 mkdir -p /var/lib/docker
-mount /dev/nvme1n1 /var/lib/docker
+mount /dev/xvdh /var/lib/docker
 
 # Sysctl
 
@@ -39,6 +39,7 @@ sudo add-apt-repository \
 
 sudo apt-get update
 sudo apt-get install -y docker-ce
+docker plugin install --grant-all-permissions rexray/ebs
 
 apt-get install -y python-pip && pip install awscli
 

@@ -6,12 +6,12 @@ locals {
 
 while true; do
   sleep 1
-  test -e /dev/nvme1n1 && break
+  test -e /dev/xvdh && break
 done
 
-mkfs.ext4 /dev/nvme1n1
+mkfs.ext4 /dev/xvdh
 mkdir -p /var/lib/docker
-mount /dev/nvme1n1 /var/lib/docker
+mount /dev/xvdh /var/lib/docker
 
 # Sysctl
 
@@ -38,8 +38,9 @@ add-apt-repository \
 
 apt-get update
 apt-get install -y docker-ce
+docker plugin install --grant-all-permissions rexray/ebs
 
-export BOYAR_VERSION=e092191aa787b21a2a78852ab7241ac6f60aa7e2
+export BOYAR_VERSION=7855efc76e9122c07c804677592764805f99fe99
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
