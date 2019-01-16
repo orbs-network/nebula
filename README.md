@@ -66,7 +66,7 @@ within your project's folder
 
 Running Nebula in the simplest way involves code such as the following
 
-```
+```js
 const nebulaSdk = require('orbs-nebula-sdk');
 
 const cloud = {
