@@ -44,7 +44,8 @@
           "Pull": true
         },
         "Config": {
-          "ethereum-endpoint": "http://172.31.1.100:8545"
+          "ethereum-endpoint": "http://172.31.1.100:8545",
+          "active-consensus-algo": 2
         }
       }
     ]
