@@ -66,7 +66,7 @@ within your project's folder
 
 Running Nebula in the simplest way involves code such as the following
 
-`
+```
 const nebulaSdk = require('orbs-nebula-sdk');
 
 const cloud = {
@@ -106,7 +106,7 @@ nebulaSdk.createConstellation({ cloud, keys })
     console.log('Swarm master public IP:', result.manager.ip);
 });
 
-`
+```
 
 ### Test
 
