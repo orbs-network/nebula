@@ -16,7 +16,8 @@
           "Pull": true
         },
         "Config": {
-          "ethereum-endpoint": "http://172.31.1.100:8545"
+          "ethereum-endpoint": "http://172.31.1.100:8545",
+          "logger-file-truncation-interval": "15m"
         }
       },
       {
@@ -30,7 +31,8 @@
           "Pull": true
         },
         "Config": {
-          "ethereum-endpoint": "http://172.31.1.100:8545"
+          "ethereum-endpoint": "http://172.31.1.100:8545",
+          "logger-file-truncation-interval": "15m"
         }
       },
       {
@@ -45,7 +47,8 @@
         },
         "Config": {
           "ethereum-endpoint": "http://172.31.1.100:8545",
-          "active-consensus-algo": 2
+          "active-consensus-algo": 2,
+          "logger-file-truncation-interval": "15m"
         }
       }
     ]
