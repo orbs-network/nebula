@@ -61,7 +61,7 @@ function getConfig() {
     return nconf.env(argsConfig).argv(argsConfig);
 }
 
-async function deploy() {
+function parseCLIOptions() {
     const config = getConfig();
 
     const removeNode = config.get("remove-node");
@@ -75,13 +75,43 @@ async function deploy() {
 
     const regions = config.get("regions").split(",");
 
+    const pathToConfig = config.get("config") || `${__dirname}/testnet`;
+    const pathToCache = config.get("cache") || `${__dirname}/_terraform`;
+
+    return {
+        removeNode,
+        createNode,
+        updateVchains,
+        chainVersion,
+        reset,
+        sshPublicKey,
+        awsProfile,
+        ethereumEnabled,
+        regions,
+        pathToConfig,
+        pathToCache
+    }
+}
+
+async function deploy(options) {
+    const {
+        removeNode,
+        createNode,
+        updateVchains,
+        chainVersion,
+        reset,
+        sshPublicKey,
+        awsProfile,
+        ethereumEnabled,
+        regions,
+        pathToConfig,
+        pathToCache
+    } = options;
+
     if (regions.length == 0) {
         console.log("Specify a region or list or regions with REGIONS env variable");
         process.exit(0);
     }
-
-    const pathToConfig = config.get("config") || `${__dirname}/testnet`;
-    const pathToCache = config.get("cache") || `${__dirname}/_terraform`;
 
     const nodeKeys = JSON.parse(readFileSync(`${pathToConfig}/keys.json`).toString());
     const ips = JSON.parse(readFileSync(`${pathToConfig}/ips.json`).toString());
@@ -187,12 +217,21 @@ async function deploy() {
     return returnValue;
 }
 
-(async () => {
-    try {
-        const returnValue = await deploy();
-        process.exit(returnValue);
-    } catch (e) {
-        console.log(e);
-        process.exit(1);
-    }
-})();
+if (!module.parent) {
+    (async () => {
+        try {
+            const returnValue = await deploy(parseCLIOptions());
+            process.exit(returnValue);
+        } catch (e) {
+            console.log(e);
+            process.exit(1);
+        }
+    })();
+} else {
+    module.exports = {
+        deploy,
+        getBlockHeight,
+        waitUntilSync,
+        getConfig
+    };
+}
