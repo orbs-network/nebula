@@ -11,9 +11,9 @@ output "main_vpc_id" {
 }
 
 output "ethereum.public_ip" {
-  value = "${aws_instance.ethereum.public_ip[0]}"
+  value = "${aws_instance.ethereum.*.public_ip[0]}"
 }
 
 output "ethereum.private_ip" {
-  value = "${aws_instance.ethereum.private_ip[0]}"
+  value = "${aws_instance.ethereum.*.private_ip[0]}"
 }
