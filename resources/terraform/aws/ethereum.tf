@@ -52,6 +52,7 @@ TFEOF
 }
 
 resource "aws_instance" "ethereum" {
+  count           = "${var.ethereum_count}"
   ami             = "${var.aws_ami_id}"
   instance_type   = "${var.aws_ether_instance_type}"
   security_groups = ["${aws_security_group.ethereum.id}"]
@@ -67,6 +68,7 @@ resource "aws_instance" "ethereum" {
 }
 
 resource "aws_ebs_volume" "ethereum_storage" {
+  count             = "${var.ethereum_count}"
   size              = 50
   availability_zone = "${aws_instance.ethereum.availability_zone}"
 
@@ -76,6 +78,7 @@ resource "aws_ebs_volume" "ethereum_storage" {
 }
 
 resource "aws_volume_attachment" "ethereum_storage_attachment" {
+  count        = "${var.ethereum_count}"
   device_name  = "/dev/sdh"
   volume_id    = "${aws_ebs_volume.ethereum_storage.id}"
   instance_id  = "${aws_instance.ethereum.id}"
