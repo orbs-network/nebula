@@ -71,7 +71,7 @@ async function deploy() {
     const reset = config.get("reset");
     const sshPublicKey = config.get("ssh-public-key") || '~/.ssh/id_rsa.pub';
     const awsProfile = config.get("aws-profile") || "default";
-    const ethereumEnabled = config.get("ethereum-enabled") != "false";
+    const ethereumEnabled = config.get("ethereum-enabled");
 
     const regions = config.get("regions").split(",");
 
