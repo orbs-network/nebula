@@ -168,9 +168,14 @@ async function deploy(options) {
             }
         };
 
-        const endpoint = `${ip}/vchains/42`
-        const blockHeight = await getBlockHeight(endpoint);
-        console.log(`Current block height: ${blockHeight}`);
+        const vchains = _.map(boyarConfig.chains, "Id");
+        const endpoints = _.map(vchains, (vchain) => `${ip}/vchains/${vchain}`);
+
+        const blockHeights = await Promise.map(endpoints, getBlockHeight);
+
+        for (let i in vchains) {
+            console.log(`Current block height for vchain ${vchains[i]}: ${blockHeights[i]}`);
+        }
 
         const c = new CoreService(new TerraformService(terraformProdAdapter, pathToCache), coreAdapter);
 
@@ -210,7 +215,9 @@ async function deploy(options) {
                 await Promise.delay(60000);
             }
 
-            await waitUntilSync(endpoint, blockHeight)
+            await Promise.map(endpoints, (endpoint, idx) => {
+                return waitUntilSync(endpoint, blockHeights[idx]);
+            });
         }
     }
 
