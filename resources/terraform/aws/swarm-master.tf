@@ -40,7 +40,7 @@ apt-get update
 apt-get install -y docker-ce
 docker plugin install --grant-all-permissions rexray/ebs
 
-export BOYAR_VERSION=82bfc62e90873517d440e53c5365313efdb23a9f
+export BOYAR_VERSION=b5d9796eb293df99d7439cd4a1e7ef26b4624fe1
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
@@ -63,7 +63,7 @@ while true; do
     sleep 15
 done
 
-HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --orchestrator swarm --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
 
 TFEOF
 }
