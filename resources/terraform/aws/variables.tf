@@ -13,7 +13,13 @@ variable "vpc_cidr_block" {
   default = "172.31.0.0/16"
 }
 
-variable "aws_ether_instance_type" {}
+variable "aws_ether_instance_type" {
+  default = "t2.large"
+}
+
+variable "aws_ether_az" {
+  default = "us-east-1a"
+}
 
 variable "run_identifier" {
   default = ""
@@ -23,11 +29,11 @@ variable "aws_ami_id" {
   default = "SOME_AMAZON_AMI_ID"
 }
 
-variable "aws_orbs_master_instance_type" {
+variable "aws_orbs_manager_instance_type" {
   default = "t2.micro"
 }
 
-variable "aws_orbs_slave_instance_type" {
+variable "aws_orbs_worker_instance_type" {
   default = "t2.micro"
 }
 
