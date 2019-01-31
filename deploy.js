@@ -78,6 +78,8 @@ function parseCLIOptions() {
     const pathToConfig = config.get("config") || `${__dirname}/testnet`;
     const pathToCache = config.get("cache") || `${__dirname}/_terraform`;
 
+    const contextPrefix = config.get("context-prefix");
+
     return {
         removeNode,
         createNode,
@@ -89,7 +91,8 @@ function parseCLIOptions() {
         ethereumEnabled,
         regions,
         pathToConfig,
-        pathToCache
+        pathToCache,
+        contextPrefix
     }
 }
 
@@ -105,7 +108,8 @@ async function deploy(options) {
         ethereumEnabled,
         regions,
         pathToConfig,
-        pathToCache
+        pathToCache,
+        contextPrefix
     } = options;
 
     if (regions.length == 0) {
@@ -146,12 +150,14 @@ async function deploy(options) {
 
         const ip = ips[region];
 
+        const spinContext = contextPrefix ? `${contextPrefix}-${region}` : region;
+
         const cloud = _.merge(cloudConfig, {
             type: types.clouds.aws,
             region: region,
             instanceType: 't2.medium',
             ip: ip,
-            spinContext: region
+            spinContext: spinContext
         });
 
         const keys = {
@@ -180,11 +186,11 @@ async function deploy(options) {
         const c = new CoreService(new TerraformService(terraformProdAdapter, pathToCache), coreAdapter);
 
         if (removeNode) {
-            const outputDir = `${pathToCache}/${region}`;
+            const outputDir = `${pathToCache}/${spinContext}`;
             if (existsSync(outputDir)) {
                 await c.destroyConstellation({
-                    spinContext: region,
-                })
+                    spinContext
+                });
 
                 removeSync(outputDir);
             }
