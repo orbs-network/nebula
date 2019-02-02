@@ -56,6 +56,45 @@ Creating a constellation with the CLI is as simple as this:
     Please allow time now for your constellation to finish syncing with the Orbs network
     No further actions required at this point
 
+or if you wish to use a less terminal verbose style , you can create a JSON file naming
+the required arguments. Let's assume the following `funky-orbsy.json` file and content:
+
+    {
+        "name": "funky-orbsy",
+        "awsProfile": "default",
+        "sshPublicKey": "~/.ssh/id_rsa.pub",
+        "orbsAddress": "d27e2e7398e2582f63d0800330010b3e58952ff6",
+        "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253", 
+        "managerPublicIp": "",
+        "region": "us-east-2",
+        "nodeSize": "t3.medium",
+        "nodeCount": 3
+    }
+
+and then we can run the following in our terminal:
+
+    $ nebula create -f funky-orbsy.json
+
+    ....
+    [Lots of Terraform output will come out here]
+    ....
+                
+    Your constellation was created successfully!
+    Provided below is the address of your manager node public IP
+    The manager IPv4 is: 1.2.3.4
+
+    Your constellation name should be used when wanting to destroy/upgrade
+    Constellation name:
+    funky-orbsy
+
+    Example usage:
+    nebula destroy --name funky-orbsy
+
+    Please allow time now for your constellation to finish syncing with the Orbs network
+    No further actions required at this point
+
+How easy is that?! now we can also `git commit` our `funky-orbsy.json` and have it managed neatly!
+
 Nebula's create command available arguments
 
 | Option                | Type    | Description                                                                                                   | Default             |

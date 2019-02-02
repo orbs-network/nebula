@@ -1,0 +1,11 @@
+{
+    "name": "funky-orbsy",
+    "awsProfile": "default",
+    "sshPublicKey": "~/.ssh/id_rsa.pub",
+    "orbsAddress": "d27e2e7398e2582f63d0800330010b3e58952ff6",
+    "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253", 
+    "managerPublicIp": "",
+    "region": "us-east-2",
+    "nodeSize": "t3.medium",
+    "nodeCount": 3
+}

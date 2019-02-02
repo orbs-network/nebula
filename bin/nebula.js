@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const chalk = require('chalk');
+const path = require('path');
+const fs = require('fs');
 
 const types = require('./../constants/types');
 const { CoreService } = require('./../lib/services/core/core');
@@ -20,6 +22,13 @@ function logRed(text) {
   console.log(chalk.redBright(text));
 }
 
+function resolveHome(filepath) {
+  if (filepath[0] === '~') {
+    return path.join(process.env.HOME, filepath.slice(1));
+  }
+  return filepath;
+}
+
 function ValidateIPaddress(ipaddress) {
   if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
     return true;
@@ -30,6 +39,11 @@ function ValidateIPaddress(ipaddress) {
 require('yargs') // eslint-disable-line
   .command('create', 'Create an Orbs constellation in the cloud', (yargs) => {
     return yargs
+      .option('file', {
+        describe: 'a JSON file representing all flags here for the terminal sake!',
+        alias: 'f',
+        default: false
+      })
       .option('name', {
         describe: 'name your constellation! in case non supplied defaults to a random name',
         default: ''
@@ -87,8 +101,28 @@ require('yargs') // eslint-disable-line
       })
       .help('help');
   }, async (argv) => {
+    let _argv = {};
+
+    if (argv.file !== '') {
+      try {
+        let pathToRequire = resolveHome(argv.file);
+        if (pathToRequire.substr(0, 1) !== '/') {
+          pathToRequire = path.join(process.cwd(), pathToRequire);
+        }
+        argsAsFile = require(pathToRequire);
+      } catch (err) {
+        logRed('Problem opening your arguments file!');
+        logRed(err);
+        process.exit(1);
+      }
+
+      _argv = argsAsFile;
+    } else {
+      _argv = argv;
+    }
+
     const { awsProfile, sshPublicKey, orbsAddress, orbsPrivateKey, region,
-      nodeSize, managerPublicIp, noEthereum = false, nodeCount, name } = argv;
+      nodeSize, managerPublicIp, noEthereum = false, nodeCount, name } = _argv;
 
     if (orbsAddress.length !== 40) {
       logRed('Invalid Orbs node address, required hex of 40 characters');
@@ -132,7 +166,7 @@ require('yargs') // eslint-disable-line
       cloud.spinContext = name;
     }
 
-    if (managerPublicIp !== false) {
+    if (managerPublicIp !== false && managerPublicIp !== '') {
       if (ValidateIPaddress(managerPublicIp)) {
         cloud.ip = managerPublicIp;
       } else {
@@ -142,9 +176,9 @@ require('yargs') // eslint-disable-line
       }
     }
 
-    //const result = await c.createConstellation({ cloud, keys });
+    const result = await c.createConstellation({ cloud, keys });
 
-    const result = { ok: true, manager: { ip: '1.2.3.4' }, spinContext: 'itamar' };
+    //const result = { ok: true, manager: { ip: '1.2.3.4' }, spinContext: 'itamar' };
     if (result.ok === true) {
       const managerIP = ('ip' in cloud) ? cloud.ip : result.manager.ip;
 
