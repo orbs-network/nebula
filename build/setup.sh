@@ -7,6 +7,12 @@ unzip terraform_0.11.10_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 terraform --version
 
+sudo mkdir -p ~/.aws
+echo "[default]
+aws_access_key_id=$AWS_ACCESS_KEY_ID
+aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+" > ~/.aws/credentials
+
 echo "Generating SSH key pair"
 echo ".ssh directory content before creating the key"
 rm -f ~/.ssh/id_rsa
