@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const types = require('./../constants/types');
 const { CoreService } = require('./../lib/services/core/core');
 const { TerraformService } = require('./../lib/services/terraform/terraform');
 const terraformProdAdapter = require('./../lib/adapters/terraform/adapter');
@@ -32,6 +33,7 @@ require('yargs') // eslint-disable-line
         default: 'default'
       })
       .boolean('testnet')
+      .boolean('no-ethereum')
       .option('manager-public-ip', {
         describe: 'attach the provided (pre-existing AWS Elastic IP) to the provisioned manager node',
         default: false
@@ -76,7 +78,7 @@ require('yargs') // eslint-disable-line
       .help('help');
   }, async (argv) => {
     const { awsProfile, sshPublicKey, orbsAddress, orbsPrivateKey, region,
-      nodeSize, managerPublicIp } = argv;
+      nodeSize, managerPublicIp, noEthereum = false } = argv;
 
     if (orbsAddress.length !== 40) {
       console.error(
@@ -108,6 +110,7 @@ require('yargs') // eslint-disable-line
           leader: "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
         },
         boyarConfig,
+        ethereum: !noEthereum,
       }
     };
 
