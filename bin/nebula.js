@@ -67,7 +67,7 @@ require('yargs') // eslint-disable-line
       })
       .option('node-size', {
         describe: 'The worker node instance size to use',
-        default: 't3.large'
+        default: 't3.medium'
       })
       .option('manager-size', {
         describe: 'The master node instance size to use',

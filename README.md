@@ -55,7 +55,22 @@ Creating a constellation with the CLI is as simple as this:
 
     Please allow time now for your constellation to finish syncing with the Orbs network
     No further actions required at this point
-    
+
+Nebula's create command available arguments
+
+| Option                | Type    | Description                                                                                                   | Default             |
+|-----------------------|---------|---------------------------------------------------------------------------------------------------------------|---------------------|
+| `--name`              | string  | name your constellation! in case non supplied defaults to a random name                                       | Random UUID         |
+| `--cloud`             | string  | The cloud you wish to deploy on (Currently only AWS supported                                                 | `aws`               |
+| `--aws-profile`       | string  | which aws profile name to use when provisioning. Strongly recommended instead of AWS keys for better security | `default`           |
+| `--testnet`           | boolean | If supplied, the constellation will join the Orbs Network testnet instead of the mainnet                      | `false`             |
+| `--manager-public-ip` | string  | if you wish to attach a static pre-existing EC2 Elastic IP                                                    |                     |
+| `--orbs-address`      | string  | Orbs node address - attained from Orbs or from our DKG process                                                |                     |
+| `--orbs-private-key`  | string  | Orbs node private key - attained from Orbs or from our DKG process                                            |                     |
+| `--node-count`        | number  | The amount of worker nodes to deploy (the more - the more vChains you can handle)                             | `2`                 |
+| `--node-size`         | string  | The worker node instance size to use                                                                          | `t3.medium`         |
+| `--region`            | string  | The AWS region to deploy to                                                                                   | `us-east-1`         |
+| `--ssh-public-key`    | string  | Path to the SSH public key to provision the EC2 machines with                                                 | `~/.ssh/id_rsa.pub` |
 
 ## Destroying a constellation
 
@@ -69,6 +84,10 @@ Destroying is even easier and requires even less arguments
 
     Your constellation has been successfully destroyed!
 
+
+At the moment - upgrading the constellation is not possible directly through Nebula.
+If you wish to upgrade - please destroy and re-create your constellation.
+Once this feature is complete - a new version of Nebula will be released.
 
 This was a short introduction as to how Nebula's CLI works - from here follows the more extensive guide
 into Nebula's API (less relevant for DevOps and more likely better for automating constellation creation with Node.js - rare cases at this stage)
