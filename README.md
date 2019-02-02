@@ -1,11 +1,84 @@
-# orbs-nebula-sdk
+# Orbs Nebula
 
 [![Build](https://circleci.com/gh/orbs-network/nebula/tree/master.svg?style=svg)](https://circleci.com/gh/orbs-network/nebula/tree/master)
+
+In short, Nebula allows you to create an Orbs constellation without too much hassle using our easy-to-use CLI.
+
+## Prerequisities
+For Nebula to work properly you should have the following setup:
+- an SSH public key (which is also loaded by the ssh-agent)
+  if you have one set at `~/.ssh/id_rsa.pub` you're good to go!
+  you can check this by running the following in your terminal:
+  `$ cat ~/.ssh/id_rsa.pub`
+- Orbs address and Orbs private key (supplied from [Orbs Network](https://orbs.com/) or from our DKG process)
+- an AWS Credentials profile set correctly
+  See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+- [Node.js](https://nodejs.org/en/) should be installed version 8 or above
+
+## Installation
+
+Nebula easily integrates into your terminal by installing the NPM package globally
+
+    $ npm install orbs-nebula -g
+
+or if using yarn
+
+    $ yarn global add orbs-nebula
+
+That is all that is required to install Nebula into your system!
+
+## Creating a constellation
+
+Creating a constellation with the CLI is as simple as this:
+
+    $ nebula create --name funky-orbsy \
+                  --orbs-address d27e2e7398e2582f63d0800330010b3e58952ff6 \
+                  --orbs-private-key 87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253 \
+                  --node-count 3 \
+                  --node-size t3.large \
+                  --region us-east-2
+
+    ....
+    [Lots of Terraform output will come out here]
+    ....
+                
+    Your constellation was created successfully!
+    Provided below is the address of your manager node public IP
+    The manager IPv4 is: 1.2.3.4
+
+    Your constellation name should be used when wanting to destroy/upgrade
+    Constellation name:
+    funky-orbsy
+
+    Example usage:
+    nebula destroy --name funky-orbsy
+
+    Please allow time now for your constellation to finish syncing with the Orbs network
+    No further actions required at this point
+    
+
+## Destroying a constellation
+
+Destroying is even easier and requires even less arguments
+
+    $ nebula destroy --name funky-orbsy
+
+    ....
+    [Lots of Terraform output will come out here]
+    ....
+
+    Your constellation has been successfully destroyed!
+
+
+This was a short introduction as to how Nebula's CLI works - from here follows the more extensive guide
+into Nebula's API (less relevant for DevOps and more likely better for automating constellation creation with Node.js - rare cases at this stage)
+
+# Programmatic API Documentation
 
 Orbs is a public blockchain infrastructure built for the needs of decentralized apps with millions of users. For more information, please check https://orbs.com and read the [white papers](https://orbs.com/white-papers).
 Nebula is a tool within the Orbs eco system of tooling providing turn-key solution for setting up an Orbs `constellation` aka blockchain `node` in common worldly terminology.
 
-This repo contains the programatic API part of the Nebula tool. which can be used for developers (or DevOps) which want a bit of a lower level or automation friendly access to provisioning and running an Orbs `constellation`.
+This repo contains a CLI and an API part of the Nebula tool. which can be used for developers (or DevOps) which want a bit of a lower level or automation friendly access to provisioning and running an Orbs `constellation`.
 The project is thoroughly tested with unit tests and E2E tests running Nebula's logic and mechanics against an Amazon account.
 Bear in mind that running the E2E tests require active `AWS IAM` access and secret keys
 

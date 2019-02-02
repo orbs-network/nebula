@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const chalk = require('chalk');
+
 const types = require('./../constants/types');
 const { CoreService } = require('./../lib/services/core/core');
 const { TerraformService } = require('./../lib/services/terraform/terraform');
@@ -10,6 +12,14 @@ const bucketPrefix = 'boyar-discovery';
 
 const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
 
+function logGreen(text) {
+  console.log(chalk.greenBright(text));
+}
+
+function logRed(text) {
+  console.log(chalk.redBright(text));
+}
+
 function ValidateIPaddress(ipaddress) {
   if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
     return true;
@@ -18,7 +28,7 @@ function ValidateIPaddress(ipaddress) {
 }
 
 require('yargs') // eslint-disable-line
-  .command('create', 'creates an Orbs constellation in the cloud', (yargs) => {
+  .command('create', 'Create an Orbs constellation in the cloud', (yargs) => {
     return yargs
       .option('name', {
         describe: 'name your constellation! in case non supplied defaults to a random name',
@@ -78,27 +88,23 @@ require('yargs') // eslint-disable-line
       .help('help');
   }, async (argv) => {
     const { awsProfile, sshPublicKey, orbsAddress, orbsPrivateKey, region,
-      nodeSize, managerPublicIp, noEthereum = false } = argv;
+      nodeSize, managerPublicIp, noEthereum = false, nodeCount, name } = argv;
 
     if (orbsAddress.length !== 40) {
-      console.error(
-        'Invalid Orbs node address, required hex of 40 characters',
-        `Got: ${orbsAddress} (Length: ${orbsAddress.length})`
-      );
+      logRed('Invalid Orbs node address, required hex of 40 characters');
+      logRed(`Got: ${orbsAddress} (Length: ${orbsAddress.length})`);
       process.exit(1);
     }
 
     if (orbsPrivateKey.length !== 64) {
-      console.error(
-        'Invalid Orbs private key, required hex of 64 characters',
-        `Got: ${orbsPrivateKey} (Length: ${orbsPrivateKey.length})`
-      );
+      logRed('Invalid Orbs private key, required hex of 64 characters');
+      logRed(`Got: ${orbsPrivateKey} (Length: ${orbsPrivateKey.length})`);
       process.exit(1);
     }
 
     const keys = {
       aws: {
-        awsProfile,
+        profile: awsProfile,
       },
       ssh: {
         path: sshPublicKey,
@@ -118,31 +124,84 @@ require('yargs') // eslint-disable-line
       type: types.clouds.aws,
       region,
       instanceType: nodeSize,
+      nodeCount: nodeCount,
       bucketPrefix,
     };
+
+    if (name !== '' && name.length > 0) {
+      cloud.spinContext = name;
+    }
 
     if (managerPublicIp !== false) {
       if (ValidateIPaddress(managerPublicIp)) {
         cloud.ip = managerPublicIp;
       } else {
-        console.error('The supplied IP address ', managerPublicIp,
-          'is not a valid IPv4 address!');
+        logRed(`The supplied IP address ${managerPublicIp}`);
+        logRed('is not a valid IPv4 address!');
         process.exit(1);
       }
     }
 
-    const result = await c.createConstellation({ cloud, keys });
+    //const result = await c.createConstellation({ cloud, keys });
 
+    const result = { ok: true, manager: { ip: '1.2.3.4' }, spinContext: 'itamar' };
     if (result.ok === true) {
       const managerIP = ('ip' in cloud) ? cloud.ip : result.manager.ip;
 
-      console.log(
-        'Your constellation was created successfully!',
-        "Provided below is the address of your manager node public IP"
-          `The manager IPv4 is: ${managerIP}`
-      );
+      logGreen('Your constellation was created successfully!');
+      logGreen("Provided below is the address of your manager node public IP");
+      logGreen(`The manager IPv4 is: ${managerIP}`);
+      console.log('');
+      logGreen('Your constellation name should be used when wanting to destroy/upgrade');
+      logGreen('Constellation name:');
+      logGreen(result.spinContext);
+      console.log('');
+      console.log('Example usage:');
+      console.log(`nebula destroy --name ${result.spinContext}`);
+      console.log('');
+      logGreen('Please allow time now for your constellation to finish syncing with the Orbs network');
+      logGreen('No further actions required at this point');
 
       process.exit(0);
+    } else {
+      logRed('Your constelation was not created successfully!');
+      logRed(`with error message as follows: ${result.message}`);
+      logRed('Please follow the inline messages from Terraform to find out why');
+      logRed('More information on debugging errors can be found by running the same commands');
+      logRed('that Nebula runs within your compiled Terraform infrastructure folder located at:');
+      logRed(result.tfPath);
+      console.log('');
+      logRed('If you are clueless as to why this error happened or think it\'s a bug with Nebula');
+      logRed('please kindly open a GitHub issue here: ');
+      logRed('https://github.com/orbs-network/nebula');
+    }
+  })
+
+  .command('destroy', 'Destroys an Orbs constellation', (yargs) => {
+    return yargs
+      .option('name', {
+        describe: 'the name you used or were provided with when you created your constellation',
+        default: '',
+      })
+      .usage('nebula destroy --name [your-constellation-name]')
+      .demandOption('name')
+      .help('help');
+  }, async (argv) => {
+    const { name } = argv;
+
+    const destroyResult = await c.destroyConstellation({ spinContext: name });
+
+    if (destroyResult.ok === true) {
+      logGreen('Your constellation has been successfully destroyed!');
+      process.exit(0);
+    } else {
+      logRed('Could not destroy constellation!');
+      logRed(destroyResult.error);
+      console.log('');
+      logRed('If you are clueless as to why this error happened or think it\'s a bug with Nebula');
+      logRed('please kindly open a GitHub issue here: ');
+      logRed('https://github.com/orbs-network/nebula');
+      process.exit(1);
     }
   })
   .option('verbose', {

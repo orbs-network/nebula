@@ -9,6 +9,7 @@ resource "aws_ebs_volume" "ethereum" {
 
 resource "aws_volume_attachment" "ethereum_storage_attachment" {
   device_name = "/dev/sdh"
+  force_detach = true
   volume_id   = "${aws_ebs_volume.ethereum.id}"
   instance_id = "${aws_instance.ethereum.id}"
 }

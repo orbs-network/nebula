@@ -37,6 +37,11 @@ variable "aws_orbs_worker_instance_type" {
   default = "t2.micro"
 }
 
+variable "aws_orbs_worker_instance_count" {
+  default = 2
+}
+
+
 variable "region" {
   default = "us-east-1"
 }

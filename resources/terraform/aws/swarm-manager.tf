@@ -96,6 +96,7 @@ resource "aws_ebs_volume" "manager_storage" {
 
 resource "aws_volume_attachment" "manager_storage_attachment" {
   device_name  = "/dev/sdh"
+  force_detach = true
   volume_id    = "${aws_ebs_volume.manager_storage.id}"
   instance_id  = "${aws_instance.manager.id}"
 }

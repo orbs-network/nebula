@@ -62,6 +62,7 @@ resource "aws_subnet" "ethereum" {
 
 resource "aws_instance" "ethereum" {
   ami               = "${data.aws_ami.ubuntu-18_04.id}"
+  count             = "${var.ethereum_count}"
   availability_zone = "${aws_ebs_volume.ethereum.availability_zone}"
   instance_type     = "${var.aws_ether_instance_type}"
   security_groups   = ["${aws_security_group.ethereum.id}"]
