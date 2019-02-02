@@ -37,17 +37,16 @@ variable "aws_orbs_worker_instance_type" {
   default = "t2.micro"
 }
 
+variable "aws_orbs_worker_instance_count" {
+  default = 2
+}
+
+
 variable "region" {
   default = "us-east-1"
 }
 
-variable "access_key" {
-  default = "SOME_AMAZON_ACCESS_KEY"
-}
-
-variable "secret_key" {
-  default = "SOME_AMAZON_SECRET_KEY"
-}
+variable "aws_profile" {}
 
 variable "context_id" {}
 
@@ -64,3 +63,9 @@ variable "s3_bucket_name" {}
 variable "s3_boyar_key" {}
 
 variable "s3_boyar_config_url" {}
+
+variable "path_to_ssh_pubkey" {}
+
+variable "ethereum_count" {
+  default = 1
+}

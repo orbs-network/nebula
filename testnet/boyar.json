@@ -1,6 +1,9 @@
 {
     "network": [
     ],
+    "orchestrator": {
+      "storage-driver": "rexray/ebs"
+    },
     "chains": [
       {
         "Id": 42,
@@ -13,7 +16,9 @@
           "Pull": true
         },
         "Config": {
-          "ethereum-endpoint": "http://172.31.1.100:8545"
+          "ethereum-endpoint": "http://172.31.1.100:8545",
+          "logger-file-truncation-interval": "15m",
+          "profiling": true
         }
       },
       {
@@ -27,7 +32,9 @@
           "Pull": true
         },
         "Config": {
-          "ethereum-endpoint": "http://172.31.1.100:8545"
+          "ethereum-endpoint": "http://172.31.1.100:8545",
+          "logger-file-truncation-interval": "15m",
+          "profiling": true
         }
       },
       {
@@ -41,7 +48,10 @@
           "Pull": true
         },
         "Config": {
-          "ethereum-endpoint": "http://172.31.1.100:8545"
+          "ethereum-endpoint": "http://172.31.1.100:8545",
+          "active-consensus-algo": 2,
+          "logger-file-truncation-interval": "15m",
+          "profiling": true
         }
       }
     ]

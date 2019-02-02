@@ -40,6 +40,7 @@ sudo add-apt-repository \
 
 sudo apt-get update
 sudo apt-get install -y docker-ce
+docker plugin install --grant-all-permissions rexray/ebs
 
 apt-get install -y python-pip && pip install awscli
 
@@ -52,7 +53,7 @@ TFEOF
 }
 
 resource "aws_instance" "worker" {
-  count                = 2
+  count                = "${var.aws_orbs_worker_instance_count}"
   ami                  = "${data.aws_ami.ubuntu-18_04.id}"
   instance_type        = "${var.aws_orbs_worker_instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
@@ -68,7 +69,7 @@ resource "aws_instance" "worker" {
 }
 
 resource "aws_ebs_volume" "worker_storage" {
-  count             = 2
+  count             = "${var.aws_orbs_worker_instance_count}"
   size              = 50
   availability_zone = "${element(aws_instance.worker.*.availability_zone, count.index)}"
 
@@ -78,7 +79,7 @@ resource "aws_ebs_volume" "worker_storage" {
 }
 
 resource "aws_volume_attachment" "worker_storage_attachment" {
-  count        = 2
+  count        = "${var.aws_orbs_worker_instance_count}"
   device_name  = "/dev/sdh"
   force_detach = true
   volume_id    = "${element(aws_ebs_volume.worker_storage.*.id, count.index)}"

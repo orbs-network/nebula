@@ -8,11 +8,15 @@
     "test:e2e": "mocha --no-timeouts test/e2e/*",
     "test": "npm run test:unit && npm run test:e2e"
   },
+  "bin": {
+    "nebula": "./bin/nebula.js"
+  },
   "author": "Itamar Arjuan",
   "license": "ISC",
   "dependencies": {
     "chai": "^4.2.0",
     "chai-asserttype": "^1.0.5",
+    "chalk": "^2.4.2",
     "child-process-promise": "^2.2.1",
     "fs-extra": "^7.0.1",
     "lodash": "^4.17.11",
@@ -22,6 +26,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "shelljs": "^0.8.3",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "yargs": "^12.0.5"
   }
 }

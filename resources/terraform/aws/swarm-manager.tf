@@ -40,8 +40,9 @@ add-apt-repository \
 
 apt-get update
 apt-get install -y docker-ce
+docker plugin install --grant-all-permissions rexray/ebs
 
-export BOYAR_VERSION=e092191aa787b21a2a78852ab7241ac6f60aa7e2
+export BOYAR_VERSION=b5d9796eb293df99d7439cd4a1e7ef26b4624fe1
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
@@ -64,7 +65,7 @@ while true; do
     sleep 15
 done
 
-HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --orchestrator swarm --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
 
 TFEOF
 }
@@ -95,6 +96,7 @@ resource "aws_ebs_volume" "manager_storage" {
 
 resource "aws_volume_attachment" "manager_storage_attachment" {
   device_name  = "/dev/sdh"
+  force_detach = true
   volume_id    = "${aws_ebs_volume.manager_storage.id}"
   instance_id  = "${aws_instance.manager.id}"
 }

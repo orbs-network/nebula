@@ -61,29 +61,62 @@ function getConfig() {
     return nconf.env(argsConfig).argv(argsConfig);
 }
 
-async function deploy() {
+function parseCLIOptions() {
     const config = getConfig();
 
     const removeNode = config.get("remove-node");
     const createNode = config.get("create-node");
     const updateVchains = config.get("update-vchains");
     const chainVersion = config.get("chain-version");
+    const reset = config.get("reset");
+    const sshPublicKey = config.get("ssh-public-key") || '~/.ssh/id_rsa.pub';
+    const awsProfile = config.get("aws-profile") || "default";
+    const ethereumEnabled = config.get("ethereum-enabled");
 
     const regions = config.get("regions").split(",");
+
+    const pathToConfig = config.get("config") || `${__dirname}/testnet`;
+    const pathToCache = config.get("cache") || `${__dirname}/_terraform`;
+
+    return {
+        removeNode,
+        createNode,
+        updateVchains,
+        chainVersion,
+        reset,
+        sshPublicKey,
+        awsProfile,
+        ethereumEnabled,
+        regions,
+        pathToConfig,
+        pathToCache
+    }
+}
+
+async function deploy(options) {
+    const {
+        removeNode,
+        createNode,
+        updateVchains,
+        chainVersion,
+        reset,
+        sshPublicKey,
+        awsProfile,
+        ethereumEnabled,
+        regions,
+        pathToConfig,
+        pathToCache
+    } = options;
 
     if (regions.length == 0) {
         console.log("Specify a region or list or regions with REGIONS env variable");
         process.exit(0);
     }
 
-    const pathToConfig = config.get("config") || `${__dirname}/testnet`;
-    const pathToCache = config.get("cache") || `${__dirname}/_terraform`;
-
     const nodeKeys = JSON.parse(readFileSync(`${pathToConfig}/keys.json`).toString());
     const ips = JSON.parse(readFileSync(`${pathToConfig}/ips.json`).toString());
     const boyarConfig = JSON.parse(readFileSync(`${pathToConfig}/boyar.json`).toString());
     const cloudConfig = JSON.parse(readFileSync(`${pathToConfig}/cloud.json`).toString());
-    const awsProfile = config.get("aws-profile"); // hack to help Tal deploy certain testnet
 
     boyarConfig.network = _.map(nodeKeys, (keys, region) => {
         return {
@@ -109,36 +142,42 @@ async function deploy() {
         const privateKey = nodeKeys[region].privateKey;
         const nodeAddresses = _.map(nodeKeys, 'address');
         const leader = nodeAddresses[0];
-        const shouldSync = leader == address;
+        const shouldSync = reset ? false : leader == address;
+
         const ip = ips[region];
 
         const cloud = _.merge(cloudConfig, {
             type: types.clouds.aws,
             region: region,
-            instanceType: 't3.medium',
+            instanceType: 't2.medium',
             ip: ip,
             spinContext: region
         });
 
         const keys = {
             aws: {
-                accessKey: process.env.AWS_ACCESS_KEY_ID,
-                secretKey: process.env.AWS_SECRET_ACCESS_KEY,
+                profile: awsProfile,
             },
             ssh: {
-                path: '~/.ssh/id_rsa.pub',
+                path: sshPublicKey,
             },
             orbs: {
                 nodeKeys: { address, privateKey, leader },
                 boyarConfig,
+                ethereum: ethereumEnabled,
             }
         };
 
-        const endpoint = `${ip}/vchains/42`
-        const blockHeight = await getBlockHeight(endpoint);
-        console.log(`Current block height: ${blockHeight}`);
+        const vchains = _.map(boyarConfig.chains, "Id");
+        const endpoints = _.map(vchains, (vchain) => `${ip}/vchains/${vchain}`);
 
-        const c = new CoreService(new TerraformService(terraformProdAdapter), coreAdapter);
+        const blockHeights = await Promise.map(endpoints, getBlockHeight);
+
+        for (let i in vchains) {
+            console.log(`Current block height for vchain ${vchains[i]}: ${blockHeights[i]}`);
+        }
+
+        const c = new CoreService(new TerraformService(terraformProdAdapter, pathToCache), coreAdapter);
 
         if (removeNode) {
             const outputDir = `${pathToCache}/${region}`;
@@ -176,19 +215,30 @@ async function deploy() {
                 await Promise.delay(60000);
             }
 
-            await waitUntilSync(endpoint, blockHeight)
+            await Promise.map(endpoints, (endpoint, idx) => {
+                return waitUntilSync(endpoint, blockHeights[idx]);
+            });
         }
     }
 
     return returnValue;
 }
 
-(async () => {
-    try {
-        const returnValue = await deploy();
-        process.exit(returnValue);
-    } catch (e) {
-        console.log(e);
-        process.exit(1);
-    }
-})();
+if (!module.parent) {
+    (async () => {
+        try {
+            const returnValue = await deploy(parseCLIOptions());
+            process.exit(returnValue);
+        } catch (e) {
+            console.log(e);
+            process.exit(1);
+        }
+    })();
+} else {
+    module.exports = {
+        deploy,
+        getBlockHeight,
+        waitUntilSync,
+        getConfig
+    };
+}
