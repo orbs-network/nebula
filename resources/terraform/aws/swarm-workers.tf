@@ -22,7 +22,7 @@ sysctl -w net.core.somaxconn=128000
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
 
-apt-get update && apt-get -y upgrade
+apt-get update
 apt-get install \
     apt-transport-https \
     ca-certificates \
