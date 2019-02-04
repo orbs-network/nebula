@@ -33,10 +33,7 @@ Creating a constellation with the CLI is as simple as this:
 
     $ nebula create --name funky-orbsy \
                   --orbs-address d27e2e7398e2582f63d0800330010b3e58952ff6 \
-                  --orbs-private-key 87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253 \
-                  --node-count 3 \
-                  --node-size t3.large \
-                  --region us-east-2
+                  --orbs-private-key 87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253
 
     ....
     [Lots of Terraform output will come out here]
@@ -65,7 +62,7 @@ the required arguments. Let's assume the following `funky-orbsy.json` file and c
         "sshPublicKey": "~/.ssh/id_rsa.pub",
         "orbsAddress": "d27e2e7398e2582f63d0800330010b3e58952ff6",
         "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253", 
-        "managerPublicIp": "",
+        "publicIp": "",
         "region": "us-east-2",
         "nodeSize": "t3.medium",
         "nodeCount": 3
@@ -97,19 +94,18 @@ How easy is that?! now we can also `git commit` our `funky-orbsy.json` and have 
 
 Nebula's create command available arguments
 
-| Option                | Type    | Description                                                                                                   | Default             |
-|-----------------------|---------|---------------------------------------------------------------------------------------------------------------|---------------------|
-| `--name`              | string  | name your constellation! in case non supplied defaults to a random name                                       | Random UUID         |
-| `--cloud`             | string  | The cloud you wish to deploy on (Currently only AWS supported                                                 | `aws`               |
-| `--aws-profile`       | string  | which aws profile name to use when provisioning. Strongly recommended instead of AWS keys for better security | `default`           |
-| `--testnet`           | boolean | If supplied, the constellation will join the Orbs Network testnet instead of the mainnet                      | `false`             |
-| `--manager-public-ip` | string  | if you wish to attach a static pre-existing EC2 Elastic IP                                                    |                     |
-| `--orbs-address`      | string  | Orbs node address - attained from Orbs or from our DKG process                                                |                     |
-| `--orbs-private-key`  | string  | Orbs node private key - attained from Orbs or from our DKG process                                            |                     |
-| `--node-count`        | number  | The amount of worker nodes to deploy (the more - the more vChains you can handle)                             | `2`                 |
-| `--node-size`         | string  | The worker node instance size to use                                                                          | `t3.medium`         |
-| `--region`            | string  | The AWS region to deploy to                                                                                   | `us-east-1`         |
-| `--ssh-public-key`    | string  | Path to the SSH public key to provision the EC2 machines with                                                 | `~/.ssh/id_rsa.pub` |
+| Option                | Mandatory | Type    | Description                                                                                                   | Default             |
+|-----------------------|-----------|---------|---------------------------------------------------------------------------------------------------------------|---------------------|
+| `orbs-address`        |Yes| string  | Orbs node address - attained from Orbs or from our DKG process                                                |                     |
+| `orbs-private-key`    |Yes| string  | Orbs node private key - attained from Orbs or from our DKG process                                            |                     |
+| `name`                |Yes| string  | name your constellation! in case non supplied defaults to a random name                                       | Random UUID         |
+| `aws-profile`         |Optional| string  | which aws profile name to use when provisioning. Strongly recommended instead of AWS keys for better security | `default`           |
+| `testnet`             |Optional| boolean | If supplied, the constellation will join the Orbs Network testnet instead of the mainnet                      | `false`             |
+| `public-ip`           |Optional| string  | if you wish to attach a static pre-existing EC2 Elastic IP                                                    |                     |
+| `node-count`          |Optional| number  | The amount of worker nodes to deploy (the more - the more vChains you can handle)                             | 2                 |
+| `node-size`           |Optional| string  | The worker node instance size to use                                                                          | `t2.medium`         |
+| `region`              |Optional| string  | The AWS region to deploy to                                                                                   | `us-east-1`         |
+| `ssh-public-key`      |Optional| string  | Path to the SSH public key to provision the EC2 machines with                                                 | `~/.ssh/id_rsa.pub` |
 
 ## Destroying a constellation
 

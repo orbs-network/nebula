@@ -48,18 +48,14 @@ require('yargs') // eslint-disable-line
         describe: 'name your constellation! in case non supplied defaults to a random name',
         default: ''
       })
-      .option('cloud', {
-        describe: 'dictates which cloud provider to use (at the moment only AWS is available)',
-        default: 'aws'
-      })
       .option('aws-profile', {
         describe: 'which aws profile name to use when provisioning. Strongly recommended instead of AWS keys for better security',
         default: 'default'
       })
       .boolean('testnet')
       .boolean('no-ethereum')
-      .option('manager-public-ip', {
-        describe: 'attach the provided (pre-existing AWS Elastic IP) to the provisioned manager node',
+      .option('public-ip', {
+        describe: 'attach a pre-existing AWS Elastic IP to the provisioned constellation',
         default: false
       })
       .option('orbs-address', {
@@ -70,22 +66,13 @@ require('yargs') // eslint-disable-line
         describe: 'Orbs node private key',
         default: ''
       })
-      // .option('master-count', { -- We should support this ASAP.
-      //   describe: 'The amount of master nodes within your constellation',
-      //   choices: [1, 3, 5, 7],
-      //   default: 1
-      // })
       .option('node-count', {
         describe: 'The amount of worker nodes within your constellation (this nodes carry the load of operating virtual chains)',
         default: 2
       })
       .option('node-size', {
         describe: 'The worker node instance size to use',
-        default: 't3.medium'
-      })
-      .option('manager-size', {
-        describe: 'The master node instance size to use',
-        default: 't3.medium'
+        default: 't2.medium'
       })
       .option('region', {
         describe: 'The region to setup the constellation in',
@@ -94,10 +81,6 @@ require('yargs') // eslint-disable-line
       .option('ssh-public-key', {
         describe: 'The path to the public key used to provision the constellation machines',
         default: '~/.ssh/id_rsa.pub'
-      })
-      .option('master-zones', {
-        describe: 'zones in which to setup the master instance',
-        default: 'us-east-1a'
       })
       .help('help');
   }, async (argv) => {
@@ -122,7 +105,7 @@ require('yargs') // eslint-disable-line
     }
 
     const { awsProfile, sshPublicKey, orbsAddress, orbsPrivateKey, region,
-      nodeSize, managerPublicIp, noEthereum = false, nodeCount, name } = _argv;
+      nodeSize, publicIp, noEthereum = false, nodeCount, name } = _argv;
 
     if (orbsAddress.length !== 40) {
       logRed('Invalid Orbs node address, required hex of 40 characters');
@@ -166,11 +149,11 @@ require('yargs') // eslint-disable-line
       cloud.spinContext = name;
     }
 
-    if (managerPublicIp !== false && managerPublicIp !== '') {
-      if (ValidateIPaddress(managerPublicIp)) {
-        cloud.ip = managerPublicIp;
+    if (publicIp !== false && publicIp !== '') {
+      if (ValidateIPaddress(publicIp)) {
+        cloud.ip = publicIp;
       } else {
-        logRed(`The supplied IP address ${managerPublicIp}`);
+        logRed(`The supplied IP address ${publicIp}`);
         logRed('is not a valid IPv4 address!');
         process.exit(1);
       }
