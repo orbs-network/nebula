@@ -50,6 +50,7 @@ TFEOF
 }
 
 resource "aws_subnet" "ethereum" {
+  count                   = "${var.ethereum_count}"
   vpc_id                  = "${module.vpc.id}"
   cidr_block              = "172.31.100.0/24"
   availability_zone       = "${aws_ebs_volume.ethereum.availability_zone}"
