@@ -8,6 +8,6 @@
     "region": "us-west-2",
     "nodeSize": "t2.medium",
     "nodeCount": 2,
-    "configPath": "/Users/kirill/GitHub/nebula/private/templates",
+    "configPath": "../templates",
     "chainVersion": "v0.8.0"
 }
