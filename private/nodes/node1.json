@@ -1,13 +1,13 @@
 {
-    "name": "node1",
-    "awsProfile": "default",
+    "name": "example-node1",
+    "awsProfile": "admin",
     "sshPublicKey": "~/.ssh/id_rsa.pub",
     "orbsAddress": "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
     "orbsPrivateKey": "426308c4d11a6348a62b4fdfb30e2cad70ab039174e2e8ea707895e4c644c4ec", 
     "publicIp": "35.183.233.125",
     "region": "ca-central-1",
     "nodeSize": "t2.medium",
-    "nodeCount": 3,
+    "nodeCount": 2,
     "configPath": "../templates",
-    "chainVersion": "orbs-network-v1"
+    "chainVersion": "v0.8.0"
 }
