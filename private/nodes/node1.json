@@ -8,6 +8,6 @@
     "region": "ca-central-1",
     "nodeSize": "t2.medium",
     "nodeCount": 3,
-    "configPath": "~/dev/nebula/private/templates",
+    "configPath": "../templates",
     "chainVersion": "orbs-network-v1"
 }

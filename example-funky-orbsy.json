@@ -8,7 +8,6 @@
     "region": "us-east-2",
     "nodeSize": "t2.medium",
     "nodeCount": 3,
-    "noEthereum": true,
     "configPath": "~/dev/nebula/testnet",
     "chainVersion": "orbs-network-v1"
 }
