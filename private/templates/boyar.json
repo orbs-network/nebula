@@ -1,0 +1,25 @@
+{
+    "network": [
+    ],
+    "orchestrator": {
+      "storage-driver": "rexray/ebs"
+    },
+    "chains": [
+      {
+        "Id": 10000,
+        "HttpPort": 8080,
+        "GossipPort": 4400,
+        "DockerConfig": {
+          "ContainerNamePrefix": "orbs-network",
+          "Image": "orbsnetwork/node",
+          "Tag": "v0.8.0",
+          "Pull": true
+        },
+        "Config": {
+          "ethereum-endpoint": "http://172.31.1.100:8545",
+          "logger-file-truncation-interval": "15m",
+          "profiling": true
+        }
+      }
+    ]
+  }
