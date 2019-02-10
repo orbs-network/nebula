@@ -14,9 +14,11 @@ For our tutorial to work properly you should have the following setup:
   If you have one set at `~/.ssh/id_rsa.pub` you're good to go!
   You can check this by running the following in your terminal:
   `$ cat ~/.ssh/id_rsa.pub`
+- *A clean, new AWS account with admin programmatic access.*
 - An AWS credentials profile set correctly:
   See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
 - [Node.js](https://nodejs.org/en/) version 8 or above
+- Yarn package manager for Node.js
 
 ### Allocating IPs on Amazon
 
@@ -30,7 +32,9 @@ These IPs will later be used in node configuration.
 
 ### Clone Nebula's repository
 
-    git clone https://github.com/orbs-network/nebula.git && cd nebula/ && yarn install
+    git clone https://github.com/orbs-network/nebula.git && git checkout private-blockchain && cd nebula/ && yarn install
+
+It's very important that you would check out Git tag `private-blockchain`, which will always contain the latest stable version of this guide.
 
 ### Locate the example files
 
@@ -98,3 +102,21 @@ Try refreshing this metrics page a couple of times. you should see this value go
 If this is the case it means that the network is alive and healthy.
 
 You can also SSH into the machines using your public key and *ubuntu* username.
+
+### Troubleshooting
+
+1. If you get terraform error that your IP does not exist, check if it belongs to the region where you are trying to provision the node (`private/nodes/node1.json`) for `example-node1` and so on.
+
+2. If new blocks aren't being created, the most basic problem that we might face is communication issue. Please verify that all nodes are accessible from each other. You can find configuration of virtual chains in `private/templates/boyar.json`. By default, the nodes should be able to access each other via port `4400`.
+
+3. You can further investigate Terraform files in `~/.nebula` and manually alter sources for these files in `resources/terraform/aws` to your liking. However, we would advise against it.
+
+4. If you are manually running Terraform, don't forget to detach your node IP from state so it wouldn't be released: `terraform state rm aws_eip.eip_manager`.
+
+5. If you are trying to destroy all blocks history, you have to manually removed all volumes with names `orbs-network-chain-*`.
+
+6. Contact the authors of this guide.
+
+### Known bugs
+
+- `nodeCount` that is not equal `2` is *not supported* (Docker Swarm cluster can only have 2 workers at the moment).
