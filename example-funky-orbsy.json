@@ -6,6 +6,8 @@
     "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253", 
     "publicIp": "",
     "region": "us-east-2",
-    "nodeSize": "t3.medium",
-    "nodeCount": 3
+    "nodeSize": "t2.medium",
+    "nodeCount": 3,
+    "configPath": "./testnet",
+    "chainVersion": ""
 }
