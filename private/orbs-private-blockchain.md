@@ -10,11 +10,8 @@ This guide assumes you have some basic knowledge regarding Amazon Web Services, 
 For our tutorial to work properly you should have the following setup:
 
 - Mac or Linux machine
-- An SSH public key (which is also loaded by the ssh-agent)
-  If you have one set at `~/.ssh/id_rsa.pub` you're good to go!
-  You can check this by running the following in your terminal:
-  `$ cat ~/.ssh/id_rsa.pub`
-- *A clean, new AWS account with admin programmatic access.*
+- An SSH public key (by default we use `~/.ssh/id_rsa.pub`)
+- **A clean, new AWS account with admin programmatic access.**
 - An AWS credentials profile set correctly:
   See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
 - [Node.js](https://nodejs.org/en/) version 8 or above
@@ -33,7 +30,8 @@ These IPs will later be used in node configuration.
 
 ### Clone Nebula's repository
 
-    git clone https://github.com/orbs-network/nebula.git && git checkout private-blockchain && cd nebula/ && yarn install
+    git clone https://github.com/orbs-network/nebula.git && cd nebula
+    git checkout private-blockchain && yarn install
 
 It's very important that you would check out Git tag `private-blockchain`, which will always contain the latest stable version of this guide.
 
