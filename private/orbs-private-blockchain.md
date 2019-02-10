@@ -19,6 +19,7 @@ For our tutorial to work properly you should have the following setup:
   See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
 - [Node.js](https://nodejs.org/en/) version 8 or above
 - Yarn package manager for Node.js
+- [Terraform](https://www.terraform.io/downloads.html) from HasiCorp
 
 ### Allocating IPs on Amazon
 
@@ -57,8 +58,8 @@ So we'll begin by opening up `private/nodes/node1.json` within a text editor and
     {
         "name": "example-node1",
         ...
-        "publicIp": "NODE1_IP",
-        "region": "NODE1_REGION",
+        "publicIp": "$NODE1_IP",
+        "region": "$NODE1_REGION",
         ...
     }
 
@@ -69,9 +70,9 @@ Next up we need to update `private/templates/ips.json` to which holds the entire
 `ips.json` looks like so:
 
     {
-        "example-node1": "NODE1_IP",
-        "example-node2": "NODE2_IP",
-        "example-node3": "NODE3_IP"
+        "example-node1": "$NODE1_IP",
+        "example-node2": "$NODE2_IP",
+        "example-node3": "$NODE3_IP"
     }
 
 Please notice that the name here is the same value as `name` field in `nodes/node1.json`.
@@ -93,7 +94,7 @@ Terraform files corresponding to nodes can be found in `~/.nebula/$NODE_NAME`, f
 At this point we have a network running but we have to verify it's able to reach consensus and close blocks.
 
 To do that, Orbs has developed a special inspection route available on each node that allows to inspect some metrics
-of the node. So open up a browser window and navigate to `http://__NODE_IP__:8080/vchains/10000/metrics` replacing __NODE_IP__ with 
+of the node. So open up a browser window and navigate to `http://$NODE_IP:8080/vchains/10000/metrics` replacing __NODE_IP__ with 
 one of your node's IPs.
 
 The JSON you see will include a property called `BlockStorage.BlockHeight` which indicates the block height that the network is currently on.
@@ -103,7 +104,38 @@ If this is the case it means that the network is alive and healthy.
 
 You can also SSH into the machines using your public key and *ubuntu* username.
 
-### Troubleshooting
+## Deploying your first contract
+
+Before we start, modify `orbs-gamma-config.json` by injecting your node IP in the `Endpoints` array in the environment configuration:
+
+```json
+{
+    "Environments": {
+        "example-node1": {
+            "VirtualChain": 10000,
+            "Endpoints": ["http://$NODE_IP/vchains/10000"]
+        }
+    }
+}
+```
+
+Install gamma-cli:
+
+    brew install gamma-cli
+
+Deploy your first contract:
+
+    gamma-cli deploy contracts/contract.go -name ExampleCounter -env example-node1
+
+Send transaction:
+
+    gamma-cli send-tx contracts/counter-add.json -signer user1 -env example-node1
+
+Query contract:
+
+    gamma-cli run-query contracts/counter-get.json -env example-node1
+
+## Troubleshooting
 
 1. If you get terraform error that your IP does not exist, check if it belongs to the region where you are trying to provision the node (`private/nodes/node1.json`) for `example-node1` and so on.
 
