@@ -10,8 +10,9 @@ This guide assumes you have some basic knowledge regarding Amazon Web Services, 
 For our tutorial to work properly you should have the following setup:
 
 - Mac or Linux machine
-- An SSH public key (by default we use `~/.ssh/id_rsa.pub`)
+- An SSH public key (by default we use `~/.ssh/id_rsa.pub`). You can generate new one using [GitHub guide](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
 - **A clean, new AWS account with admin programmatic access.**
+- AWS CLI.
 - An AWS credentials profile set correctly:
   See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
 - [Node.js](https://nodejs.org/en/) version 8 or above
@@ -150,3 +151,4 @@ Query contract:
 ### Known bugs
 
 - `nodeCount` that is not equal `2` is *not supported* (Docker Swarm cluster can only have 2 workers at the moment).
+- running multiple nodes in the same region with the same virtual chain id is not supported at the moment, so it's a requirement to place your nodes in different AWS regions.
