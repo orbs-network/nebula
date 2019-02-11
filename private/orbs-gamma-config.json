@@ -1,6 +1,6 @@
 {
     "Environments": {
-        "example-node1": {
+        "private1": {
             "VirtualChain": 10000,
             "Endpoints": ["http://35.183.233.125/vchains/10000"]
         }

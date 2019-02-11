@@ -110,7 +110,7 @@ Before we start, modify `orbs-gamma-config.json` by injecting your node IP in th
 ```json
 {
     "Environments": {
-        "example-node1": {
+        "private1": {
             "VirtualChain": 10000,
             "Endpoints": ["http://$NODE_IP/vchains/10000"]
         }
@@ -124,11 +124,11 @@ Install gamma-cli:
 
 Deploy your first contract:
 
-    gamma-cli deploy contracts/contract.go -name ExampleCounter -env example-node1
+    gamma-cli deploy contracts/contract.go -name ExampleCounter -env private1
 
 Send transaction:
 
-    gamma-cli send-tx contracts/counter-add.json -signer user1 -env example-node1
+    gamma-cli send-tx contracts/counter-add.json -signer user1 -env private1
 
 Query contract:
 
