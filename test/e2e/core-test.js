@@ -8,9 +8,11 @@ const terraformProdAdapter = require('./../../lib/adapters/terraform/adapter');
 const { coreAdapter } = require('../../lib/adapters/core/adapter');
 const harness = require('./harness');
 const path = require('path');
+const { waitUntilSync, getBlockHeight } = require('./../../deploy');
 
 const boyarConfig = require('./../../testnet/boyar');
 const cachePathForTests = path.join(__dirname, '../../../_terraform');
+const { create, destroy } = require('./../../lib/cli/cli');
 
 const c = new CoreService(new TerraformService(terraformProdAdapter, cachePathForTests), coreAdapter);
 
@@ -69,5 +71,25 @@ describe('Nebula core', () => {
         expect(desiredMessageIndex, 'Expecting to see the IP is still alive after destroying infra').to.not.equal(-1);
 
         await harness.destroyStandAloneInfra();
+    });
+
+    it('should provision a whole private blockchain from the private folder', async () => {
+        const endpoint = '52.57.222.178/vchains/10000';
+
+        const creations = [1, 2, 3].map(k => create({
+            file: `test/e2e/private-network/nodes/node${k}.json`
+        }).catch(err => err));
+
+        const results = await Promise.all(creations);
+
+        // Wait for the network to sync correctly
+        await waitUntilSync(endpoint, 10);
+        const blockHeight = await getBlockHeight(endpoint);
+
+        await Promise.all([1, 2, 3].map(k => destroy({
+            file: `test/e2e/private-network/nodes/node${k}.json`
+        })));
+
+        expect(blockHeight, "block height should advance").to.be.gte(10);
     });
 });
