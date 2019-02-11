@@ -93,7 +93,7 @@ Terraform files corresponding to nodes can be found in `~/.nebula/$NODE_NAME`, f
 At this point we have a network running but we have to verify it's able to reach consensus and close blocks.
 
 To do that, Orbs has developed a special inspection route available on each node that allows to inspect some metrics
-of the node. So open up a browser window and navigate to `http://$NODE_IP:8080/vchains/10000/metrics` replacing __NODE_IP__ with 
+of the node. So open up a browser window and navigate to `http://$NODE_IP/vchains/10000/metrics` replacing __NODE_IP__ with 
 one of your node's IPs.
 
 The JSON you see will include a property called `BlockStorage.BlockHeight` which indicates the block height that the network is currently on.
