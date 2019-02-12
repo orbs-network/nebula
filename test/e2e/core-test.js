@@ -73,7 +73,7 @@ describe('Nebula core', () => {
         await harness.destroyStandAloneInfra();
     });
 
-    it.only('should provision a whole private blockchain from the private folder', async () => {
+    it('should provision a whole private blockchain from the private folder', async () => {
         const endpoint = '52.57.222.178/vchains/10000';
 
         const creations = [1, 2, 3].map(k => create({
@@ -114,5 +114,48 @@ describe('Nebula core', () => {
         await Promise.all([1, 2, 3, 4].map(k => destroy({
             file: `test/e2e/private-network/nodes2/node${k}.json`
         })));
+    });
+
+    it.skip('should upgrade the binary version for a constellation', async () => {
+        // Create the constellation first
+        const constellation = {
+            name: "e2e-test-upgrade-binary-version-node",
+            awsProfile: "default",
+            sshPublicKey: "~/.ssh/id_rsa.pub",
+            orbsAddress: "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
+            orbsPrivateKey: "426308c4d11a6348a62b4fdfb30e2cad70ab039174e2e8ea707895e4c644c4ec",
+            publicIp: "",
+            region: "eu-central-1",
+            nodeSize: "t2.medium",
+            nodeCount: 2,
+            configPath: "test/e2e/private-network/templates",
+            chainVersion: "v0.8.0"
+        };
+
+        const result = await create(constellation).catch(err => err);
+        console.log(result);
+        expect(result.ok).to.equal(true);
+
+        const publicIp = result.manager.ip;
+        const endpoint = `http://${publicIp}/vchains/10000/metrics`;
+
+        console.log('Sleeping after setting up constellation...');
+        console.log('since it takes it at least 90 seconds to come up');
+        await new Promise((resolve) => setTimeout(resolve, 90*1000));
+        expect(await harness.eventuallySeeDockerTagInMetrics(endpoint, 'v0.8.0', 60)).to.equal(true);
+
+        const upgradedConstellation = Object.assign({}, constellation, {
+            chainVersion: "v0.8.1"
+        });
+
+        await update(upgradedConstellation);
+        
+        console.log('Sleeping after upgrading the constellation...');
+        console.log('since it takes it 60 seconds for Boyar to refresh it\'s configuration');
+        await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
+
+        expect(await harness.eventuallySeeDockerTagInMetrics(endpoint, 'v0.8.1', 60)).to.equal(true);
+
+        await destroy(upgradedConstellation);
     });
 });
