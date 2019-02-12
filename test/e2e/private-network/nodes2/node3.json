@@ -1,0 +1,13 @@
+{
+    "name": "e2e-test-node3",
+    "awsProfile": "default",
+    "sshPublicKey": "~/.ssh/id_rsa.pub",
+    "orbsAddress": "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
+    "orbsPrivateKey": "901a1a0bfbe217593062a054e561e708707cb814a123474c25fd567a0fe088f8", 
+    "publicIp": "52.56.242.67",
+    "region": "eu-west-2",
+    "nodeSize": "t2.medium",
+    "nodeCount": 2,
+    "configPath": "../templates2",
+    "chainVersion": "v0.8.0"
+}

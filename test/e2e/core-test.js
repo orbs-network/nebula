@@ -12,7 +12,7 @@ const { waitUntilSync, getBlockHeight } = require('./../../deploy');
 
 const boyarConfig = require('./../../testnet/boyar');
 const cachePathForTests = path.join(__dirname, '../../../_terraform');
-const { create, destroy } = require('./../../lib/cli/cli');
+const { create, destroy, update } = require('./../../lib/cli/cli');
 
 const c = new CoreService(new TerraformService(terraformProdAdapter, cachePathForTests), coreAdapter);
 
@@ -73,7 +73,7 @@ describe('Nebula core', () => {
         await harness.destroyStandAloneInfra();
     });
 
-    it('should provision a whole private blockchain from the private folder', async () => {
+    it.only('should provision a whole private blockchain from the private folder', async () => {
         const endpoint = '52.57.222.178/vchains/10000';
 
         const creations = [1, 2, 3].map(k => create({
@@ -86,10 +86,33 @@ describe('Nebula core', () => {
         await waitUntilSync(endpoint, 10);
         const blockHeight = await getBlockHeight(endpoint);
 
-        await Promise.all([1, 2, 3].map(k => destroy({
-            file: `test/e2e/private-network/nodes/node${k}.json`
-        })));
-
         expect(blockHeight, "block height should advance").to.be.gte(10);
+
+        // at this stage we have a running network of 3 nodes able to close blocks
+        // Now we will add a 4th node to the network and update the network configuration
+        // for the existing 3 nodes
+
+        const resultNode4 = await create({ file: 'test/e2e/private-network/nodes2/node4.json' })
+            .catch(err => err);
+
+        expect(resultNode4.ok).to.equal(true);
+
+        const endpoint4thNode = '52.47.127.65/vchains/10000';
+
+        // TODO: check that update was successful on all nodes
+        const updateResults = await Promise.all([1, 2, 3].map(k => update({
+            file: `test/e2e/private-network/nodes2/node${k}.json`
+        }).catch(err => err)));
+
+        const lastKnownblockHeight = await getBlockHeight(endpoint);
+
+        await waitUntilSync(endpoint4thNode, lastKnownblockHeight + 100);
+        const currentBlockHeight = await getBlockHeight(endpoint4thNode);
+
+        expect(currentBlockHeight, "block height should advance with 4th node added").to.be.gte(lastKnownblockHeight + 100);
+
+        await Promise.all([1, 2, 3, 4].map(k => destroy({
+            file: `test/e2e/private-network/nodes2/node${k}.json`
+        })));
     });
 });
