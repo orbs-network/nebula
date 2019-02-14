@@ -35,7 +35,7 @@ function mockMetricsResponse() {
     .reply(200, response);
 }
 
-describe.only("metrics unit tests", () => {
+describe("metrics unit tests", () => {
     before(() => {
         mockMetricsResponse()
     });
