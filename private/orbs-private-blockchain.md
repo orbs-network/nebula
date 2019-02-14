@@ -43,7 +43,7 @@ Install dependencies
 
     cd private
 
-This folder contains the required JSON files used to set up our 3 nodes public blockchain network.
+This folder contains the required JSON files used to set up our 3 nodes private blockchain network.
 
 Within it, you'll find 2 more folders:
 
@@ -135,7 +135,7 @@ Send transaction:
 
 Query contract:
 
-    gamma-cli run-query contracts/counter-get.json -env example-node1
+    gamma-cli run-query contracts/counter-get.json -env private1
 
 ## Troubleshooting
 
