@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const nock = require("nock");
 const {
     describe,
@@ -17,12 +18,18 @@ const {
     getVersion,
     waitUntil,
     waitUntilSync,
-    waitUntilVersion
+    waitUntilVersion,
+    getStatus
 } = require("./../../lib/metrics.js");
 
 const HOST = "fake.staging.orbs-test.com";
+const HOST_RED = "fake-red.staging.orbs-test.com";
+const HOST_GREEN = "fake-green.staging.orbs-test.com";
+
 const PATH = "/vchains/2013";
 const ENDPOINT_STAGING = `${HOST}${PATH}`;
+const ENDPOINT_STAGING_RED = `${HOST_RED}${PATH}`;
+const ENDPOINT_STAGING_GREEN = `${HOST_GREEN}${PATH}`;
 
 function mockMetricsResponse() {
     const response = require(`${__dirname}/metrics.json`);
@@ -33,6 +40,23 @@ function mockMetricsResponse() {
     .persist()
     .get(`${PATH}/metrics`)
     .reply(200, response);
+
+    nock(`http://${HOST_RED}`)
+    .persist()
+    .get(`${PATH}/metrics`)
+    .reply(200, response);
+
+    let blockHeight = response["BlockStorage.BlockHeight"].Value;
+
+    nock(`http://${HOST_GREEN}`)
+    .persist()
+    .get(`${PATH}/metrics`)
+    .reply(200, () => {
+        blockHeight += 1;
+        const greenResponse = _.cloneDeep(response);
+        greenResponse["BlockStorage.BlockHeight"].Value = blockHeight;
+        return greenResponse;
+    });
 }
 
 describe("metrics unit tests", () => {
@@ -124,4 +148,33 @@ describe("metrics unit tests", () => {
             expect(await getVersion(ENDPOINT_STAGING)).to.include("83a149e4");
         });
     });
+
+    describe("#getStatus", () => {
+        it("returns status object for endpoints", async () => {
+            const status = await getStatus({
+                "first-node": ENDPOINT_STAGING
+            });
+
+            expect(status).to.be.eql({
+                "first-node": {
+                    "blockHeight": 1079369,
+                    "status": "red",
+                    "commit": "83a149e41764d820ddd36091c74563ee2ab176b6"
+                }
+            });
+        });
+
+        it("marks endpoints as green/red", async () => {
+            const status = await getStatus({
+                "green-node": ENDPOINT_STAGING_GREEN,
+                "red-node": ENDPOINT_STAGING_RED
+            });
+
+            expect(status["green-node"].blockHeight).to.be.gt(1079369);
+            expect(status["green-node"].status).to.be.eql("green");
+
+            expect(status["red-node"].blockHeight).to.be.eql(1079369);
+            expect(status["red-node"].status).to.be.eql("red");
+        });
+    })
 });
