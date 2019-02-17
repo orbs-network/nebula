@@ -41,7 +41,7 @@ const keys = {
 };
 
 describe('Nebula core', () => {
-    it.only('should provision a new constellation', async () => {
+    it('should provision a new constellation', async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         const { preExistingElasticIp } = await harness.createStandAloneIPAndVolume({
             accessKey, secretKey, region, ethereumAZ
