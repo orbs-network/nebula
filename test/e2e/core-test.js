@@ -41,7 +41,7 @@ const keys = {
 };
 
 describe('Nebula core', () => {
-    it('should provision a new constellation with a pre-existing EBS for ethereum persistency kept between destructions', async () => {
+    it('should provision a new constellation', async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         const { preExistingElasticIp } = await harness.createStandAloneIPAndVolume({
             accessKey, secretKey, region, ethereumAZ
@@ -108,6 +108,10 @@ describe('Nebula core', () => {
 
         await waitUntilSync(endpoint4thNode, lastKnownblockHeight + 100);
         const currentBlockHeight = await getBlockHeight(endpoint4thNode);
+
+        // TODO : Make test provision the IPs
+        // TODO : Add a contract call before adding the 4th node and another GET call to check the 
+        // value exists afterwards and accessible from the 4th node (check syncing)
 
         expect(currentBlockHeight, "block height should advance with 4th node added").to.be.gte(lastKnownblockHeight + 100);
 

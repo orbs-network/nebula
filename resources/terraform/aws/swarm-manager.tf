@@ -60,8 +60,9 @@ $(aws ecr get-login --no-include-email --region us-west-2)
 echo '0 * * * * $(/usr/local/bin/aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
 crontab /tmp/crontab
 
+# Check that we have at least 1 worker and 1 manager in the constellation
 while true; do
-    [ $(docker node ls -q | wc -l) -eq 3 ] && break
+    [ $(docker node ls -q | wc -l) -ge 2 ] && break
     sleep 15
 done
 
