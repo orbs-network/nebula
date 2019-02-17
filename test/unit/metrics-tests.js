@@ -16,9 +16,11 @@ const {
     getMetrics,
     getBlockHeight,
     getVersion,
+    getCommit,
     waitUntil,
     waitUntilSync,
     waitUntilVersion,
+    waitUntilCommit,
     getStatus
 } = require("./../../lib/metrics.js");
 
@@ -76,7 +78,7 @@ describe("metrics unit tests", () => {
 
     it("should retrieve version", async () => {
         const version = await getVersion(ENDPOINT_STAGING);
-        expect(version).to.include("83a149e417")
+        expect(version).to.include("v0.7.0")
     })
 
     describe("#waitUntil", () => {
@@ -134,20 +136,26 @@ describe("metrics unit tests", () => {
     describe("#waitUntilSync", () => {
         it("test against staging", async () => {
             await waitUntilSync(ENDPOINT_STAGING, 1000);
-
-            console.log(await getBlockHeight(ENDPOINT_STAGING));
             expect(await getBlockHeight(ENDPOINT_STAGING)).to.be.gte(1000);
         });
     });
 
     describe("#waitUntilVersion", () => {
         it("test against staging", async () => {
-            await waitUntilVersion(ENDPOINT_STAGING, "83a149e4");
-
-            console.log(await getVersion(ENDPOINT_STAGING));
-            expect(await getVersion(ENDPOINT_STAGING)).to.include("83a149e4");
+            await waitUntilVersion(ENDPOINT_STAGING, "v0.7.0");
+            expect(await getVersion(ENDPOINT_STAGING)).to.include("v0.7.0");
         });
     });
+
+    describe("#waitUntilCommit", () => {
+        it("test against staging", async () => {
+            await waitUntilCommit(ENDPOINT_STAGING, "83a149e4");
+
+            console.log(await getCommit(ENDPOINT_STAGING));
+            expect(await getCommit(ENDPOINT_STAGING)).to.include("83a149e4");
+        });
+    });
+
 
     describe("#getStatus", () => {
         it("returns status object for endpoints", async () => {
@@ -159,6 +167,7 @@ describe("metrics unit tests", () => {
                 "first-node": {
                     "blockHeight": 1079369,
                     "status": "red",
+                    "version": "v0.7.0",
                     "commit": "83a149e41764d820ddd36091c74563ee2ab176b6"
                 }
             });
