@@ -31,16 +31,19 @@ These IPs will later be used in node configuration.
 
 ### Clone Nebula's repository
 
-    git clone https://github.com/orbs-network/nebula.git && cd nebula
-    git checkout private-blockchain && yarn install
+Clone git repository
 
-It's very important that you would check out Git tag `private-blockchain`, which will always contain the latest stable version of this guide.
+    git clone https://github.com/orbs-network/nebula.git && cd nebula
+
+Install dependencies
+
+    yarn install
 
 ### Locate the example files
 
     cd private
 
-This folder contains the required JSON files used to set up our 3 nodes public blockchain network.
+This folder contains the required JSON files used to set up our 3 nodes private blockchain network.
 
 Within it, you'll find 2 more folders:
 
@@ -132,7 +135,7 @@ Send transaction:
 
 Query contract:
 
-    gamma-cli run-query contracts/counter-get.json -env example-node1
+    gamma-cli run-query contracts/counter-get.json -env private1
 
 ## Troubleshooting
 
