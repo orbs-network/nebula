@@ -74,7 +74,7 @@ describe('Nebula core', () => {
         await harness.destroyStandAloneInfra();
     });
 
-    it.only('should provision a whole private blockchain from the private folder', async () => {
+    it('should provision a whole private blockchain from the private folder', async () => {
         const endpoint = '52.57.222.178/vchains/10000';
 
         const creations = [1, 2, 3].map(k => create({

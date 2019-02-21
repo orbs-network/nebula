@@ -25,7 +25,7 @@ describe("cli", () => {
             expect(nodes).to.be.eql({
                 "e2e-test-node1": "52.57.222.178",
                 "e2e-test-node2": "63.35.73.209",
-                "e2e-test-node3": "52.56.242.67"
+                "e2e-test-node3": "35.178.161.247"
             });
         });
     })

@@ -31,7 +31,7 @@ describe("boyar config generation", () => {
             },
             {
                 "address": "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
-                "ip": "52.56.242.67"
+                "ip": "35.178.161.247"
             }
         ]);
 
