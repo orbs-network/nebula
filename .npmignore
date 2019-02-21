@@ -1,0 +1,6 @@
+private/
+/deploy.js
+testnet/
+build/
+.vscode/
+.circleci/

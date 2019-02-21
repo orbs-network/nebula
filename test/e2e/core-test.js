@@ -41,7 +41,7 @@ const keys = {
 };
 
 // Disabled until everything is fixed
-xdescribe('Nebula core', () => {
+describe('Nebula core', () => {
     it('should provision a new constellation', async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         const { preExistingElasticIp } = await harness.createStandAloneIPAndVolume({
@@ -100,7 +100,7 @@ xdescribe('Nebula core', () => {
             .catch(err => err);
 
         expect(resultNode4.ok).to.equal(true);
-
+        
         const endpoint4thNode = '52.47.127.65/vchains/10000';
 
         // TODO: check that update was successful on all nodes
