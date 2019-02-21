@@ -21,8 +21,8 @@
       },
       {
         "Id": 20000,
-        "HttpPort": 8080,
-        "GossipPort": 4400,
+        "HttpPort": 8081,
+        "GossipPort": 4401,
         "DockerConfig": {
           "ContainerNamePrefix": "orbs-network",
           "Image": "orbsnetwork/node",
@@ -37,8 +37,8 @@
       },
       {
         "Id": 30000,
-        "HttpPort": 8080,
-        "GossipPort": 4400,
+        "HttpPort": 8082,
+        "GossipPort": 4402,
         "DockerConfig": {
           "ContainerNamePrefix": "orbs-network",
           "Image": "orbsnetwork/node",

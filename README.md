@@ -4,13 +4,21 @@
 
 In short, Nebula allows you to create an Orbs constellation without too much hassle using our easy-to-use CLI.
 
+## Orbs node keypair and Elastic IP
+
+Prior to running nebula to provision your blockchain node, you need to perform 2 tasks:
+* Generate an `ECDSA` keypair which will be used by your node (and is required to run nebula)
+* Allocate an Elastic IP in your AWS account (in the region in which you plan to run your node obviously)
+* Your public key from the first bullet and the Elastic IP should have been provided to Orbs prior
+to running this tool for your node to be able to sync correctly to the Orbs Network.
+
 ## Prerequisities
 For Nebula to work properly you should have the following setup:
 - an SSH public key (which is also loaded by the ssh-agent)
   if you have one set at `~/.ssh/id_rsa.pub` you're good to go!
   you can check this by running the following in your terminal:
   `$ cat ~/.ssh/id_rsa.pub`
-- Orbs address and Orbs private key (supplied from [Orbs Network](https://orbs.com/) or from our DKG process)
+- Orbs key pair
 - an AWS Credentials profile set correctly
   See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
 - [Node.js](https://nodejs.org/en/) should be installed version 8 or above
@@ -31,9 +39,11 @@ That is all that is required to install Nebula into your system!
 
 Creating a constellation with the CLI is as simple as this:
 
-    $ nebula create --name funky-orbsy \
+    $ nebula create --name your-node-name \
                   --orbs-address d27e2e7398e2582f63d0800330010b3e58952ff6 \
                   --orbs-private-key 87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253
+                  --public-ip 1.2.3.4
+                  --region us-west-2
 
     ....
     [Lots of Terraform output will come out here]
@@ -45,32 +55,32 @@ Creating a constellation with the CLI is as simple as this:
 
     Your constellation name should be used when wanting to destroy/upgrade
     Constellation name:
-    funky-orbsy
+    your-node-name
 
     Example usage:
-    nebula destroy --name funky-orbsy
+    nebula destroy --name your-node-name
 
     Please allow time now for your constellation to finish syncing with the Orbs network
     No further actions required at this point
 
 or if you wish to use a less terminal verbose style , you can create a JSON file naming
-the required arguments. Let's assume the following `funky-orbsy.json` file and content:
+the required arguments. Let's assume the following `your-node-name.json` file and content:
 
     {
-        "name": "funky-orbsy",
+        "name": "your-node-name",
         "awsProfile": "default",
         "sshPublicKey": "~/.ssh/id_rsa.pub",
         "orbsAddress": "d27e2e7398e2582f63d0800330010b3e58952ff6",
         "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253", 
-        "publicIp": "",
-        "region": "us-east-2",
+        "publicIp": "1.2.3.4",
+        "region": "us-west-2",
         "nodeSize": "t3.medium",
-        "nodeCount": 3
+        "nodeCount": 2
     }
 
 and then we can run the following in our terminal:
 
-    $ nebula create -f funky-orbsy.json
+    $ nebula create -f your-node-name.json
 
     ....
     [Lots of Terraform output will come out here]
@@ -82,15 +92,15 @@ and then we can run the following in our terminal:
 
     Your constellation name should be used when wanting to destroy/upgrade
     Constellation name:
-    funky-orbsy
+    your-node-name
 
     Example usage:
-    nebula destroy --name funky-orbsy
+    nebula destroy --name your-node-name
 
     Please allow time now for your constellation to finish syncing with the Orbs network
     No further actions required at this point
 
-How easy is that?! now we can also `git commit` our `funky-orbsy.json` and have it managed neatly!
+How easy is that?! now we can also `git commit` our `your-node-name.json` and have it managed neatly!
 
 Nebula's create command available arguments
 
@@ -101,7 +111,7 @@ Nebula's create command available arguments
 | `name`                |Yes| string  | name your constellation! in case non supplied defaults to a random name                                       | Random UUID         |
 | `aws-profile`         |Optional| string  | which aws profile name to use when provisioning. Strongly recommended instead of AWS keys for better security | `default`           |
 | `testnet`             |Optional| boolean | If supplied, the constellation will join the Orbs Network testnet instead of the mainnet                      | `false`             |
-| `public-ip`           |Optional| string  | if you wish to attach a static pre-existing EC2 Elastic IP                                                    |                     |
+| `public-ip`           |Mandatory| string  | if you wish to attach a static pre-existing EC2 Elastic IP                                                    |                     |
 | `node-count`          |Optional| number  | The amount of worker nodes to deploy (the more - the more vChains you can handle)                             | 2                 |
 | `node-size`           |Optional| string  | The worker node instance size to use                                                                          | `t2.medium`         |
 | `region`              |Optional| string  | The AWS region to deploy to                                                                                   | `us-east-1`         |
@@ -111,7 +121,7 @@ Nebula's create command available arguments
 
 Destroying is even easier and requires even less arguments
 
-    $ nebula destroy --name funky-orbsy
+    $ nebula destroy --name your-node-name
 
     ....
     [Lots of Terraform output will come out here]

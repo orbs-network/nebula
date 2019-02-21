@@ -41,7 +41,7 @@ const keys = {
 };
 
 // Disabled until everything is fixed
-xdescribe('Nebula core', () => {
+describe('Nebula core', () => {
     it('should provision a new constellation', async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         const { preExistingElasticIp } = await harness.createStandAloneIPAndVolume({
@@ -74,7 +74,7 @@ xdescribe('Nebula core', () => {
         await harness.destroyStandAloneInfra();
     });
 
-    it('should provision a whole private blockchain from the private folder', async () => {
+    it.only('should provision a whole private blockchain from the private folder', async () => {
         const endpoint = '52.57.222.178/vchains/10000';
 
         const creations = [1, 2, 3].map(k => create({
@@ -82,6 +82,9 @@ xdescribe('Nebula core', () => {
         }).catch(err => err));
 
         const results = await Promise.all(creations);
+
+        const errornousCreations = results.filter(r => r.ok === false);
+        expect(errornousCreations.length).to.equal(0);
 
         // Wait for the network to sync correctly
         await waitUntilSync(endpoint, 10);
@@ -97,7 +100,7 @@ xdescribe('Nebula core', () => {
             .catch(err => err);
 
         expect(resultNode4.ok).to.equal(true);
-
+        
         const endpoint4thNode = '52.47.127.65/vchains/10000';
 
         // TODO: check that update was successful on all nodes
@@ -146,7 +149,7 @@ xdescribe('Nebula core', () => {
 
         console.log('Sleeping after setting up constellation...');
         console.log('since it takes it at least 90 seconds to come up');
-        await new Promise((resolve) => setTimeout(resolve, 90*1000));
+        await new Promise((resolve) => setTimeout(resolve, 90 * 1000));
         expect(await harness.eventuallySeeDockerTagInMetrics(endpoint, 'v0.8.0', 60)).to.equal(true);
 
         const upgradedConstellation = Object.assign({}, constellation, {
@@ -154,7 +157,7 @@ xdescribe('Nebula core', () => {
         });
 
         await update(upgradedConstellation);
-        
+
         console.log('Sleeping after upgrading the constellation...');
         console.log('since it takes it 60 seconds for Boyar to refresh it\'s configuration');
         await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
