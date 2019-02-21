@@ -161,7 +161,7 @@ describe("metrics unit tests", () => {
         it("returns status object for endpoints", async () => {
             const status = await getStatus({
                 "first-node": ENDPOINT_STAGING
-            });
+            }, 10, 100);
 
             expect(status).to.be.eql({
                 "first-node": {
@@ -177,7 +177,7 @@ describe("metrics unit tests", () => {
             const status = await getStatus({
                 "green-node": ENDPOINT_STAGING_GREEN,
                 "red-node": ENDPOINT_STAGING_RED
-            });
+            }, 10, 100);
 
             expect(status["green-node"].blockHeight).to.be.gt(1079369);
             expect(status["green-node"].status).to.be.eql("green");
@@ -185,5 +185,5 @@ describe("metrics unit tests", () => {
             expect(status["red-node"].blockHeight).to.be.eql(1079369);
             expect(status["red-node"].status).to.be.eql("red");
         });
-    })
+    });
 });
