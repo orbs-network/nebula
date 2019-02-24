@@ -4,6 +4,10 @@
 
 In short, Nebula allows you to create an Orbs constellation without too much hassle using our easy-to-use CLI.
 
+Nebula generates Terraform code to provision the required AWS resources so that you have a running Orbs node. Once done, the following illustration highlights the created resources expected in your AWS account.
+
+![](diagram.png)
+
 ## Orbs node keypair and Elastic IP
 
 Prior to running nebula to provision your blockchain node, you need to perform 2 tasks:
