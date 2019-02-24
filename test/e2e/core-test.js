@@ -108,6 +108,9 @@ describe('Nebula core', () => {
             file: `test/e2e/private-network/nodes2/node${k}.json`
         }).catch(err => err)));
 
+        const successfulUpdates = updateResults.filter(r => r.ok === true);
+        expect(successfulUpdates.length, 'Expect all 3 updates to work correctly').to.equal(3);
+
         const lastKnownblockHeight = await getBlockHeight(endpoint);
 
         await waitUntilSync(endpoint4thNode, lastKnownblockHeight + 100);

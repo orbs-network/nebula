@@ -18,7 +18,7 @@ async function getBlockHeight(endpoint) {
         const body = await request(`http://${endpoint}/metrics`, {
             timeout: 2000,
         });
-        return JSON.parse(body)["BlockStorage.BlockHeight"].Value;    
+        return JSON.parse(body)["BlockStorage.BlockHeight"].Value;
     } catch (e) {
         console.log(`Error: ${e.message}`);
         return 0;
@@ -27,36 +27,40 @@ async function getBlockHeight(endpoint) {
 
 async function waitUntilSync(endpoint, targetBlockHeight) {
     return new Promise((resolve, reject) => {
-      const start = new Date().getTime();
-  
-      const interval = setInterval(async () => {
-        // Reject after 15 minutes
-        if ((new Date().getTime() - start) / 1000 > 60 * 15) {
-          resolve("Sync timed out");
-        }
-  
-        try {
-          const newBlockHeight = await getBlockHeight(endpoint);
-          console.log(`Waiting for the node ${endpoint} to sync...`);
-          console.log(`Synced ${newBlockHeight}/${targetBlockHeight}`);
-  
-          if (newBlockHeight >= targetBlockHeight) {
-              clearInterval(interval);
-              const diff = (Date.now() - start) / 1000;
-              console.log(`Sync finished successfully in ${diff}s`);
-              resolve();
-          }
-        } catch (e) {
-          console.log(`Error: ${e}`);
-        }
-      }, 5000);
+        const start = new Date().getTime();
+
+        const interval = setInterval(async () => {
+            // Reject after 15 minutes
+            if (((new Date().getTime() - start) / 1000) > 60 * 15) {
+                clearInterval(interval);
+                const errorMessage = "Sync timed out after 15 minutes";
+                console.log(errorMessage);
+                reject(new Error(errorMessage));
+                return; // Break execution and avoid the try.
+            }
+
+            try {
+                const newBlockHeight = await getBlockHeight(endpoint);
+                console.log(`Waiting for the node ${endpoint} to sync...`);
+                console.log(`Synced ${newBlockHeight}/${targetBlockHeight}`);
+
+                if (newBlockHeight >= targetBlockHeight) {
+                    clearInterval(interval);
+                    const diff = (Date.now() - start) / 1000;
+                    console.log(`Sync finished successfully in ${diff}s`);
+                    resolve();
+                }
+            } catch (e) {
+                console.log(`Error: ${e}`);
+            }
+        }, 5000);
     });
 }
 
 function getConfig() {
     const argsConfig = {
         parseValues: true
-      };
+    };
 
     return nconf.env(argsConfig).argv(argsConfig);
 }
