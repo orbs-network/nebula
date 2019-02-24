@@ -73,7 +73,7 @@ To create new network:
 
 To destroy the network:
 
-    ../bin/nebula.js create -f node.json
+    ../bin/nebula.js destroy -f node.json
 
 Terraform files corresponding to nodes can be found in `~/.nebula/$NODE_NAME`, for example, `~/.nebula/example-public-node1`. We advise to keep these files in source control just in case.
 
