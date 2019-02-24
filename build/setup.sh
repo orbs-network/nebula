@@ -18,7 +18,7 @@ echo "Installing AWS CLI"
 sudo curl -O https://bootstrap.pypa.io/get-pip.py
 python get-pip.py --user
 export PATH=~/.local/bin:$PATH
-sudo pip install awscli --upgrade --user
+pip install awscli --upgrade --user
 
 echo "Generating SSH key pair"
 echo ".ssh directory content before creating the key"
