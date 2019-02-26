@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for CTX in $(ls -lh _terraform | awk '{print $9}'); do
+for CTX in $(ls _terraform); do
     cd _terraform/$CTX
     
     terraform destroy --var-file=terraform.tfvars -auto-approve
@@ -9,7 +9,7 @@ for CTX in $(ls -lh _terraform | awk '{print $9}'); do
     cd ../..
 done
 
-for CTX in $(ls -lh ~/.nebula | awk '{print $9}'); do
+for CTX in $(ls ~/.nebula); do
     cd ~/.nebula/$CTX
     
     terraform destroy --var-file=terraform.tfvars -auto-approve

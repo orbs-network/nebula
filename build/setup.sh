@@ -7,18 +7,15 @@ unzip terraform_0.11.10_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 terraform --version
 
-sudo mkdir -p ~/.aws
-echo "[default]
-aws_access_key_id=$AWS_ACCESS_KEY_ID
-aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-" > ~/.aws/credentials
+# sudo mkdir -p ~/.aws
+# echo "[default]
+# aws_access_key_id=$AWS_ACCESS_KEY_ID
+# aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+# " > ~/.aws/credentials
 
 # Installing aws cli
 echo "Installing AWS CLI"
-sudo curl -O https://bootstrap.pypa.io/get-pip.py
-python get-pip.py --user
-export PATH=~/.local/bin:$PATH
-pip install awscli --upgrade --user
+sudo apt-get install awscli
 
 echo "Generating SSH key pair"
 echo ".ssh directory content before creating the key"

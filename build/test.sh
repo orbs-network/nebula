@@ -6,7 +6,6 @@ echo "running tests"
 
 
 echo "Running clean up!"
-# Ignore cleanup
-# bash ./build/clean.sh 
+bash ./build/clean.sh
 
 exit $SUCCESS
