@@ -182,7 +182,9 @@ async function getNodes() {
 
 function generateIpsConfig(nodes) {
     return _.reduce(nodes, (result, node) => {
-        return _.merge(result, {[node.name]: node.publicIp});
+        return _.merge(result, {
+            [node.name]: node.publicIp
+        });
     }, {});
 }
 
@@ -270,14 +272,15 @@ describe('Nebula core', () => {
         await harness.destroyStandAloneInfra();
     });
 
-    it.only('should provision a whole private blockchain from the private folder', async () => {
+    it('should provision a whole private blockchain from the private folder', async () => {
         const nodes = await getNodes();
         const _3_nodes = _.take(nodes, 3);
+        const lastNode = _.last(nodes);
 
         try {
             saveConfig(_3_nodes);
 
-            const endpoint = `${_3_nodes[0].publicIp}/vchains/10000`;
+            const firstEndpoint = `${_3_nodes[0].publicIp}/vchains/10000`;
 
             const creations = _.map(_3_nodes, (node) => create(node).catch(err => err));
             const results = await Promise.all(creations);
@@ -286,58 +289,49 @@ describe('Nebula core', () => {
             expect(errornousCreations.length).to.equal(0);
 
             // Wait for the network to sync correctly
-            await waitUntilSync(endpoint, 10);
-            const blockHeight = await getBlockHeight(endpoint);
+            await waitUntilSync(firstEndpoint, 10);
+            const blockHeight = await getBlockHeight(firstEndpoint);
 
             expect(blockHeight, "block height should advance").to.be.gte(10);
+
+            // at this stage we have a running network of 3 nodes able to close blocks
+            // Now we will add a 4th node to the network and update the network configuration
+            // for the existing 3 nodes
+
+            saveConfig(nodes);
+
+            const resultNode4 = await create(lastNode).catch(err => err);
+            expect(resultNode4.ok).to.equal(true);
+
+            const lastEndpoint = `${lastNode.publicIp}/vchains/10000`;
+
+            // TODO: check that update was successful on all nodes
+            const updateResults = await Promise.all(_.map(_3_nodes, (node) => update(node).catch(err => err)));
+            const successfulUpdates = updateResults.filter(r => r.ok === true);
+            expect(successfulUpdates.length, 'Expect all 3 updates to work correctly').to.equal(3);
+
+            // wait until the last node had synced with others
+            await waitUntilSync(lastEndpoint, 30);
+
+            // check again that the first node keeps advancing too
+            const firstNodeBlockHeight = await getBlockHeight(firstEndpoint);
+            expect(firstNodeBlockHeight, "block height should advance with 4th node added").to.be.gte(30);
+
+            // check again that the last node advances, not just syncs
+            await waitUntilSync(lastEndpoint, firstNodeBlockHeight + 10);
+
+            const lastNodeBlockHeight = await getBlockHeight(lastEndpoint);
+            expect(lastNodeBlockHeight, "block height should advance with 4th node added").to.be.gte(firstNodeBlockHeight + 10);
+
+            // TODO: Add a contract call before adding the 4th node and another GET call to check the
+            // value exists afterwards and accessible from the 4th node (check syncing)
         } finally {
-            await Promise.all(_.map(_3_nodes, (node) => destroy(node).catch(err => err)));
+            await Promise.all(_.map(nodes, (node) => destroy(node).catch(err => err)));
 
             await Promise.all(_.map(nodes, (node) => {
                 return destroyPublicIp(node.region, node.publicIp);
             }));
         }
-
-        // try {
-
-        //     // at this stage we have a running network of 3 nodes able to close blocks
-        //     // Now we will add a 4th node to the network and update the network configuration
-        //     // for the existing 3 nodes
-
-        //     const resultNode4 = await create({
-        //             file: 'test/e2e/private-network/nodes2/node4.json'
-        //         })
-        //         .catch(err => err);
-
-        //     expect(resultNode4.ok).to.equal(true);
-
-        //     const endpoint4thNode = '52.47.127.65/vchains/10000';
-
-        //     // TODO: check that update was successful on all nodes
-        //     const updateResults = await Promise.all([1, 2, 3].map(k => update({
-        //         file: `test/e2e/private-network/nodes2/node${k}.json`
-        //     }).catch(err => err)));
-
-        //     const successfulUpdates = updateResults.filter(r => r.ok === true);
-        //     expect(successfulUpdates.length, 'Expect all 3 updates to work correctly').to.equal(3);
-
-        //     const lastKnownblockHeight = await getBlockHeight(endpoint);
-
-        //     await waitUntilSync(endpoint4thNode, lastKnownblockHeight + 100);
-        //     const currentBlockHeight = await getBlockHeight(endpoint4thNode);
-
-        //     // TODO : Make test provision the IPs
-        //     // TODO : Add a contract call before adding the 4th node and another GET call to check the 
-        //     // value exists afterwards and accessible from the 4th node (check syncing)
-
-        //     expect(currentBlockHeight, "block height should advance with 4th node added").to.be.gte(lastKnownblockHeight + 100);
-        // } catch (e) {
-        //     await Promise.all([1, 2, 3, 4].map(k => destroy({
-        //         file: `test/e2e/private-network/nodes2/node${k}.json`
-        //     })).catch(err => err));
-
-        //     throw (e);
-        // }
     });
 
     it.skip('should upgrade the binary version for a constellation', async () => {
