@@ -104,8 +104,6 @@ module.exports = {
     async createStandAloneIPAndVolume({ accessKey, secretKey, region, ethereumAZ }) {
         // Write the variables file into place
         const variableData = `
-        access_key = "${accessKey}"
-        secret_key = "${secretKey}"
         region     = "${region}"
         ethAZ      = "${ethereumAZ}"
         `;
