@@ -36,6 +36,7 @@ const fs = require("fs");
 const AWS = require("aws-sdk");
 
 const _ = require("lodash");
+const Promise = require("bluebird");
 
 const BOYAR_CONFIG_TEMPLATE = {
     "network": [],
@@ -102,7 +103,7 @@ const NODES_TEMPLATE = [{
         "region": "eu-central-1",
         "nodeSize": "t2.medium",
         "nodeCount": 2,
-        "configPath": "../templates",
+        "configPath": `${__dirname}/private-network/templates/`,
         "chainVersion": "v0.8.0"
     },
     {
@@ -115,7 +116,7 @@ const NODES_TEMPLATE = [{
         "region": "eu-west-1",
         "nodeSize": "t2.medium",
         "nodeCount": 2,
-        "configPath": "../templates",
+        "configPath": `${__dirname}/private-network/templates/`,
         "chainVersion": "v0.8.0"
     },
     {
@@ -128,7 +129,7 @@ const NODES_TEMPLATE = [{
         "region": "eu-west-2",
         "nodeSize": "t2.medium",
         "nodeCount": 2,
-        "configPath": "../templates",
+        "configPath": `${__dirname}/private-network/templates/`,
         "chainVersion": "v0.8.0"
     },
     {
@@ -141,7 +142,7 @@ const NODES_TEMPLATE = [{
         "region": "eu-west-3",
         "nodeSize": "t2.medium",
         "nodeCount": 2,
-        "configPath": "../templates",
+        "configPath": `${__dirname}/private-network/templates/`,
         "chainVersion": "v0.8.0"
     }
 ]
@@ -193,6 +194,12 @@ function generateKeysConfig(nodes) {
             }
         });
     }, {});
+}
+
+function saveConfig(nodes) {
+    fs.writeFileSync(`${__dirname}/private-network/templates/boyar.json`, JSON.stringify(BOYAR_CONFIG_TEMPLATE, 2, 2));
+    fs.writeFileSync(`${__dirname}/private-network/templates/ips.json`, JSON.stringify(generateIpsConfig(nodes), 2, 2));
+    fs.writeFileSync(`${__dirname}/private-network/templates/keys.json`, JSON.stringify(generateKeysConfig(nodes), 2, 2));
 }
 
 // Disabled until everything is fixed
@@ -265,35 +272,33 @@ describe('Nebula core', () => {
 
     it.only('should provision a whole private blockchain from the private folder', async () => {
         const nodes = await getNodes();
+        const _3_nodes = _.take(nodes, 3);
 
         try {
-            fs.writeFileSync(`${__dirname}/private-network/templates/boyar.json`, JSON.stringify(BOYAR_CONFIG_TEMPLATE, 2, 2));
-            fs.writeFileSync(`${__dirname}/private-network/templates/ips.json`, JSON.stringify(generateIpsConfig(nodes), 2, 2));
-            fs.writeFileSync(`${__dirname}/private-network/templates/keys.json`, JSON.stringify(generateKeysConfig(nodes), 2, 2));
+            saveConfig(_3_nodes);
+
+            const endpoint = `${_3_nodes[0].publicIp}/vchains/10000`;
+
+            const creations = _.map(_3_nodes, (node) => create(node).catch(err => err));
+            const results = await Promise.all(creations);
+
+            const errornousCreations = results.filter(r => r.ok === false);
+            expect(errornousCreations.length).to.equal(0);
+
+            // Wait for the network to sync correctly
+            await waitUntilSync(endpoint, 10);
+            const blockHeight = await getBlockHeight(endpoint);
+
+            expect(blockHeight, "block height should advance").to.be.gte(10);
         } finally {
+            await Promise.all(_.map(_3_nodes, (node) => destroy(node).catch(err => err)));
+
             await Promise.all(_.map(nodes, (node) => {
                 return destroyPublicIp(node.region, node.publicIp);
             }));
         }
 
-        return;
         // try {
-        //     const endpoint = '52.57.222.178/vchains/10000';
-
-        //     const creations = [1, 2, 3].map(k => create({
-        //         file: `test/e2e/private-network/nodes/node${k}.json`
-        //     }).catch(err => err));
-
-        //     const results = await Promise.all(creations);
-
-        //     const errornousCreations = results.filter(r => r.ok === false);
-        //     expect(errornousCreations.length).to.equal(0);
-
-        //     // Wait for the network to sync correctly
-        //     await waitUntilSync(endpoint, 10);
-        //     const blockHeight = await getBlockHeight(endpoint);
-
-        //     expect(blockHeight, "block height should advance").to.be.gte(10);
 
         //     // at this stage we have a running network of 3 nodes able to close blocks
         //     // Now we will add a 4th node to the network and update the network configuration
