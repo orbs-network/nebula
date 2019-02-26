@@ -21,7 +21,9 @@ const harness = require('./harness');
 const path = require('path');
 const {
     waitUntilSync,
-    getBlockHeight
+    waitUntilVersion,
+    getBlockHeight,
+    getVersion
 } = require('./../../lib/metrics');
 
 const cachePathForTests = path.join(__dirname, '../../../_terraform');
@@ -334,46 +336,32 @@ describe('Nebula core', () => {
         }
     });
 
-    it.skip('should upgrade the binary version for a constellation', async () => {
-        // Create the constellation first
-        const constellation = {
-            name: "e2e-test-upgrade-binary-version-node",
-            awsProfile: "default",
-            sshPublicKey: "~/.ssh/id_rsa.pub",
-            orbsAddress: "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
-            orbsPrivateKey: "426308c4d11a6348a62b4fdfb30e2cad70ab039174e2e8ea707895e4c644c4ec",
-            publicIp: "",
-            region: "eu-central-1",
-            nodeSize: "t2.medium",
-            nodeCount: 2,
-            configPath: "test/e2e/private-network/templates",
-            chainVersion: "v0.8.0"
-        };
+    it('should upgrade the binary version for a constellation', async () => {
+        const singleNode = NODES_TEMPLATE[0];
+        singleNode.publicIp = await getPublicIp(singleNode.region);
 
-        const result = await create(constellation).catch(err => err);
-        console.log(result);
-        expect(result.ok).to.equal(true);
+        try {
+            saveConfig([singleNode]);
 
-        const publicIp = result.manager.ip;
-        const endpoint = `http://${publicIp}/vchains/10000/metrics`;
+            const endpoint = `${singleNode.publicIp}/vchains/10000`;
+            await create(singleNode);
 
-        console.log('Sleeping after setting up constellation...');
-        console.log('since it takes it at least 90 seconds to come up');
-        await new Promise((resolve) => setTimeout(resolve, 90 * 1000));
-        expect(await harness.eventuallySeeDockerTagInMetrics(endpoint, 'v0.8.0', 60)).to.equal(true);
+            // This is a known bug, the binary from the tag v0.8.0 will still report an old version
+            await waitUntilVersion(endpoint, "v0.7.0");
+            const version = await getVersion(endpoint);
+            expect(version, "versions should match").to.be.eql("v0.7.0");
 
-        const upgradedConstellation = Object.assign({}, constellation, {
-            chainVersion: "v0.8.1"
-        });
+            const upgradedNode = _.merge({}, singleNode, {
+                chainVersion: "v0.8.1"
+            });
+            update(upgradedNode);
 
-        await update(upgradedConstellation);
-
-        console.log('Sleeping after upgrading the constellation...');
-        console.log('since it takes it 60 seconds for Boyar to refresh it\'s configuration');
-        await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
-
-        expect(await harness.eventuallySeeDockerTagInMetrics(endpoint, 'v0.8.1', 60)).to.equal(true);
-
-        await destroy(upgradedConstellation);
+            await waitUntilVersion(endpoint, "v0.8.1");
+            const currentVersion = await getVersion(endpoint);
+            expect(currentVersion, "versions should match").to.be.eql("v0.8.1");
+        } finally {
+            await destroy(singleNode);
+            await destroyPublicIp(singleNode.region, singleNode.publicIp);
+        }
     });
 });
