@@ -17,8 +17,6 @@ region = us-east-1" > ~/.aws/config
 
 ls -lh ~/.aws
 
-exit 0
-
 # Installing aws cli
 echo "Installing AWS CLI"
 sudo apt-get install awscli
