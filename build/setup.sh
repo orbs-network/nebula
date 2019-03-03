@@ -15,7 +15,7 @@ aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
 echo "[profile default]
 region = us-east-1" > ~/.aws/config
 
-ls -lh ~/.aws
+sudo ls -lh ~/.aws
 
 exit 0
 
