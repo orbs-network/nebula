@@ -7,15 +7,15 @@ unzip terraform_0.11.10_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 terraform --version
 
-sudo mkdir -p ~/.aws
-sudo echo "[default]
+mkdir -p ~/.aws
+echo "[default]
 aws_access_key_id=$AWS_ACCESS_KEY_ID
 aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
 
-sudo echo "[profile default]
+echo "[profile default]
 region = us-east-1" > ~/.aws/config
 
-sudo ls -lh ~/.aws
+ls -lh ~/.aws
 
 exit 0
 
