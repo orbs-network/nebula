@@ -19,15 +19,15 @@ jobs:
       - run: ./build/setup.sh
       
       # clean up run cache
-      # - run: rm -rf _terraform
-      # - run: yarn install
+      - run: rm -rf _terraform
+      - run: yarn install
 
-      # - save_cache:
-      #     paths:
-      #       - node_modules
-      #     key: v1-dependencies-{{ checksum "package.json" }}
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
         
-      # # run tests!
-      # - run: aws help --version
-      # - run: ./build/test.sh
+      # run tests!
+      - run: aws help --version
+      - run: ./build/test.sh
       
