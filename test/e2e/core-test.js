@@ -44,109 +44,109 @@ const BOYAR_CONFIG_TEMPLATE = {
     "network": [],
     "orchestrator": {},
     "chains": [{
-            "Id": 10000,
-            "HttpPort": 8080,
-            "GossipPort": 4400,
-            "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
-                "Pull": true
-            },
-            "Config": {
-                "ethereum-endpoint": "http://172.31.1.100:8545",
-                "logger-file-truncation-interval": "15m",
-                "profiling": true
-            }
+        "Id": 10000,
+        "HttpPort": 8080,
+        "GossipPort": 4400,
+        "DockerConfig": {
+            "ContainerNamePrefix": "orbs-network",
+            "Image": "orbsnetwork/node",
+            "Tag": "v0.8.0",
+            "Pull": true
         },
-        {
-            "Id": 20000,
-            "HttpPort": 8081,
-            "GossipPort": 4401,
-            "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
-                "Pull": true
-            },
-            "Config": {
-                "ethereum-endpoint": "http://172.31.1.100:8545",
-                "logger-file-truncation-interval": "15m",
-                "profiling": true
-            }
-        },
-        {
-            "Id": 30000,
-            "HttpPort": 8082,
-            "GossipPort": 4402,
-            "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
-                "Pull": true
-            },
-            "Config": {
-                "ethereum-endpoint": "http://172.31.1.100:8545",
-                "logger-file-truncation-interval": "15m",
-                "profiling": true
-            }
+        "Config": {
+            "ethereum-endpoint": "http://172.31.1.100:8545",
+            "logger-file-truncation-interval": "15m",
+            "profiling": true
         }
+    },
+    {
+        "Id": 20000,
+        "HttpPort": 8081,
+        "GossipPort": 4401,
+        "DockerConfig": {
+            "ContainerNamePrefix": "orbs-network",
+            "Image": "orbsnetwork/node",
+            "Tag": "v0.8.0",
+            "Pull": true
+        },
+        "Config": {
+            "ethereum-endpoint": "http://172.31.1.100:8545",
+            "logger-file-truncation-interval": "15m",
+            "profiling": true
+        }
+    },
+    {
+        "Id": 30000,
+        "HttpPort": 8082,
+        "GossipPort": 4402,
+        "DockerConfig": {
+            "ContainerNamePrefix": "orbs-network",
+            "Image": "orbsnetwork/node",
+            "Tag": "v0.8.0",
+            "Pull": true
+        },
+        "Config": {
+            "ethereum-endpoint": "http://172.31.1.100:8545",
+            "logger-file-truncation-interval": "15m",
+            "profiling": true
+        }
+    }
     ]
 }
 
 
 const NODES_TEMPLATE = [{
-        "name": "e2e-test-node1",
-        "awsProfile": "default",
-        "sshPublicKey": "~/.ssh/id_rsa.pub",
-        "orbsAddress": "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
-        "orbsPrivateKey": "426308c4d11a6348a62b4fdfb30e2cad70ab039174e2e8ea707895e4c644c4ec",
-        "publicIp": "",
-        "region": "eu-central-1",
-        "nodeSize": "t2.medium",
-        "nodeCount": 2,
-        "configPath": `${__dirname}/private-network/templates/`,
-        "chainVersion": "v0.8.0"
-    },
-    {
-        "name": "e2e-test-node2",
-        "awsProfile": "default",
-        "sshPublicKey": "~/.ssh/id_rsa.pub",
-        "orbsAddress": "d27e2e7398e2582f63d0800330010b3e58952ff6",
-        "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253",
-        "publicIp": "",
-        "region": "eu-west-1",
-        "nodeSize": "t2.medium",
-        "nodeCount": 2,
-        "configPath": `${__dirname}/private-network/templates/`,
-        "chainVersion": "v0.8.0"
-    },
-    {
-        "name": "e2e-test-node3",
-        "awsProfile": "default",
-        "sshPublicKey": "~/.ssh/id_rsa.pub",
-        "orbsAddress": "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
-        "orbsPrivateKey": "901a1a0bfbe217593062a054e561e708707cb814a123474c25fd567a0fe088f8",
-        "publicIp": "",
-        "region": "eu-west-2",
-        "nodeSize": "t2.medium",
-        "nodeCount": 2,
-        "configPath": `${__dirname}/private-network/templates/`,
-        "chainVersion": "v0.8.0"
-    },
-    {
-        "name": "e2e-test-node4",
-        "awsProfile": "default",
-        "sshPublicKey": "~/.ssh/id_rsa.pub",
-        "orbsAddress": "c056dfc0d1fbc7479db11e61d1b0b57612bf7f17",
-        "orbsPrivateKey": "1e404ba4e421cedf58dcc3dddcee656569afc7904e209612f7de93e1ad710300",
-        "publicIp": "",
-        "region": "eu-west-3",
-        "nodeSize": "t2.medium",
-        "nodeCount": 2,
-        "configPath": `${__dirname}/private-network/templates/`,
-        "chainVersion": "v0.8.0"
-    }
+    "name": "e2e-test-node1",
+    "awsProfile": "default",
+    "sshPublicKey": "~/.ssh/id_rsa.pub",
+    "orbsAddress": "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
+    "orbsPrivateKey": "426308c4d11a6348a62b4fdfb30e2cad70ab039174e2e8ea707895e4c644c4ec",
+    "publicIp": "",
+    "region": "eu-central-1",
+    "nodeSize": "t2.medium",
+    "nodeCount": 2,
+    "configPath": `${__dirname}/private-network/templates/`,
+    "chainVersion": "v0.8.0"
+},
+{
+    "name": "e2e-test-node2",
+    "awsProfile": "default",
+    "sshPublicKey": "~/.ssh/id_rsa.pub",
+    "orbsAddress": "d27e2e7398e2582f63d0800330010b3e58952ff6",
+    "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253",
+    "publicIp": "",
+    "region": "eu-west-1",
+    "nodeSize": "t2.medium",
+    "nodeCount": 2,
+    "configPath": `${__dirname}/private-network/templates/`,
+    "chainVersion": "v0.8.0"
+},
+{
+    "name": "e2e-test-node3",
+    "awsProfile": "default",
+    "sshPublicKey": "~/.ssh/id_rsa.pub",
+    "orbsAddress": "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
+    "orbsPrivateKey": "901a1a0bfbe217593062a054e561e708707cb814a123474c25fd567a0fe088f8",
+    "publicIp": "",
+    "region": "eu-west-2",
+    "nodeSize": "t2.medium",
+    "nodeCount": 2,
+    "configPath": `${__dirname}/private-network/templates/`,
+    "chainVersion": "v0.8.0"
+},
+{
+    "name": "e2e-test-node4",
+    "awsProfile": "default",
+    "sshPublicKey": "~/.ssh/id_rsa.pub",
+    "orbsAddress": "c056dfc0d1fbc7479db11e61d1b0b57612bf7f17",
+    "orbsPrivateKey": "1e404ba4e421cedf58dcc3dddcee656569afc7904e209612f7de93e1ad710300",
+    "publicIp": "",
+    "region": "eu-west-3",
+    "nodeSize": "t2.medium",
+    "nodeCount": 2,
+    "configPath": `${__dirname}/private-network/templates/`,
+    "chainVersion": "v0.8.0"
+}
 ]
 
 async function getPublicIp(region) {
@@ -206,13 +206,11 @@ function saveConfig(nodes) {
     fs.writeFileSync(`${__dirname}/private-network/templates/keys.json`, JSON.stringify(generateKeysConfig(nodes), 2, 2));
 }
 
-// Disabled until everything is fixed
 describe('Nebula core', () => {
     it('should provision a new constellation', async () => {
         const region = 'us-east-2';
-        const ethereumAZ = 'us-east-2b';
         const bucketPrefix = 'boyar-discovery';
-
+        
         const c = new CoreService(new TerraformService(terraformProdAdapter, cachePathForTests), coreAdapter);
 
         const boyarConfig = require('./../../testnet/boyar');
@@ -234,14 +232,8 @@ describe('Nebula core', () => {
             }
         };
 
-
         // First we will create an Elastic IP outside the scope of createConstellation()
-        const {
-            preExistingElasticIp
-        } = await harness.createStandAloneIPAndVolume({
-            region,
-            ethereumAZ
-        });
+        const preExistingElasticIp = await getPublicIp(region);
 
         const cloud = {
             type: types.clouds.aws,
@@ -267,11 +259,7 @@ describe('Nebula core', () => {
         expect(destroyResult.error).to.equal(null);
         expect(destroyResult.ok).to.equal(true);
 
-        const standAlonePlanOutputAsString = await harness.checkPlanForStandAloneIPAndVolume();
-        const desiredMessageIndex = standAlonePlanOutputAsString.indexOf('No changes. Infrastructure is up-to-date');
-        expect(desiredMessageIndex, 'Expecting to see the IP is still alive after destroying infra').to.not.equal(-1);
-
-        await harness.destroyStandAloneInfra();
+        await destroyPublicIp(region, preExistingElasticIp);
     });
 
     it('should provision a whole private blockchain from the private folder', async () => {
