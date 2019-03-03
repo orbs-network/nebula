@@ -12,6 +12,13 @@ echo "[default]
 aws_access_key_id=$AWS_ACCESS_KEY_ID
 aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
 
+echo "[profile default]
+region = us-east-1" > ~/.aws/config
+
+ls -lh ~/.aws
+
+exit 0
+
 # Installing aws cli
 echo "Installing AWS CLI"
 sudo apt-get install awscli
