@@ -8,11 +8,11 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 
 sudo mkdir -p ~/.aws
-echo "[default]
+sudo echo "[default]
 aws_access_key_id=$AWS_ACCESS_KEY_ID
 aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" > ~/.aws/credentials
 
-echo "[profile default]
+sudo echo "[profile default]
 region = us-east-1" > ~/.aws/config
 
 sudo ls -lh ~/.aws
