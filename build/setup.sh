@@ -19,7 +19,8 @@ ls -lh ~/.aws
 
 # Installing aws cli
 echo "Installing AWS CLI"
-sudo apt-get install awscli
+sudo apt-get install -y python-pip
+sudo pip install awscli
 
 echo "Generating SSH key pair"
 echo ".ssh directory content before creating the key"
