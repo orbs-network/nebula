@@ -28,13 +28,13 @@ To complete this guide you will need the following set up:
   Use `brew install terraform` to get it installed
 - [Orbs Key Generator](https://www.github.com/orbs-network/orbs-key-generator)
 
-  Use `brew install orbs-key-generator` to get it installed
+  Use `brew install orbs-key-generator` to get it installed (requires a Mac)
 
 ### Generating SSH public and private keys
 
 We require a valid public/private keys to run our deployment scripts and set up the EC2 resources. The key file should remain secret with the exception of feeding it to the configuration during setup. (providing the path for the pub file in the `node.json` setup file as described below)
 
-The generated key should not have a passphrase.
+The generated key should __not__ have a passphrase.
 It is okay to generate a key by any means, such as based on the following tutorial by [GitHub](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 
 The gist of creating such a key is running:
@@ -57,9 +57,9 @@ That IP address and region will later be used in the node configuration file.
 An Orbs node is identified by a public key and any action of the node should be signed with the corresponding private key. 
 These keys should be generated in a secure fashion and the private key should be securely stored. 
 
-We require an Orbs private key and an Orbs address. These can be generated using the [Orbs key generator]() by running `orbs-generate-keys node`
+We require an Orbs private key and an Orbs address. These can be generated using the [Orbs key generator](https://github.com/orbs-network/orbs-key-generator) by running `orbs-key-generator node`
 
-The output of the key generator should be securely stored and used in the `node.json` configuration file as explained below.
+The output of the key generator should be securely stored and used in the `node.json` configuration file as explained below. You will need the `Address` and `PrivateKey` later on.
 
 ### Clone Nebula's repository
 
@@ -86,10 +86,11 @@ You will need to configure this JSON file with the correct parameters for your n
 The thing to do next is to open up the `node.json` file and configure it as required for the new node.
 
 You will need:
-* The IP address
-* The AWS region
-* The publc and private keys
-* The Orbs address for that node
+* The IP address (from AWS)
+* The AWS region (from AWS)
+* The SSH publc and private key file path (the generated pub file)
+* The Orbs node address (from the Orbs key generator)
+* The Orbs node private key (from the Orbs key generator)
 
 Begin by opening up `public/node.json` in a text editor and update the following part:
 
