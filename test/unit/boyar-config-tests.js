@@ -17,7 +17,7 @@ const {
 describe("boyar config generation", () => {
     it("generates network configuration", () => {
         const config = createBoyarConfig({
-            configPath: `${__dirname}/../e2e/private-network/templates`
+            configPath: `${__dirname}/templates`
         });
 
         expect(config.network).not.to.be.empty;
@@ -40,7 +40,7 @@ describe("boyar config generation", () => {
 
     it("updates all vchains to the same version", () => {
         const config = createBoyarConfig({
-            configPath: `${__dirname}/../e2e/private-network/templates`,
+            configPath: `${__dirname}/templates`,
             chainVersion: "some-random-chain-version"
         });
 
@@ -51,7 +51,7 @@ describe("boyar config generation", () => {
 
     it("updates vchains one by one", () => {
         const config = createBoyarConfig({
-            configPath: `${__dirname}/../e2e/private-network/templates`,
+            configPath: `${__dirname}/templates`,
             chainVersion: {
                 10000: "diamond dogs",
                 20000: "1984",

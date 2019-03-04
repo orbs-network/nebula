@@ -28,5 +28,6 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
         
       # run tests!
+      - run: aws help --version
       - run: ./build/test.sh
       
