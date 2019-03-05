@@ -2,6 +2,8 @@
 
 This step-by-step guide will walk you through creating a new node and connecting it to an existing Orbs network.
 
+![](../diagram.png)
+
 ## Prerequisites
 
 To complete this guide you will need the following set up:
@@ -28,7 +30,7 @@ To complete this guide you will need the following set up:
   Use `brew install terraform` to get it installed
 - [Orbs Key Generator](https://www.github.com/orbs-network/orbs-key-generator)
 
-  Use `brew install orbs-key-generator` to get it installed (requires a Mac)
+  Use `brew install orbs-network/devtools/orbs-key-generator` to get it installed (requires a Mac)
 
 ### Generating SSH public and private keys
 
@@ -59,7 +61,7 @@ These keys should be generated in a secure fashion and the private key should be
 
 We require an Orbs private key and an Orbs address. These can be generated using the [Orbs key generator](https://github.com/orbs-network/orbs-key-generator) by running `orbs-key-generator node`
 
-The output of the key generator should be securely stored and used in the `node.json` configuration file as explained below. You will need the `Address` and `PrivateKey` later on.
+The output of the key generator should be securely stored and used in the `node.json` configuration file as explained below. You will need the `NodeAddress` and `NodePrivateKey` later on.
 
 ### Clone Nebula's repository
 
@@ -138,7 +140,7 @@ Once the node becomes operational, it will bootstrap the network configuration f
 At this point your node has joined the network and should be syncing the existing blocks.
 
 To inspect your node operation on every virtual chain, Orbs has developed a special inspection route available on each node that provides access to node metrics.
-To access the metrics, navigate to `http://$NODE_IP/vchains/10000/metrics` replacing __$NODE_IP__ with 
+To access the metrics, navigate to `http://$NODE_IP/vchains/1000/metrics` replacing __$NODE_IP__ with 
 your node IP.
 
 The JSON you see will include a property called `BlockStorage.BlockHeight`, which indicates the block height that the network is currently on.
