@@ -1,19 +1,17 @@
 #!/bin/bash
 
-for CTX in $(ls -lh _terraform | awk '{print $9}'); do
+for CTX in $(ls _terraform); do
     cd _terraform/$CTX
     
-    node ../../build/ips.js `pwd`/outputs.json | xargs -I {} sh -c "ssh -i ~/.ssh/id_rsa -o ConnectTimeout=4 -o StrictHostKeyChecking=no ubuntu@{} 'sudo systemctl stop docker && sudo umount /dev/xvdh'"
     terraform destroy --var-file=terraform.tfvars -auto-approve
     rm -f terraform.tfvars
 
     cd ../..
 done
 
-for CTX in $(ls -lh ~/.nebula | awk '{print $9}'); do
+for CTX in $(ls ~/.nebula); do
     cd ~/.nebula/$CTX
     
-    node ../../build/ips.js `pwd`/outputs.json | xargs -I {} sh -c "ssh -i ~/.ssh/id_rsa -o ConnectTimeout=4 -o StrictHostKeyChecking=no ubuntu@{} 'sudo systemctl stop docker && sudo umount /dev/xvdh'"
     terraform destroy --var-file=terraform.tfvars -auto-approve
     rm -f terraform.tfvars
 done

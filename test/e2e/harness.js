@@ -1,6 +1,5 @@
 const { trim } = require('lodash');
 const { exec: _exec } = require('child-process-promise');
-const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
 const util = require('util');
@@ -77,35 +76,9 @@ module.exports = {
 
         return false;
     },
-    async eventuallySeeDockerTagInMetrics(endpoint, expectedVersion, timeoutInSeconds) {
-        let pollCount = 0;
-        let poll = true;
-
-        do {
-            try {
-                console.log(`Request #${pollCount} to`, endpoint);
-                const response = await fetch(endpoint);
-                const metrics = await response.json();
-                console.log('Found version: ', metrics['Version.Semantic']);
-                console.log('Comparing to: ', expectedVersion);
-                if (metrics['Version.Semantic'].Value === expectedVersion) {
-                    console.log('SUCCESS: Found the required version on this node from the metrics route', expectedVersion);
-                    return true;
-                }
-            } catch (err) {
-            }
-
-            pollCount++;
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-        } while (poll && pollCount < timeoutInSeconds);
-
-        return false;
-    },
     async createStandAloneIPAndVolume({ accessKey, secretKey, region, ethereumAZ }) {
         // Write the variables file into place
         const variableData = `
-        access_key = "${accessKey}"
-        secret_key = "${secretKey}"
         region     = "${region}"
         ethAZ      = "${ethereumAZ}"
         `;

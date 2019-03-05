@@ -1,10 +1,11 @@
 #!/bin/bash
 
 yarn test
-echo "running tests"
 SUCCESS=$?
+echo "running tests"
+
 
 echo "Running clean up!"
-bash ./build/clean.sh 
+bash ./build/clean.sh
 
 exit $SUCCESS
