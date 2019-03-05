@@ -1,36 +1,67 @@
 # Setting up an Orbs Public Blockchain Node using Nebula CLI
 
-This step-by-step guide will walk you through creating a new node and attaching it to an existing network.
+This step-by-step guide will walk you through creating a new node and connecting it to an existing Orbs network.
 
-This guide assumes you have some basic knowledge regarding Amazon Web Services, ability to run commands within a terminal window and a few other small requirements.
+![](../diagram.png)
 
 ## Prerequisites
 
-For our tutorial to work properly you should have the following setup:
+To complete this guide you will need the following set up:
 
 - Mac or Linux machine
-- An SSH public key (by default we use `~/.ssh/id_rsa.pub`). You can generate new one using [GitHub guide](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
+- An SSH public key (by default we use `~/.ssh/id_rsa.pub`). We go into details on how to generate these below
 - **A clean, new AWS account with admin programmatic access.**
-- AWS CLI.
+- AWS CLI
+  
+  Use `brew install awscli` to get it installed
 - An AWS credentials profile set correctly:
+  
   See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+  
+  We require the `aws_access_key_id` and `aws_secret_access_key` of an admin account for our Terraform script to execute correctly 
 - [Node.js](https://nodejs.org/en/) version 8 or above
+  
+  Use `brew install node` to get it installed
 - Yarn package manager for Node.js
+  
+  Use `brew install yarn` to get it installed
 - [Terraform](https://www.terraform.io/downloads.html) from HasiCorp
+  
+  Use `brew install terraform` to get it installed
+- [Orbs Key Generator](https://www.github.com/orbs-network/orbs-key-generator)
+
+  Use `brew install orbs-network/devtools/orbs-key-generator` to get it installed (requires a Mac)
+
+### Generating SSH public and private keys
+
+We require a valid public/private keys to run our deployment scripts and set up the EC2 resources. The key file should remain secret with the exception of feeding it to the configuration during setup. (providing the path for the pub file in the `node.json` setup file as described below)
+
+The generated key should __not__ have a passphrase.
+It is okay to generate a key by any means, such as based on the following tutorial by [GitHub](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
+
+The gist of creating such a key is running:
+
+    ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
 ### Allocating IPs on Amazon
 
-Orbs nodes that you provision have to have static IPs in order to communicate between themselves.
+The Orbs node that you provision must have a static IPs in order to communicate with the network.
 
-- Go into your AWS Console
-- Pick a region (we recommend `ca-central-1`)
+- Go to your AWS Console
+- Pick a region (for example `ca-central-1`)
 - Allocate 1 Elastic IPs
 
-Thies IP will later be used in node configuration.
+That IP address and region will later be used in the node configuration file.
 
-### Generating public and private keys
 
-**TODO**
+### Generating Orbs addresses
+
+An Orbs node is identified by a public key and any action of the node should be signed with the corresponding private key. 
+These keys should be generated in a secure fashion and the private key should be securely stored. 
+
+We require an Orbs private key and an Orbs address. These can be generated using the [Orbs key generator](https://github.com/orbs-network/orbs-key-generator) by running `orbs-key-generator node`
+
+The output of the key generator should be securely stored and used in the `node.json` configuration file as explained below. You will need the `NodeAddress` and `NodePrivateKey` later on.
 
 ### Clone Nebula's repository
 
@@ -42,102 +73,93 @@ Install dependencies
 
     yarn install
 
+These steps will install everything required for Nebula to set up the node, except for the third party requirements mentioned above (awscli, node, yarn, terraform)
+
 ### Locate the example files
 
     cd public
 
-This folder contains the required JSON file used to set up our node.
+This folder contains the required JSON file template used to set up your node to join an existing network.
+ 
+You will need to configure this JSON file with the correct parameters for your node.
 
-### Alter the example JSON
+### Configure the boilerplate JSON file
 
-The thing to do next is to open up each of the files respectively and update the IPs
-according to the IPs that we allocated a few steps back.
+The thing to do next is to open up the `node.json` file and configure it as required for the new node.
 
-So we'll begin by opening up `public/node.json` within a text editor and update the following line:
+You will need:
+* The IP address (from AWS)
+* The AWS region (from AWS)
+* The SSH publc and private key file path (the generated pub file)
+* The Orbs node address (from the Orbs key generator)
+* The Orbs node private key (from the Orbs key generator)
+
+Begin by opening up `public/node.json` in a text editor and update the following part:
 
     {
-        "name": "example-public-node1",
+        "name": "$VALIDATOR_NAME-orbs-node",
         ...
-        "publicIp": "$NODE1_IP",
-        "region": "$NODE1_REGION",
+        "sshPublicKey": "$LOCATION_TO_PUB_FILE",
+        "orbsAddress": "$ORBS_PUBLIC_NODE_ADDRESS",
+        "orbsPrivateKey": "$ORBS_PRIVATE_KEY", 
+        "publicIp": "$NODE_AWS_IP",
+        "region": "$NODE_AWS_REGION",
         ...
     }
 
-Please change `example-public-node1` to something more meaningful, for example, `$COMPANY_NAME-orbs-node`.
+Please use an indicative name for your Validator name, such as a company name or brand name. 
 
 ### Run Nebula CLI to create all nodes
 
-To create new network:
+To provision the resources required for the node:
 
     ../bin/nebula.js create -f node.json
 
-To destroy the network:
+To remove all resources provisioned for the node:
 
     ../bin/nebula.js destroy -f node.json
 
-Terraform files corresponding to nodes can be found in `~/.nebula/$NODE_NAME`, for example, `~/.nebula/example-public-node1`. We advise to keep these files in source control just in case.
+Terraform files corresponding to nodes can be found in `~/.nebula/$NODE_NAME`, for example, `~/.nebula/example-public-node1`.
 
-### Inspect the network health
+### Registering to the Orbs public network
 
-At this point we have a network running but we have to verify it's able to reach consensus and close blocks.
+Please send the following details to your Orbs contact to register with the network:
 
-To do that, Orbs has developed a special inspection route available on each node that allows to inspect some metrics
-of the node. So open up a browser window and navigate to `http://$NODE_IP/vchains/10000/metrics` replacing __NODE_IP__ with 
-one of your node's IPs.
+* `name` - The node name, as configured in the `node.json` file
+* `orbsAddress` - The node Orbs address, as configured in the `node.json` file
+* `publicIp` - The node public IP address, as configured in the `node.json` file
 
-The JSON you see will include a property called `BlockStorage.BlockHeight` which indicates the block height that the network is currently on.
-Try refreshing this metrics page a couple of times. you should see this value going up between refreshes
+__Important - do not send Orbs, or any other party, the Orbs or SSH private key, or AWS credentials__
 
-If this is the case it means that the network is alive and healthy.
+### What happens after deployment
 
-You can also SSH into the machines using your public key and *ubuntu* username.
+Once the node becomes operational, it will bootstrap the network configuration from the setup (currently from a shared AWS S3 object), and will attempt to join the network and sync. Joining the network will work once the network configuration file includes the new node parameters (result of the network registration described above).
 
-## Deploying your first contract
+### How to inspect the network health
 
-Before we start, modify `orbs-gamma-config.json` by injecting your node IP in the `Endpoints` array in the environment configuration:
+At this point your node has joined the network and should be syncing the existing blocks.
 
-```json
-{
-    "Environments": {
-        "private1": {
-            "VirtualChain": 10000,
-            "Endpoints": ["http://$NODE_IP/vchains/10000"]
-        }
-    }
-}
-```
+To inspect your node operation on every virtual chain, Orbs has developed a special inspection route available on each node that provides access to node metrics.
+To access the metrics, navigate to `http://$NODE_IP/vchains/1000/metrics` replacing __$NODE_IP__ with 
+your node IP.
 
-Install gamma-cli:
+The JSON you see will include a property called `BlockStorage.BlockHeight`, which indicates the block height that the network is currently on.
+Try refreshing this metrics page a couple of times, you should see this value increasing.
 
-    brew install gamma-cli
+If this is the case it means that the network is alive and healthy. 
 
-Deploy your first contract:
-
-    gamma-cli deploy contracts/contract.go -name ExampleCounter -env private1
-
-Send transaction:
-
-    gamma-cli send-tx contracts/counter-add.json -signer user1 -env private1
-
-Query contract:
-
-    gamma-cli run-query contracts/counter-get.json -env private1
+__Congratulations!__
 
 ## Troubleshooting
 
-1. If you get terraform error that your IP does not exist, check if it belongs to the region where you are trying to provision the node (`private/nodes/node1.json`) for `example-node1` and so on.
+1. If you get an Terraform error that your IP does not exist, check whether the combination of ip and region is correct in the node configuration file (`public/node.json`)
 
-2. If new blocks aren't being created, the most basic problem that we might face is communication issue. Please verify that all nodes are accessible from each other. You can find configuration of virtual chains in `private/templates/boyar.json`. By default, the nodes should be able to access each other via port `4400`.
+2. If new blocks are not being created, it is possible that your node is not registered with Orbs. Check to see that it is in https://s3.amazonaws.com/boyar-bootstrap-test/boyar/config.json. Also verify that port `4400` is open
 
-3. You can further investigate Terraform files in `~/.nebula` and manually alter sources for these files in `resources/terraform/aws` to your liking. However, we would advise against it.
+3. If you are trying to destroy all blocks history, you have to manually remove all EBS volumes with names `orbs-network-chain-*`. The destroy operation will not remove data persistence.
 
-4. If you are manually running Terraform, don't forget to detach your node IP from state so it wouldn't be released: `terraform state rm aws_eip.eip_manager`.
+4. Contact Orbs for any other issues
 
-5. If you are trying to destroy all blocks history, you have to manually removed all volumes with names `orbs-network-chain-*`.
+### Known issues
 
-6. Contact the authors of this guide.
-
-### Known bugs
-
-- `nodeCount` that is not equal `2` is *not supported* (Docker Swarm cluster can only have 2 workers at the moment).
-- running multiple nodes in the same region with the same virtual chain id is not supported at the moment, so it's a requirement to place your nodes in different AWS regions.
+- `nodeCount` that is not equal `2` is *not supported* (Docker Swarm cluster can only have 2 workers at the moment)

@@ -19,7 +19,7 @@ describe("cli", () => {
     describe("#getNodes", () => {
         it("returns the list of the nodes", () => {
             const nodes = getNodes({
-                configPath: `${__dirname}/../e2e/private-network/templates`
+                configPath: `${__dirname}/templates`
             });
 
             expect(nodes).to.be.eql({

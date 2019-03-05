@@ -60,10 +60,20 @@ $(aws ecr get-login --no-include-email --region us-west-2)
 echo '0 * * * * $(/usr/local/bin/aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
 crontab /tmp/crontab
 
-# Check that we have at least 1 worker and 1 manager in the constellation
+# Wait for everyone to join the swarm
 while true; do
-    [ $(docker node ls -q | wc -l) -ge 2 ] && break
+    [ $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | wc -l) -ge ${var.aws_orbs_worker_instance_count} ] && break
     sleep 15
+done
+
+# Label workers
+for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | cut -d" " -f1); do
+    docker node update --label-add worker=true $n
+done
+
+# Label leader as manager
+for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep Leader | cut -d" " -f1); do
+    docker node update --label-add manager=true $n
 done
 
 HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
