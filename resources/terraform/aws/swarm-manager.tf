@@ -42,7 +42,7 @@ apt-get update
 apt-get install -y docker-ce
 docker plugin install --grant-all-permissions rexray/ebs
 
-export BOYAR_VERSION=7c92c0d347bb8bb514b9563205837b115466eeb5
+export BOYAR_VERSION=83ae6aaf9dae77e4ec49eb97be9116f377aedf33
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
@@ -76,7 +76,7 @@ for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep Leader | 
     docker node update --label-add manager=true $n
 done
 
-HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize > /var/log/boyar.log &
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 1m > /var/log/boyar.log &
 
 TFEOF
 }
