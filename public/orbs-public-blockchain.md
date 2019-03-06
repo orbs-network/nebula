@@ -22,9 +22,7 @@ To complete this guide you will need the following set up:
 - [Node.js](https://nodejs.org/en/) version 8 or above
   
   Use `brew install node` to get it installed
-- Yarn package manager for Node.js
-  
-  Use `brew install yarn` to get it installed
+
 - [Terraform](https://www.terraform.io/downloads.html) from HasiCorp
   
   Use `brew install terraform` to get it installed
@@ -61,26 +59,22 @@ These keys should be generated in a secure fashion and the private key should be
 
 We require an Orbs private key and an Orbs address. These can be generated using the [Orbs key generator](https://github.com/orbs-network/orbs-key-generator) by running `orbs-key-generator node`
 
-The output of the key generator should be securely stored and used in the `node.json` configuration file as explained below. You will need the `NodeAddress` and `NodePrivateKey` later on.
+The output of the key generator should be securely stored and used in the `node.json` configuration file as explained below. You will need the `NodeAddress` and `NodePrivateKey` later on __without the leading 0x__.
 
-### Clone Nebula's repository
+### Install Nebula via NPM
 
-Clone git repository
+To install Nebula run
 
-    git clone https://github.com/orbs-network/nebula.git && cd nebula
+    npm install -g orbs-nebula
 
-Install dependencies
-
-    yarn install
-
-These steps will install everything required for Nebula to set up the node, except for the third party requirements mentioned above (awscli, node, yarn, terraform)
+If you have previously installed Nebula, you can run the `npm update -g orbs-nebula`
 
 ### Locate the example files
 
-    cd public
+We require a `node.json` configuration file to run Nebula, you can find one which contains example data here 
 
-This folder contains the required JSON file template used to set up your node to join an existing network.
- 
+    https://github.com/orbs-network/nebula/blob/master/public/node.json
+
 You will need to configure this JSON file with the correct parameters for your node.
 
 ### Configure the boilerplate JSON file
@@ -91,8 +85,8 @@ You will need:
 * The IP address (from AWS)
 * The AWS region (from AWS)
 * The SSH publc and private key file path (the generated pub file)
-* The Orbs node address (from the Orbs key generator)
-* The Orbs node private key (from the Orbs key generator)
+* The Orbs node address (from the Orbs key generator - without the leading 0x)
+* The Orbs node private key (from the Orbs key generator - without the leading 0x)
 
 Begin by opening up `public/node.json` in a text editor and update the following part:
 
@@ -109,15 +103,15 @@ Begin by opening up `public/node.json` in a text editor and update the following
 
 Please use an indicative name for your Validator name, such as a company name or brand name. 
 
-### Run Nebula CLI to create all nodes
+### Run Nebula CLI to deploy the node
 
 To provision the resources required for the node:
 
-    ../bin/nebula.js create -f node.json
+    nebula create -f node.json
 
 To remove all resources provisioned for the node:
 
-    ../bin/nebula.js destroy -f node.json
+    nebula destroy -f node.json
 
 Terraform files corresponding to nodes can be found in `~/.nebula/$NODE_NAME`, for example, `~/.nebula/example-public-node1`.
 
@@ -140,7 +134,7 @@ Once the node becomes operational, it will bootstrap the network configuration f
 At this point your node has joined the network and should be syncing the existing blocks.
 
 To inspect your node operation on every virtual chain, Orbs has developed a special inspection route available on each node that provides access to node metrics.
-To access the metrics, navigate to `http://$NODE_IP/vchains/1000/metrics` replacing __$NODE_IP__ with 
+To access the metrics, navigate to `http://$NODE_IP/vchains/2019/metrics` replacing __$NODE_IP__ with 
 your node IP.
 
 The JSON you see will include a property called `BlockStorage.BlockHeight`, which indicates the block height that the network is currently on.
