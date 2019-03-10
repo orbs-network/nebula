@@ -41,7 +41,7 @@ The gist of creating such a key is running:
 
     ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
-### Allocating IPs on Amazon
+### Allocating an IP on Amazon
 
 The Orbs node that you provision must have a static IPs in order to communicate with the network.
 
@@ -81,27 +81,29 @@ You will need to configure this JSON file with the correct parameters for your n
 
 The thing to do next is to open up the `node.json` file and configure it as required for the new node.
 
-You will need:
-* The IP address (from AWS)
-* The AWS region (from AWS)
-* The SSH publc and private key file path (the generated pub file)
-* The Orbs node address (from the Orbs key generator - without the leading 0x)
-* The Orbs node private key (from the Orbs key generator - without the leading 0x)
-
-Begin by opening up `public/node.json` in a text editor and update the following part:
+Create a `node.json` file with the following information:
 
     {
         "name": "$VALIDATOR_NAME-orbs-node",
-        ...
+        "awsProfile": "default",
         "sshPublicKey": "$LOCATION_TO_PUB_FILE",
         "orbsAddress": "$ORBS_PUBLIC_NODE_ADDRESS",
         "orbsPrivateKey": "$ORBS_PRIVATE_KEY", 
         "publicIp": "$NODE_AWS_IP",
         "region": "$NODE_AWS_REGION",
-        ...
+        "nodeSize": "t2.medium",
+        "nodeCount": 2,
+        "chainVersion": "v0.8.0",
+        "bootstrapUrl": "https://s3.amazonaws.com/boyar-bootstrap-test/boyar/config.json"
     }
 
-Please use an indicative name for your Validator name, such as a company name or brand name. 
+You will need:
+* $VALIDATOR_NAME-orbs-node - Name for your Validator name, such as a company name or brand name.
+* $NODE_AWS_IP - The IP address (from AWS)
+* $NODE_AWS_REGION - The AWS region (from AWS)
+* $LOCATION_TO_PUB_FILE - The SSH publc and private key file path (the generated pub file)
+* $ORBS_PUBLIC_NODE_ADDRESS - The Orbs node address (from the Orbs key generator - without the leading 0x)
+* $ORBS_PRIVATE_KEY - The Orbs node private key (from the Orbs key generator - without the leading 0x)
 
 ### Run Nebula CLI to deploy the node
 
