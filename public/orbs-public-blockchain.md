@@ -124,6 +124,7 @@ Please send the following details to your Orbs contact to register with the netw
 * `name` - The node name, as configured in the `node.json` file
 * `orbsAddress` - The node Orbs address, as configured in the `node.json` file
 * `publicIp` - The node public IP address, as configured in the `node.json` file
+* `region` - The AWS region that was used, as configured in the `node.json` file
 
 __Important - do not send Orbs, or any other party, the Orbs or SSH private key, or AWS credentials__
 
