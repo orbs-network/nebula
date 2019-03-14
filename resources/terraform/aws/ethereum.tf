@@ -40,14 +40,16 @@ apt-get install -y docker-ce
 apt-get install -y python-pip
 pip install awscli
 
-export ETHEREUM_CHAIN=mainnet #var.ethereum_chain
+export ETHEREUM_CHAIN=${var.ethereum_chain}
 
 # Sync data from S3
 
 mkdir -p /ethereum-persistency/chains/ethereum
 chown -R ubuntu:ubuntu /ethereum-persistency
 
-su ubuntu -c "aws s3 sync --region us-west-2 s3://orbs-network-parity-bootstrap/$ETHEREUM_CHAIN/ /ethereum-persistency/chains/ethereum"
+if [ ! -z "${var.ethereum_sync_s3_bucket}" ]; then
+  su ubuntu -c "aws s3 sync --region us-west-2 s3://${var.ethereum_sync_s3_bucket}/$ETHEREUM_CHAIN/ /ethereum-persistency/chains/ethereum"
+fi
 
 docker run -d \
   -p 8545:8545 \

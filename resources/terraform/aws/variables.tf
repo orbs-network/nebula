@@ -69,3 +69,19 @@ variable "path_to_ssh_pubkey" {}
 variable "ethereum_count" {
   default = 1
 }
+
+variable "ethereum_chain" {
+  default = "mainnet"
+}
+
+variable "ethereum_sync_s3_bucket" {
+  default = "orbs-network-parity-bootstrap"
+}
+
+variable "ethereum_topology_contract_address" {
+  default = ""
+}
+
+variable "boyar_version" {
+  default = "4508fbeeca948339d3606fff4dd0fa40540e41c8"
+}
