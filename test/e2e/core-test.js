@@ -208,7 +208,7 @@ function saveConfig(nodes) {
 
 describe('Nebula core', () => {
     it('should provision a new constellation', async () => {
-        const region = 'us-east-2';
+        const region = 'eu-north-1';
         const bucketPrefix = 'boyar-discovery';
         
         const c = new CoreService(new TerraformService(terraformProdAdapter, cachePathForTests), coreAdapter);
