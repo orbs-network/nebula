@@ -3,9 +3,14 @@ const { exec: _exec } = require('child-process-promise');
 const path = require('path');
 const fs = require('fs');
 const util = require('util');
-const { TerraformService } = require('./../../lib/services/terraform/terraform');
-
 const writeFile = util.promisify(fs.writeFile);
+const unlink = util.promisify(fs.unlink);
+
+const AWS = require('aws-sdk');
+const uuid = require('uuid');
+
+const { TerraformService } = require('./../../lib/services/terraform/terraform');
+const fixtures = require('./fixtures/nodes.json');
 
 const tf = new TerraformService({});
 
@@ -35,10 +40,102 @@ async function exec(cmd, opts) {
     return result;
 }
 
-const targetDir = path.join(__dirname, 'eip_tf_state');
+function circleCiBuildNumber() {
+    return process.env.CIRCLE_BUILD_NUM || uuid().split('-')[1];
+}
 
 module.exports = {
     exec,
+    fixtures,
+    writeNodesJSONsToDisc(jsons) {
+        return Promise.all(jsons.map((json, index) => {
+            const targetPath = path.join(__dirname, 'private-network/nodes', `node${index + 1}.json`);
+            return writeFile(targetPath, JSON.stringify(json, 2, 2));
+        }));
+    },
+    deleteNodesJSONsFromDisk(jsons) {
+        return Promise.all(jsons.map((_, index) => unlink(path.join(__dirname, 'private-network/nodes', `node${index + 1}.json`))));
+    },
+    getElasticIPsInRegions(regions) {
+        return Promise.all(regions.map((region) => this.aws.getPublicIp(region)));
+    },
+    aws: {
+        async getPublicIp(region) {
+            const ec2 = new AWS.EC2({
+                region
+            });
+
+            try {
+                const response = await ec2.allocateAddress({
+                    Domain: 'vpc'
+                }).promise();
+
+                return {
+                    ok: true,
+                    region,
+                    ip: response.PublicIp,
+                };
+            } catch (err) {
+                return {
+                    ok: false,
+                    region,
+                    err,
+                };
+            }
+        },
+        async destroyPublicIp(region, ip) {
+            console.log(`Attempting to destroy ${ip} in ${region}`);
+
+            const ec2 = new AWS.EC2({
+                region,
+            });
+
+            try {
+                const description = await ec2.describeAddresses({
+                    PublicIps: [ip],
+                }).promise();
+
+                const result = await ec2.releaseAddress({
+                    AllocationId: description.Addresses[0].AllocationId
+                }).promise();
+
+                return {
+                    ok: true,
+                    region,
+                    ip,
+                    result,
+                };
+            } catch (err) {
+                return {
+                    ok: false,
+                    region,
+                    ip,
+                    err,
+                };
+            }
+        }
+    },
+    getNodesJSONs({ elasticIPs, buildNumber = circleCiBuildNumber() }) {
+        const commonProps = {
+            sshPublicKey: '~/.ssh/id_rsa.pub',
+            configPath: '../templates',
+            awsProfile: 'default',
+            nodeSize: 't2.medium',
+            nodeCount: 2,
+            chainVersion: 'orbs-network-v1',
+        };
+
+        return fixtures.nodes.map(node => {
+            const { ip: publicIp } = elasticIPs
+                .filter(({ region }) => region === node.region)[0];
+
+            node.name = node.name.replace('{circle_ci_build_number}', buildNumber);
+
+            return Object.assign({}, node, commonProps, {
+                publicIp
+            });
+        });
+    },
     remoteExec({ command, ip }) {
         return exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} '${command}'`);
     },
