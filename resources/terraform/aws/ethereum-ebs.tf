@@ -1,6 +1,6 @@
 resource "aws_ebs_volume" "ethereum" {
   count             = "${var.ethereum_count}"
-  size              = 100
+  size              = 200
   availability_zone = "${data.aws_availability_zones.available.names[0]}"
 
   tags = {

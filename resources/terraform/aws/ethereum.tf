@@ -36,6 +36,19 @@ add-apt-repository \
 apt-get update
 apt-get install -y docker-ce
 
+# Install AWS CLI
+apt-get install -y python-pip
+pip install awscli
+
+export ETHEREUM_CHAIN=mainnet #var.ethereum_chain
+
+# Sync data from S3
+
+mkdir -p /ethereum-persistency/chains/ethereum
+chown -R ubuntu:ubuntu /ethereum-persistency
+
+su ubuntu -c "aws s3 sync --region us-west-2 s3://orbs-network-parity-bootstrap/$ETHEREUM_CHAIN/ /ethereum-persistency/chains/ethereum"
+
 docker run -d \
   -p 8545:8545 \
   -p 8546:8546 \
@@ -44,7 +57,11 @@ docker run -d \
   --restart always \
   --name ethereum \
   -v /ethereum-persistency:/home/parity/.local/share/io.parity.ethereum \
-  parity/parity:stable --chain ropsten --base-path /home/parity/.local/share/io.parity.ethereum
+  parity/parity:stable \
+  --chain $ETHEREUM_CHAIN \
+  --base-path /home/parity/.local/share/io.parity.ethereum \
+  --no-secretstore --jsonrpc-interface all --no-ui --no-ipc --no-ws \
+  --pruning-history 2000
 
 TFEOF
 }
@@ -70,6 +87,7 @@ resource "aws_instance" "ethereum" {
   key_name          = "${aws_key_pair.deployer.key_name}"
   subnet_id         = "${ aws_subnet.ethereum.id }"
   private_ip        = "172.31.100.100"
+  iam_instance_profile = "${ aws_iam_instance_profile.ethereum.name }"
 
   user_data = "${local.ethereum_user_data}"
 
