@@ -2,18 +2,6 @@ locals {
   ethereum_user_data = <<TFEOF
 #! /bin/bash
 
-while true; do
-  sleep 1
-  test -e /dev/xvdh && break
-done
-
-[[ $(sudo file -s /dev/xvdh) != *UUID* ]] && mkfs -t ext4 /dev/xvdh
-mkdir /ethereum-persistency
-cp /etc/fstab etc/fstab.bak
-echo '/dev/xvdh /ethereum-persistency ext4 defaults,nofail 0 0' >> /etc/fstab
-mount -a
-chown -R ubuntu:ubuntu /ethereum-persistency/
-
 # Remove old instances of Docker which might ship with ubuntu
 apt-get remove docker docker-engine docker.io
 
@@ -40,17 +28,47 @@ apt-get install -y docker-ce
 apt-get install -y python-pip
 pip install awscli
 
-export ETHEREUM_CHAIN=${var.ethereum_chain}
+# Create ebs for the ethereum persistence
+export VOLUME_NAME=${var.run_identifier}-parity-${var.ethereum_chain}
 
+docker plugin install --grant-all-permissions rexray/ebs
+docker volume create --driver rexray/ebs --opt size=150 --opt volumetype=gp2 --name $VOLUME_NAME
+
+# Do not sync data from S3 because it's too complicated right now
 # Sync data from S3
+#if [ ! -z "${var.ethereum_sync_s3_bucket}" ]; then
+#   export INSTANCE_ID=$(curl -L http://169.254.169.254/latest/meta-data/instance-id)
+#   export REGION=$(curl -s -L http://169.254.169.254/latest/meta-data/placement/availability-zone | sed -e s/.$//)
 
-mkdir -p /ethereum-persistency/chains/ethereum
-chown -R ubuntu:ubuntu /ethereum-persistency
+#   export VOLUME_ID=$(aws ec2 describe-volumes --region $REGION --filters "Name=tag:Name,Values=$VOLUME_NAME" --query "Volumes[0].VolumeId" --output text)
 
-if [ ! -z "${var.ethereum_sync_s3_bucket}" ]; then
-  su ubuntu -c "aws s3 sync --region us-west-2 s3://${var.ethereum_sync_s3_bucket}/$ETHEREUM_CHAIN/ /ethereum-persistency/chains/ethereum"
-fi
+#   aws ec2 attach-volume --device /dev/xvdh --instance-id $INSTANCE_ID --volume-id $VOLUME_ID --region $REGION
 
+#   while true; do
+#     sleep 1
+#     test -e /dev/xvdh && break
+#   done
+
+#   mkdir /ethereum-persistency
+#   cp /etc/fstab etc/fstab.bak
+#   echo '/dev/xvdh /ethereum-persistency ext4 defaults,nofail 0 0' >> /etc/fstab
+#   mount -a
+
+#   # Check if there is any data in bootstrap
+#   export CHAIN_DIR=${var.ethereum_chain}
+#   if [ "${var.ethereum_chain}" == "mainnet" ]; then
+#     export CHAIN_DIR=ethereum
+#   fi
+
+#   if [ ! -d /ethereum-persistency/chains/$CHAIN_DIR ]; then
+#     # Very important step
+#     chown -R ubuntu:ubuntu /ethereum-persistency/
+
+#     su ubuntu -c "aws s3 sync s3://${var.ethereum_sync_s3_bucket}/${var.ethereum_chain}/ /ethereum-persistency/chains/$CHAIN_DIR"
+#   fi
+# fi
+
+# Run parity node
 docker run -d \
   -p 8545:8545 \
   -p 8546:8546 \
@@ -58,10 +76,10 @@ docker run -d \
   -p 30303:30303 \
   --restart always \
   --name ethereum \
-  -v /ethereum-persistency:/home/parity/.local/share/io.parity.ethereum \
+  -v $VOLUME_NAME:/home/parity/ \
   parity/parity:stable \
-  --chain $ETHEREUM_CHAIN \
-  --base-path /home/parity/.local/share/io.parity.ethereum \
+  --chain ${var.ethereum_chain} \
+  --base-path /home/parity/data \
   --no-secretstore --jsonrpc-interface all --no-ui --no-ipc --no-ws \
   --pruning-history 2000
 
@@ -72,7 +90,7 @@ resource "aws_subnet" "ethereum" {
   count                   = "${var.ethereum_count}"
   vpc_id                  = "${module.vpc.id}"
   cidr_block              = "172.31.100.0/24"
-  availability_zone       = "${aws_ebs_volume.ethereum.availability_zone}"
+  availability_zone = "${aws_instance.manager.availability_zone}"
   map_public_ip_on_launch = true
 
   tags = {
@@ -83,7 +101,7 @@ resource "aws_subnet" "ethereum" {
 resource "aws_instance" "ethereum" {
   ami               = "${data.aws_ami.ubuntu-18_04.id}"
   count             = "${var.ethereum_count}"
-  availability_zone = "${aws_ebs_volume.ethereum.availability_zone}"
+  availability_zone = "${aws_instance.manager.availability_zone}"
   instance_type     = "${var.aws_ether_instance_type}"
   security_groups   = ["${aws_security_group.ethereum.id}"]
   key_name          = "${aws_key_pair.deployer.key_name}"
