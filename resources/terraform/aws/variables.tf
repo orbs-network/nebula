@@ -83,5 +83,5 @@ variable "ethereum_topology_contract_address" {
 }
 
 variable "boyar_version" {
-  default = "4508fbeeca948339d3606fff4dd0fa40540e41c8"
+  default = "eb2b8666a7708ec8f14a84be16465202b51b8d32"
 }
