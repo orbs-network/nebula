@@ -80,6 +80,7 @@ docker run -d \
   parity/parity:stable \
   --chain ${var.ethereum_chain} \
   --base-path /home/parity/data \
+  --min-peers=45 --max-peers=60 \
   --no-secretstore --jsonrpc-interface all --no-ui --no-ipc --no-ws \
   --pruning-history 2000
 

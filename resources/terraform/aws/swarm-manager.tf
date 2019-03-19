@@ -100,7 +100,7 @@ resource "aws_instance" "manager" {
 }
 
 resource "aws_ebs_volume" "manager_storage" {
-  size              = 50
+  size              = 30
   availability_zone = "${aws_instance.manager.availability_zone}"
 
   tags {
