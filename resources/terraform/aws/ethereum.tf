@@ -34,40 +34,6 @@ export VOLUME_NAME=${var.run_identifier}-parity-${var.ethereum_chain}
 docker plugin install --grant-all-permissions rexray/ebs
 docker volume create --driver rexray/ebs --opt size=150 --opt volumetype=gp2 --name $VOLUME_NAME
 
-# Do not sync data from S3 because it's too complicated right now
-# Sync data from S3
-#if [ ! -z "${var.ethereum_sync_s3_bucket}" ]; then
-#   export INSTANCE_ID=$(curl -L http://169.254.169.254/latest/meta-data/instance-id)
-#   export REGION=$(curl -s -L http://169.254.169.254/latest/meta-data/placement/availability-zone | sed -e s/.$//)
-
-#   export VOLUME_ID=$(aws ec2 describe-volumes --region $REGION --filters "Name=tag:Name,Values=$VOLUME_NAME" --query "Volumes[0].VolumeId" --output text)
-
-#   aws ec2 attach-volume --device /dev/xvdh --instance-id $INSTANCE_ID --volume-id $VOLUME_ID --region $REGION
-
-#   while true; do
-#     sleep 1
-#     test -e /dev/xvdh && break
-#   done
-
-#   mkdir /ethereum-persistency
-#   cp /etc/fstab etc/fstab.bak
-#   echo '/dev/xvdh /ethereum-persistency ext4 defaults,nofail 0 0' >> /etc/fstab
-#   mount -a
-
-#   # Check if there is any data in bootstrap
-#   export CHAIN_DIR=${var.ethereum_chain}
-#   if [ "${var.ethereum_chain}" == "mainnet" ]; then
-#     export CHAIN_DIR=ethereum
-#   fi
-
-#   if [ ! -d /ethereum-persistency/chains/$CHAIN_DIR ]; then
-#     # Very important step
-#     chown -R ubuntu:ubuntu /ethereum-persistency/
-
-#     su ubuntu -c "aws s3 sync s3://${var.ethereum_sync_s3_bucket}/${var.ethereum_chain}/ /ethereum-persistency/chains/$CHAIN_DIR"
-#   fi
-# fi
-
 # Run parity node
 docker run -d \
   -p 8545:8545 \

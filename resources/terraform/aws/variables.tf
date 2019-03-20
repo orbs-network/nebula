@@ -74,10 +74,6 @@ variable "ethereum_chain" {
   default = "mainnet"
 }
 
-variable "ethereum_sync_s3_bucket" {
-  default = "orbs-network-parity-bootstrap"
-}
-
 variable "ethereum_topology_contract_address" {
   default = ""
 }
