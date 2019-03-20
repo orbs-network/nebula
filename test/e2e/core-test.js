@@ -108,7 +108,8 @@ const NODES_TEMPLATE = [{
     "configPath": `${__dirname}/private-network/templates/`,
     "chainVersion": "v0.8.0",
     "noEthereum": false,
-    "ethereumSyncS3Bucket": false
+    "ethereumSyncS3Bucket": false,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 },
 {
     "name": "e2e-test-node2",
@@ -123,7 +124,8 @@ const NODES_TEMPLATE = [{
     "configPath": `${__dirname}/private-network/templates/`,
     "chainVersion": "v0.8.0",
     "noEthereum": true,
-    "ethereumSyncS3Bucket": false
+    "ethereumSyncS3Bucket": false,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 },
 {
     "name": "e2e-test-node3",
@@ -138,7 +140,8 @@ const NODES_TEMPLATE = [{
     "configPath": `${__dirname}/private-network/templates/`,
     "chainVersion": "v0.8.0",
     "noEthereum": true,
-    "ethereumSyncS3Bucket": false
+    "ethereumSyncS3Bucket": false,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 },
 {
     "name": "e2e-test-node4",
@@ -153,7 +156,8 @@ const NODES_TEMPLATE = [{
     "configPath": `${__dirname}/private-network/templates/`,
     "chainVersion": "v0.8.0",
     "noEthereum": true,
-    "ethereumSyncS3Bucket": false
+    "ethereumSyncS3Bucket": false,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 }
 ]
 
