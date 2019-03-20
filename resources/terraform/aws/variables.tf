@@ -85,3 +85,8 @@ variable "ethereum_topology_contract_address" {
 variable "boyar_version" {
   default = "eb2b8666a7708ec8f14a84be16465202b51b8d32"
 }
+
+variable "incoming_ssh_cidr_blocks" {
+  default = []
+  type = "list"
+}
