@@ -1,4 +1,5 @@
-const { trim } = require('lodash');
+const _ = require('lodash');
+const { trim } = _;
 const { exec: _exec } = require('child-process-promise');
 const path = require('path');
 const fs = require('fs');
@@ -11,6 +12,7 @@ const uuid = require('uuid');
 
 const { TerraformService } = require('./../../lib/services/terraform/terraform');
 const fixtures = require('./fixtures/nodes.json');
+const boyar = require('./fixtures/boyar.json');
 
 const tf = new TerraformService({});
 
@@ -44,6 +46,24 @@ function circleCiBuildNumber() {
     return process.env.CIRCLE_BUILD_NUM || uuid().split('-')[1];
 }
 
+function generateIpsConfig(nodes) {
+    return _.reduce(nodes, (result, node) => {
+        return _.merge(result, {
+            [node.name]: node.publicIp
+        });
+    }, {});
+}
+
+function generateKeysConfig(nodes) {
+    return _.reduce(nodes, (result, node) => {
+        return _.merge(result, {
+            [node.name]: {
+                address: node.orbsAddress,
+            }
+        });
+    }, {});
+}
+
 module.exports = {
     exec,
     fixtures,
@@ -58,6 +78,20 @@ module.exports = {
     },
     getElasticIPsInRegions(regions) {
         return Promise.all(regions.map((region) => this.aws.getPublicIp(region)));
+    },
+    writeBoyarConfig() {
+        const targetPath = path.join(__dirname, 'private-network/templates/boyar.json');
+        return fs.writeFileSync(targetPath, JSON.stringify(boyar, 2, 2));
+    },
+    writeConfigurationFiles(nodes) {
+        this.writeBoyarConfig();
+
+        const basePath = path.join(__dirname, 'private-network/templates');
+        const ipsTargetPath = path.join(basePath, 'ips.json');
+        const keysTargetPath = path.join(basePath, 'keys.json');
+
+        fs.writeFileSync(ipsTargetPath, JSON.stringify(generateIpsConfig(nodes), 2, 2));
+        fs.writeFileSync(keysTargetPath, JSON.stringify(generateKeysConfig(nodes), 2, 2));
     },
     aws: {
         async getPublicIp(region) {
@@ -115,17 +149,16 @@ module.exports = {
             }
         }
     },
-    getNodesJSONs({ elasticIPs, buildNumber = circleCiBuildNumber() }) {
+    getNodesJSONs({ elasticIPs, buildNumber = circleCiBuildNumber() }, nodes = fixtures.nodes) {
         const commonProps = {
             sshPublicKey: '~/.ssh/id_rsa.pub',
             configPath: '../templates',
             awsProfile: 'default',
             nodeSize: 't2.medium',
             nodeCount: 2,
-            chainVersion: 'orbs-network-v1',
         };
 
-        return fixtures.nodes.map(node => {
+        return nodes.map(node => {
             const { ip: publicIp } = elasticIPs
                 .filter(({ region }) => region === node.region)[0];
 
