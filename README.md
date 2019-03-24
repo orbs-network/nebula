@@ -79,7 +79,8 @@ the required arguments. Let's assume the following `your-node-name.json` file an
         "publicIp": "1.2.3.4",
         "region": "us-west-2",
         "nodeSize": "t3.medium",
-        "nodeCount": 2
+        "nodeCount": 2,
+        "incomingSshCidrBlocks": ["$MY_IP_ADDRESS/32"]
     }
 
 and then we can run the following in our terminal:

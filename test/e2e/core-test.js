@@ -106,7 +106,9 @@ const NODES_TEMPLATE = [{
     "nodeSize": "t2.medium",
     "nodeCount": 2,
     "configPath": `${__dirname}/private-network/templates/`,
-    "chainVersion": "v0.8.0"
+    "chainVersion": "v0.8.0",
+    "noEthereum": false,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 },
 {
     "name": "e2e-test-node2",
@@ -119,7 +121,9 @@ const NODES_TEMPLATE = [{
     "nodeSize": "t2.medium",
     "nodeCount": 2,
     "configPath": `${__dirname}/private-network/templates/`,
-    "chainVersion": "v0.8.0"
+    "chainVersion": "v0.8.0",
+    "noEthereum": true,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 },
 {
     "name": "e2e-test-node3",
@@ -132,7 +136,9 @@ const NODES_TEMPLATE = [{
     "nodeSize": "t2.medium",
     "nodeCount": 2,
     "configPath": `${__dirname}/private-network/templates/`,
-    "chainVersion": "v0.8.0"
+    "chainVersion": "v0.8.0",
+    "noEthereum": true,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 },
 {
     "name": "e2e-test-node4",
@@ -145,7 +151,9 @@ const NODES_TEMPLATE = [{
     "nodeSize": "t2.medium",
     "nodeCount": 2,
     "configPath": `${__dirname}/private-network/templates/`,
-    "chainVersion": "v0.8.0"
+    "chainVersion": "v0.8.0",
+    "noEthereum": true,
+    "incomingSshCidrBlocks": ["0.0.0.0/0"]
 }
 ]
 
