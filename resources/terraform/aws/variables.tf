@@ -78,8 +78,13 @@ variable "ethereum_topology_contract_address" {
   default = ""
 }
 
+variable "ethereum_endpoint" {
+  default = "http://172.31.100.100:8545"
+}
+
+
 variable "boyar_version" {
-  default = "bba0635d9279bbce722e74b878e5a7876cb38780"
+  default = "ae4a501b84bd4c6971233f64dff1727384b83676"
 }
 
 variable "incoming_ssh_cidr_blocks" {

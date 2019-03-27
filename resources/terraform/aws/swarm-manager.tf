@@ -76,10 +76,10 @@ done
 
 # Extract topology from Ethereum if possible
 if [ ! -z "${var.ethereum_topology_contract_address}" ]; then
-  export ETHEREUM_PARAMS="--ethereum-endpoint http://172.31.100.100:8545 --topology-contract-address ${var.ethereum_topology_contract_address}"
+  export ETHEREUM_PARAMS="--ethereum-endpoint ${var.ethereum_endpoint} --topology-contract-address ${var.ethereum_topology_contract_address}"
 fi
 
-HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 15m $ETHEREUM_PARAMS > /var/log/boyar.log &
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS > /var/log/boyar.log &
 
 TFEOF
 }
