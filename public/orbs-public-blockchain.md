@@ -69,7 +69,7 @@ To install Nebula run
 
 If you have previously installed Nebula and you are performing a new deploy, we recommend updating it by running `npm update -g orbs-nebula`
 
-__Your Nebula version should be 1.1.1 or higher__ (you can run `npm list -g orbs-nebula` to check your version)
+__Your Nebula version should be 1.1.2 or higher__ (you can run `npm list -g orbs-nebula` to check your version)
 
 ### Configure the boilerplate JSON file
 
@@ -161,4 +161,6 @@ __Congratulations!__
 
 2. If the metrics page does not respond, it could be that the Ethereum node did not finish syncing - this takes several hours.
 
-3. Contact Orbs for any other issues
+3. If you are having trouble with Ethereum node, add `"ethereumEndpoint": "http://eth.orbs.com"` to your `node.json` and redeploy the node (`nebula destroy` and then `nebula create` as usual). If you have your own synced Ethereum node, you can use it as a value for `ethereumEndpoint`. We only provide `eth.orbs.com` for your convenience. Our long term goal is to use the Ethereum node that belongs to the Orbs node.
+
+4. Contact Orbs for any other issues
