@@ -90,7 +90,7 @@ The content of the `orbs-node.json` should be:
         "ethereumChain": "mainnet",
         "ethereumTopologyContractAddress": "0x804c8336846d8206c95CEe24752D514210B5a240",
         "cachePath": "./_terraform",
-        “ethereumEndpoint”: "$ETHEREUM_NODE_ADDRESS",
+        "ethereumEndpoint": "$ETHEREUM_NODE_ADDRESS",
         "incomingSshCidrBlocks": ["$YOUR_OFFICE_IP/32"]
     }
 
