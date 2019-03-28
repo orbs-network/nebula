@@ -90,6 +90,7 @@ The content of the `orbs-node.json` should be:
         "ethereumChain": "mainnet",
         "ethereumTopologyContractAddress": "0x804c8336846d8206c95CEe24752D514210B5a240",
         "cachePath": "./_terraform",
+        "ethereumEndpoint": "$ETHEREUM_NODE_ADDRESS",
         "incomingSshCidrBlocks": ["$YOUR_OFFICE_IP/32"]
     }
 
@@ -99,6 +100,7 @@ You will need:
 * $ORBS_PUBLIC_NODE_ADDRESS - The Orbs node address (from the Orbs key generator - __without the leading 0x__)
 * $NODE_AWS_IP - The IP address (from AWS)
 * $NODE_AWS_REGION - The AWS region (from AWS)
+* $ETHEREUM_NODE_ADDRESS - this parameter is _optional_, used to configure an external Ethereum node. If the parameter is not included, an internal Ethereum node will be used. If you have your own synced Ethereum node, you can use it as a value for ethereumEndpoint. Alternatively, you can use "http://eth.orbs.com" , which we provide for your convenience (configure it by writing "ethereumEndpoint": "http://eth.orbs.com"). Our long term goal is to use the Ethereum node that is internal to the Orbs node. 
 * $YOUR_OFFICE_IP - This is the IP address/range that we will grant access to for ssh connections to the node, you will still need the public key to connect - it is required only in cases of troubleshooting. The format is standard CIDR so a range may be provided by changing the mask. Any IP not in the range will not be able to SSH to the node, even if it has the SSH key file.
 
 Other parameters (no need to change them):
