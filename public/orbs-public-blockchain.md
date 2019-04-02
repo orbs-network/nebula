@@ -123,6 +123,12 @@ Terraform files corresponding to nodes can be found in the folder defined in `ca
 If needed, the command to remove all resources provisioned for the node is:
            
     nebula destroy -f orbs-node.json
+    
+### IMPORTANT! ###
+After deployment make sure to backup and securely store - 
+1. __Orbs keys__ (and any other credentials you used and configured, such as SSH keys)
+2. __`_terraform` folder contents__ - these are required to destroy or redeploy the node
+3. The __`orbs-node.json`__ file
 
 ### Registering to the Orbs public network
 
