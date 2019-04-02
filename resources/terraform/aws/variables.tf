@@ -69,3 +69,25 @@ variable "path_to_ssh_pubkey" {}
 variable "ethereum_count" {
   default = 1
 }
+
+variable "ethereum_chain" {
+  default = "mainnet"
+}
+
+variable "ethereum_topology_contract_address" {
+  default = ""
+}
+
+variable "ethereum_endpoint" {
+  default = "http://172.31.100.100:8545"
+}
+
+
+variable "boyar_version" {
+  default = "ae4a501b84bd4c6971233f64dff1727384b83676"
+}
+
+variable "incoming_ssh_cidr_blocks" {
+  default = []
+  type = "list"
+}

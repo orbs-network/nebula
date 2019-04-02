@@ -153,6 +153,7 @@ module.exports = {
         const commonProps = {
             sshPublicKey: '~/.ssh/id_rsa.pub',
             configPath: '../templates',
+            incomingSshCidrBlocks: ["0.0.0.0/0"],
             awsProfile: 'default',
             nodeSize: 't2.medium',
             nodeCount: 2,

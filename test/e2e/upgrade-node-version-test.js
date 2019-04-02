@@ -46,7 +46,7 @@ describe('nebula upgrade node version', () => {
         await create(fileObject);
         nebulaCreationStepMarker = true;
 
-        // // This is a known bug, the binary from the tag v0.8.0 will still report an old version
+        // This is a known bug, the binary from the tag v0.8.0 will still report an old version
         await waitUntilVersion(endpoint, 'v0.7.0');
         const version = await getVersion(endpoint);
         expect(version, 'versions should match').to.be.eql('v0.7.0');

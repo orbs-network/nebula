@@ -16,7 +16,7 @@ const c = new CoreService(new TerraformService(terraformProdAdapter, cachePathFo
 const region = 'sa-east-1';
 let preExistingElasticIp;
 
-describe.only('nebula core api', () => {
+describe('nebula core api', () => {
     before(async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         console.log('Allocating a public IP from AWS...');
@@ -37,6 +37,7 @@ describe.only('nebula core api', () => {
             },
             ssh: {
                 path: '~/.ssh/id_rsa.pub',
+                cidr: ['0.0.0.0/0']
             },
             orbs: {
                 nodeKeys: {

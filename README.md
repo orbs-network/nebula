@@ -1,7 +1,5 @@
 # Orbs Nebula
 
-[![CircleCI](https://circleci.com/gh/orbs-network/nebula/tree/master.svg?style=svg&circle-token=60b170b420aa577138953e226888a9981708fe85)](https://circleci.com/gh/orbs-network/nebula/tree/master)
-
 In short, Nebula allows you to create an Orbs constellation without too much hassle using our easy-to-use CLI.
 
 Nebula generates Terraform code to provision the required AWS resources so that you have a running Orbs node. Once done, the following illustration highlights the created resources expected in your AWS account.
@@ -79,7 +77,8 @@ the required arguments. Let's assume the following `your-node-name.json` file an
         "publicIp": "1.2.3.4",
         "region": "us-west-2",
         "nodeSize": "t3.medium",
-        "nodeCount": 2
+        "nodeCount": 2,
+        "incomingSshCidrBlocks": ["$MY_IP_ADDRESS/32"]
     }
 
 and then we can run the following in our terminal:

@@ -168,7 +168,12 @@ describe("metrics unit tests", () => {
                     "blockHeight": 1079369,
                     "status": "red",
                     "version": "v0.7.0",
-                    "commit": "83a149e41764d820ddd36091c74563ee2ab176b6"
+                    "commit": "83a149e41764d820ddd36091c74563ee2ab176b6",
+                    "ethereum": {
+                        "lastBlock": 0,
+                        "syncStatus": "",
+                        "txReceiptsStatus": ""
+                    }
                 }
             });
         });

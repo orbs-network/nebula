@@ -8,7 +8,6 @@ resource "aws_security_group" "swarm" {
     from_port   = "0"
     to_port     = "0"
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
     self        = true
   }
 
@@ -16,29 +15,41 @@ resource "aws_security_group" "swarm" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${var.incoming_ssh_cidr_blocks}"]
   }
 
+  // Http api port
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  // Http ports
+  ingress {
+    from_port   = 8000
+    to_port     = 8999
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  // Gossip ports
+  ingress {
+    from_port   = 4000
+    to_port     = 4999
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  // All outbound traffic from any port
   egress {
     from_port   = "0"
     to_port     = "0"
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
     self        = true
-  }
-
-  egress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags {
@@ -55,7 +66,6 @@ resource "aws_security_group" "ethereum" {
     from_port   = "0"
     to_port     = "0"
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
     self        = true
   }
 
@@ -63,14 +73,7 @@ resource "aws_security_group" "ethereum" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${var.incoming_ssh_cidr_blocks}"]
   }
 
   ingress {
@@ -87,6 +90,7 @@ resource "aws_security_group" "ethereum" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  // All outbound traffic from any port
   egress {
     from_port   = "0"
     to_port     = "0"
@@ -95,12 +99,6 @@ resource "aws_security_group" "ethereum" {
     self        = true
   }
 
-  egress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   tags {
     Name = "${var.application}-${var.run_identifier}-ethereum-sg"

@@ -42,9 +42,7 @@ apt-get update
 apt-get install -y docker-ce
 docker plugin install --grant-all-permissions rexray/ebs
 
-export BOYAR_VERSION=1cb165d6bb57bfbe019f1a530247e1191fdf7d9e
-
-curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-$BOYAR_VERSION.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
+curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-${var.boyar_version}.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 
 apt-get install -y python-pip && pip install awscli
 
@@ -76,7 +74,12 @@ for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep Leader | 
     docker node update --label-add manager=true $n
 done
 
-HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 1m > /var/log/boyar.log &
+# Extract topology from Ethereum if possible
+if [ ! -z "${var.ethereum_topology_contract_address}" ]; then
+  export ETHEREUM_PARAMS="--ethereum-endpoint ${var.ethereum_endpoint} --topology-contract-address ${var.ethereum_topology_contract_address}"
+fi
+
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS > /var/log/boyar.log &
 
 TFEOF
 }
@@ -97,7 +100,7 @@ resource "aws_instance" "manager" {
 }
 
 resource "aws_ebs_volume" "manager_storage" {
-  size              = 50
+  size              = 30
   availability_zone = "${aws_instance.manager.availability_zone}"
 
   tags {
