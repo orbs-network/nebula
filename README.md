@@ -1,285 +1,174 @@
-# Orbs Nebula
+# Setting up an Orbs Public Blockchain Node using Nebula CLI
 
-In short, Nebula allows you to create an Orbs constellation without too much hassle using our easy-to-use CLI.
+This step-by-step guide will walk you through creating a new node and connecting it to an existing Orbs network.
 
-Nebula generates Terraform code to provision the required AWS resources so that you have a running Orbs node. Once done, the following illustration highlights the created resources expected in your AWS account.
+![](../diagram.png)
 
-![](diagram.png)
+## Prerequisites
 
-## Orbs node keypair and Elastic IP
+To complete this guide you will need the following set up:
 
-Prior to running nebula to provision your blockchain node, you need to perform 2 tasks:
-* Generate an `ECDSA` keypair which will be used by your node (and is required to run nebula)
-* Allocate an Elastic IP in your AWS account (in the region in which you plan to run your node obviously)
-* Your public key from the first bullet and the Elastic IP should have been provided to Orbs prior
-to running this tool for your node to be able to sync correctly to the Orbs Network.
-
-## Prerequisities
-For Nebula to work properly you should have the following setup:
-- an SSH public key (which is also loaded by the ssh-agent)
-  if you have one set at `~/.ssh/id_rsa.pub` you're good to go!
-  you can check this by running the following in your terminal:
-  `$ cat ~/.ssh/id_rsa.pub`
-- Orbs key pair
-- an AWS Credentials profile set correctly
+- Mac or Linux machine
+- An SSH public key (by default we use `~/.ssh/id_rsa.pub`). We go into details on how to generate it below
+- **A clean, new AWS account with admin programmatic access.**
+- AWS CLI
+  
+  Use `brew install awscli` to get it installed
+- An AWS credentials profile set correctly:
+  
   See more [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
-- [Node.js](https://nodejs.org/en/) should be installed version 8 or above
+  
+  We require the `aws_access_key_id` and `aws_secret_access_key` of an admin account for our Terraform script to execute correctly 
+- [Node.js](https://nodejs.org/en/) version 8 or above
+  
+  Use `brew install node` to get it installed
 
-## Installation
+- [Terraform](https://www.terraform.io/downloads.html) from HasiCorp
+  
+  Use `brew install terraform` to get it installed
+- [Orbs Key Generator](https://www.github.com/orbs-network/orbs-key-generator)
 
-Nebula easily integrates into your terminal by installing the NPM package globally
+  Use `brew install orbs-network/devtools/orbs-key-generator` to get it installed (requires a Mac)
 
-    $ npm install orbs-nebula -g
+### Generating SSH public and private keys
 
-or if using yarn
+We require a valid public/private keys to run our deployment scripts and set up the EC2 resources. The key file should remain secret with the exception of feeding it to the configuration during setup. (providing the path for the pub file in the `orbs-node.json` setup file as described below)
 
-    $ yarn global add orbs-nebula
+The generated key should __not__ have a passphrase.
+It is okay to generate a key by any means, such as based on the following tutorial by [GitHub](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 
-That is all that is required to install Nebula into your system!
+The gist of creating such a key is running:
 
-## Creating a constellation
+    ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
-Creating a constellation with the CLI is as simple as this:
+### Allocating an IP on Amazon
 
-    $ nebula create --name your-node-name \
-                  --orbs-address d27e2e7398e2582f63d0800330010b3e58952ff6 \
-                  --orbs-private-key 87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253
-                  --public-ip 1.2.3.4
-                  --region us-west-2
+The Orbs node that you provision must have a static IPs in order to communicate with the network.
 
-    ....
-    [Lots of Terraform output will come out here]
-    ....
-                
-    Your constellation was created successfully!
-    Provided below is the address of your manager node public IP
-    The manager IPv4 is: 1.2.3.4
+- Go to your AWS Console
+- Pick a region (for example `ca-central-1`)
+- Allocate 1 Elastic IPs
 
-    Your constellation name should be used when wanting to destroy/upgrade
-    Constellation name:
-    your-node-name
+That IP address and region will later be used in the node configuration file.
 
-    Example usage:
-    nebula destroy --name your-node-name
 
-    Please allow time now for your constellation to finish syncing with the Orbs network
-    No further actions required at this point
+### Generating Orbs addresses
 
-or if you wish to use a less terminal verbose style , you can create a JSON file naming
-the required arguments. Let's assume the following `your-node-name.json` file and content:
+An Orbs node is identified by a public key and any action of the node should be signed with the corresponding private key. 
+These keys should be generated in a secure fashion and the private key should be securely stored. 
+
+We require an Orbs private key and an Orbs address. These can be generated using the [Orbs key generator](https://github.com/orbs-network/orbs-key-generator) by running `orbs-key-generator node`
+
+The output of the key generator should be securely stored and used in the `orbs-node.json` configuration file and node deployment command as explained below. You will need the `NodeAddress` and `NodePrivateKey` later on __without the leading 0x__.
+
+### Install Nebula via NPM
+
+To install Nebula run
+
+    npm install -g orbs-nebula
+
+If you have previously installed Nebula and you are performing a new deploy, we recommend updating it by running `npm update -g orbs-nebula`
+
+__Your Nebula version should be 1.1.2 or higher__ (you can run `npm list -g orbs-nebula` to check your version)
+
+### Configure the boilerplate JSON file
+
+The thing to do next is to create the `orbs-node.json` file and configure it as required for the new node.
+
+The content of the `orbs-node.json` should be:
 
     {
-        "name": "your-node-name",
+        "name": "$VALIDATOR_NAME-orbs-prod",
         "awsProfile": "default",
-        "sshPublicKey": "~/.ssh/id_rsa.pub",
-        "orbsAddress": "d27e2e7398e2582f63d0800330010b3e58952ff6",
-        "orbsPrivateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253", 
-        "publicIp": "1.2.3.4",
-        "region": "us-west-2",
-        "nodeSize": "t3.medium",
+        "sshPublicKey": "$LOCATION_TO_PUB_FILE",
+        "orbsAddress": "$ORBS_PUBLIC_NODE_ADDRESS",
+        "publicIp": "$NODE_AWS_IP",
+        "region": "$NODE_AWS_REGION",
+        "nodeSize": "m4.xlarge",
         "nodeCount": 2,
-        "incomingSshCidrBlocks": ["$MY_IP_ADDRESS/32"]
+        "bootstrapUrl": "https://s3.amazonaws.com/orbs-bootstrap-prod/boyar/config.json",
+        "ethereumChain": "mainnet",
+        "ethereumTopologyContractAddress": "0x804c8336846d8206c95CEe24752D514210B5a240",
+        "cachePath": "./_terraform",
+        "ethereumEndpoint": "$ETHEREUM_NODE_ADDRESS",
+        "incomingSshCidrBlocks": ["$YOUR_OFFICE_IP/32"]
     }
 
-and then we can run the following in our terminal:
+You will need:
+* $VALIDATOR_NAME-orbs-node - Name for your Validator name, such as a company name or brand name.
+* $LOCATION_TO_PUB_FILE - The SSH public and private key file path (the generated pub file)
+* $ORBS_PUBLIC_NODE_ADDRESS - The Orbs node address (from the Orbs key generator - __without the leading 0x__)
+* $NODE_AWS_IP - The IP address (from AWS)
+* $NODE_AWS_REGION - The AWS region (from AWS)
+* $ETHEREUM_NODE_ADDRESS - this parameter is _optional_, used to configure an external Ethereum node. If the parameter is not included, an internal Ethereum node will be used. If you have your own synced Ethereum node, you can use it as a value for ethereumEndpoint. Alternatively, you can use "http://eth.orbs.com" , which we provide for your convenience (configure it by writing "ethereumEndpoint": "http://eth.orbs.com"). Our long term goal is to use the Ethereum node that is internal to the Orbs node. 
+* $YOUR_OFFICE_IP - This is the IP address/range that we will grant access to for ssh connections to the node, you will still need the public key to connect - it is required only in cases of troubleshooting. The format is standard CIDR so a range may be provided by changing the mask. Any IP not in the range will not be able to SSH to the node, even if it has the SSH key file.
 
-    $ nebula create -f your-node-name.json
+Other parameters (no need to change them):
 
-    ....
-    [Lots of Terraform output will come out here]
-    ....
-                
-    Your constellation was created successfully!
-    Provided below is the address of your manager node public IP
-    The manager IPv4 is: 1.2.3.4
+The `cachePath` configuration tells nebula where to store the terraform installation meta-data created during the deploy stage. It is required in cases where you wish to remove the node from AWS. You should store these files and back them up so you can run maintenance if required.
 
-    Your constellation name should be used when wanting to destroy/upgrade
-    Constellation name:
-    your-node-name
+The `awsProfile` configuration can be changed if you are using multiple aws configurations and want a specific one to be applied.
 
-    Example usage:
-    nebula destroy --name your-node-name
+### Run Nebula CLI to deploy the node
 
-    Please allow time now for your constellation to finish syncing with the Orbs network
-    No further actions required at this point
+To avoid having the orbs node private key as part of your command history, we recommend creating a file called `orbs-private-key.txt` and put the orbs node private key inside it, __without the leading 0x__.
+That key was generated by the key generator and should be in a hex string of size 64 characters, like `f5f83Ee70a85fFF2exxxxxxxxxxxxxxxxxxxxxxxxxxx334932F34C8D629165Ed`.
 
-How easy is that?! now we can also `git commit` our `your-node-name.json` and have it managed neatly!
+To provision the resources required for the node:
 
-Nebula's create command available arguments
+    nebula create -f orbs-node.json --orbs-private-key $(cat path/to/orbs-private-key.txt)
 
-| Option                | Mandatory | Type    | Description                                                                                                   | Default             |
-|-----------------------|-----------|---------|---------------------------------------------------------------------------------------------------------------|---------------------|
-| `orbs-address`        |Yes| string  | Orbs node address - attained from Orbs or from our DKG process                                                |                     |
-| `orbs-private-key`    |Yes| string  | Orbs node private key - attained from Orbs or from our DKG process                                            |                     |
-| `name`                |Yes| string  | name your constellation! in case non supplied defaults to a random name                                       | Random UUID         |
-| `aws-profile`         |Optional| string  | which aws profile name to use when provisioning. Strongly recommended instead of AWS keys for better security | `default`           |
-| `testnet`             |Optional| boolean | If supplied, the constellation will join the Orbs Network testnet instead of the mainnet                      | `false`             |
-| `public-ip`           |Mandatory| string  | if you wish to attach a static pre-existing EC2 Elastic IP                                                    |                     |
-| `node-count`          |Optional| number  | The amount of worker nodes to deploy (the more - the more vChains you can handle)                             | 2                 |
-| `node-size`           |Optional| string  | The worker node instance size to use                                                                          | `t2.medium`         |
-| `region`              |Optional| string  | The AWS region to deploy to                                                                                   | `us-east-1`         |
-| `ssh-public-key`      |Optional| string  | Path to the SSH public key to provision the EC2 machines with                                                 | `~/.ssh/id_rsa.pub` |
+Terraform files corresponding to nodes can be found in the folder defined in `cachePath` and should be backed up.
 
-## Destroying a constellation
+If needed, the command to remove all resources provisioned for the node is:
+           
+    nebula destroy -f orbs-node.json
+    
+### IMPORTANT! ###
+After deployment make sure to backup and securely store - 
+1. __Orbs keys__ (and any other credentials you used and configured, such as SSH keys)
+2. __`_terraform` folder contents__ - these are required to destroy or redeploy the node
+3. The __`orbs-node.json`__ file
 
-Destroying is even easier and requires even less arguments
+### Registering to the Orbs public network
 
-    $ nebula destroy --name your-node-name
+In order to register on the network, please follow [the Validator Registration process](https://github.com/orbs-network/orbs-ethereum-contracts/blob/master/voting/ethereum/instructions/validator_registration.md)
 
-    ....
-    [Lots of Terraform output will come out here]
-    ....
-
-    Your constellation has been successfully destroyed!
+Contact Orbs after registration is done.
 
 
-At the moment - upgrading the constellation is not possible directly through Nebula.
-If you wish to upgrade - please destroy and re-create your constellation.
-Once this feature is complete - a new version of Nebula will be released.
+### What happens after deployment
 
-This was a short introduction as to how Nebula's CLI works - from here follows the more extensive guide
-into Nebula's API (less relevant for DevOps and more likely better for automating constellation creation with Node.js - rare cases at this stage)
+Once the deployment finishes, the node goes through several stages:
+1. First it will wait for the Ethereum node to finish syncing - this can take several hours and until that is done, the node will not be operational
+2. It will then bootstrap the initial network configuration.
+3. It will retrieve the network topology from an Ethereum contract to learn who are its other peers and connect to them.
 
-# Programmatic API Documentation
+At that point if everything passes and the node is part of the topology, it will start syncing with other nodes.
 
-Orbs is a public blockchain infrastructure built for the needs of decentralized apps with millions of users. For more information, please check https://orbs.com and read the [white papers](https://orbs.com/white-papers).
-Nebula is a tool within the Orbs eco system of tooling providing turn-key solution for setting up an Orbs `constellation` aka blockchain `node` in common worldly terminology.
+### How to inspect the network health
 
-This repo contains a CLI and an API part of the Nebula tool. which can be used for developers (or DevOps) which want a bit of a lower level or automation friendly access to provisioning and running an Orbs `constellation`.
-The project is thoroughly tested with unit tests and E2E tests running Nebula's logic and mechanics against an Amazon account.
-Bear in mind that running the E2E tests require active `AWS IAM` access and secret keys
+Now, your node has joined the network and should be syncing the existing blocks.
 
-Nebula is very simple! in essence it is about the following sentence:
+To inspect your node operation on every virtual chain, Orbs has developed a special inspection route available on each node that provides access to node metrics.
+To access the metrics, navigate to `http://$NODE_IP/vchains/1100000/metrics` replacing __$NODE_IP__ with 
+your node IP.
 
-    You provide us with the keys and we'll provision and run everything for you
+You node will not be able to respond to any requests until its Ethereum node finished syncing - this can take several hours from deploy.
 
-This project is designed to be DevOps friendly and prints out all information out to the screen that the tool generates. 
-In the spririt of decentralization the code is obviously open source and we will do our best to make sure you understand what this tool
-essentially does for you.
+The JSON you see will include a property called `BlockStorage.BlockHeight`, which indicates the block height that the network is currently on.
+Try refreshing this metrics page a couple of times, you should see this value increasing.
 
-## So what is it that Nebula does?
+If this is the case it means that the network is alive and healthy. 
 
-an Orbs `constellation` is currently designed to run on top of AWS. In light of this: Nebula essentially receives as input from the user the following:
+__Congratulations!__
 
-* AWS Access/secret pair
-* Orbs key pair (Obtained through a process called DKG)
-* SSH Key (to be installed on the machines provisioned with this tool)
+## Troubleshooting
 
-With these supplied Nebula can begin provisioning the required resources on top of AWS.
-Nebula will create a new folder within your machine and will generate [Terraform](https://www.terraform.io/) scripts to go into
-these folder. These scripts are responsible for generating your completely new and shiny infrastructure that is required to run
-an Orbs `constellation` in AWS.
+1. If you get an Terraform error that your IP does not exist, check whether the combination of ip and region is correct in the node configuration file (`orbs-node.json`)
 
-Of course you can modify and customize a couple of things such as the instances type 
-(incase you want to handle more virtual chains than other constellations) but we'll get into that a bit later.
+2. If the metrics page does not respond, it could be that the Ethereum node did not finish syncing - this takes several hours.
 
-Nebula then runs the generated `Terraform` code, provisioning the entire infrastructure required. 
-Once in-place Nebula performs the following:
+3. If you are having trouble with Ethereum node, add `"ethereumEndpoint": "http://eth.orbs.com"` to your `node.json` and redeploy the node (`nebula destroy` and then `nebula create` as usual). If you have your own synced Ethereum node, you can use it as a value for `ethereumEndpoint`. We only provide `eth.orbs.com` for your convenience. Our long term goal is to use the Ethereum node that belongs to the Orbs node.
 
-* Update the server's packages and check for any OS-level security packages which might require updating.
-* Install all the required software into the servers provisioned for Orbs to run.
-* Aquire network topology for the entire Orbs Blockchain Network
-* Startup `boyar` (our internal agent responsible to manage the various `virtual chains`)
-* at this point `boyar` will start running `virtual chains` on your `constellation` and have them sync with the network (which can take time!)
-
-At this point you should be good! Nebula has setup the `constellation` for you.
-
-### Prerequisites
-
-* Make sure [Node.js](https://nodejs.org/en/download/) is installed (version 8 or later, we recommend version 10 and up).
-  
-  > Verify with `node -v`
-
-### Installing Nebula
-
-You can use `orbs-nebula-sdk` in one of two ways:
-
-* If you want to incorporate it into an existing Node project simply install it by running:
-`npm install orbs-nebula-sdk --save`
-within your project's folder
-
-* If you wish to start a new project for the sole purpose of maintaining an Orbs constellation you can start
-  a new Node project by running `npm init` within a new folder and then of course install the package
-  in similar fashion to what is shown above.
-
-### Run
-
-Running Nebula in the simplest way involves code such as the following
-
-```js
-const nebulaSdk = require('orbs-nebula-sdk');
-
-const cloud = {
-    type: nebulaSdk.clouds.aws,
-    region: 'us-east-1',
-    instanceType: 't3.medium'
-};
-
-const keys = {
-    aws: {
-        accessKey: 'YOUR_AWS_ACCESS_KEY',
-        secretKey: 'YOUR_AWS_SECRET_KEY'
-    },
-    ssh: {
-        path: '~/.ssh/id_rsa.pub',
-    },
-    orbs: {
-        nodeKeys: {
-            address: "d27e2e7398e2582f63d0800330010b3e58952ff6",
-            privateKey: "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253",
-            leader: "a328846cd5b4979d68a8c58a9bdfeee657b34de7"
-        }
-    }
-};
-
-nebulaSdk.createConstellation({ cloud, keys })
-.then((result) => {
-    console.log(result); // ->
-    // { ok: true, 
-    //   spinContext: '65b2c790-125b-11e9-b828-8781a9e90148',
-    //   manager: {
-    //     ip: '1.2.3.4'
-    //   }
-    // }
-
-    console.log('Constellation created successfully!');
-    console.log('Swarm master public IP:', result.manager.ip);
-});
-
-```
-
-### Test
-
-* Running the tests require an active AWS credentials set appropriately in the following environment variables
-
-```
- $ export AWS_ACCESS_KEY_ID='YOUR_AWS_ACCESS_KEY'
- $ export AWS_SECRET_ACCESS_KEY='YOUR_AWS_SECRET_KEY'
-```
-
-* Once that is inplace, and within the same terminal navigate you can clone this repository from GitHub by running the following
-
-```
- $ git clone https://github.com/orbs-network/nebula
-```
-
-* Install the project's dependencies
-
-```
- $ cd nebula && npm install
-```
-
-* and finally, run the tests by running
-```
-  $ npm test
-```
-
-Please note that this command will run all of the provided tests which at the moment are end to end and unit tests.
-
-### Inspecting your Orbs Constellation's Health and metrics
-
-TBD
-
-## License
-
-MIT
+4. Contact Orbs for any other issues
