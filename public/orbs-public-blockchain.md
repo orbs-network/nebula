@@ -151,7 +151,7 @@ At that point if everything passes and the node is part of the topology, it will
 Now, your node has joined the network and should be syncing the existing blocks.
 
 To inspect your node operation on every virtual chain, Orbs has developed a special inspection route available on each node that provides access to node metrics.
-To access the metrics, navigate to `http://$NODE_IP/vchains/1000000/metrics` replacing __$NODE_IP__ with 
+To access the metrics, navigate to `http://$NODE_IP/vchains/1100000/metrics` replacing __$NODE_IP__ with 
 your node IP.
 
 You node will not be able to respond to any requests until its Ethereum node finished syncing - this can take several hours from deploy.
