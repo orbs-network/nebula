@@ -13,10 +13,10 @@ const cachePathForTests = path.join(__dirname, '../../../_terraform');
 
 const c = new CoreService(new TerraformService(terraformProdAdapter, cachePathForTests), coreAdapter);
 
-const region = 'sa-east-1';
+const region = 'us-east-1';
 let preExistingElasticIp;
 
-describe.only('nebula core api', () => {
+describe('nebula core api', () => {
     before(async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         console.log('Allocating a public IP from AWS...');
