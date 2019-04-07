@@ -159,9 +159,9 @@ module.exports = {
             nodeCount: 2,
         };
 
-        return nodes.map(node => {
+        return nodes.map((node, index) => {
             const { ip: publicIp } = elasticIPs
-                .filter(({ region }) => region === node.region)[0];
+                .filter(({ region }) => region === node.region)[index];
 
             node.name = node.name.replace('{circle_ci_build_number}', buildNumber);
 
