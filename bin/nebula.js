@@ -10,7 +10,7 @@ require("yargs") // eslint-disable-line
     alias: "v",
     default: false
   })
-  .command("update", "Updates a running constellation\"s topology and vChains version", updateOptions, update)
+  .command("update", "Updates a running constellation's topology and vChains version", updateOptions, update)
   .command("network-status", "Shows status of the whole network", networkStatusOptions, status)
   .command("bootstrap-config", "Generates bootstrap config", generateConfigOptions, bootstrapConfig)
   .demandCommand()

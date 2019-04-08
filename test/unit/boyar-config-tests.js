@@ -12,7 +12,7 @@ const {
 
 const {
     createBoyarConfig
-} = require("../../lib/cli/cli");
+} = require("../../lib/cli/boyar/create-config");
 
 describe("boyar config generation", () => {
     it("generates network configuration", () => {

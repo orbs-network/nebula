@@ -13,7 +13,7 @@ const {
 
 const {
     getNodes
-} = require("../../lib/cli/cli");
+} = require("../../lib/cli/boyar/create-config");
 
 describe("cli", () => {
     describe("#getNodes", () => {

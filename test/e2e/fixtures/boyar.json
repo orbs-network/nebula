@@ -1,17 +1,15 @@
 {
     "network": [],
-    "orchestrator": {
-        "storage-driver": "rexray/ebs"
-    },
+    "orchestrator": {},
     "chains": [
         {
-            "Id": 42,
+            "Id": 10000,
             "HttpPort": 8080,
             "GossipPort": 4400,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
-                "Tag": "master",
+                "Image": "orbsnetwork/node",
+                "Tag": "v0.8.0",
                 "Pull": true
             },
             "Config": {
@@ -21,13 +19,13 @@
             }
         },
         {
-            "Id": 1969,
+            "Id": 20000,
             "HttpPort": 8081,
             "GossipPort": 4401,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
-                "Tag": "master",
+                "Image": "orbsnetwork/node",
+                "Tag": "v0.8.0",
                 "Pull": true
             },
             "Config": {
@@ -37,18 +35,17 @@
             }
         },
         {
-            "Id": 2013,
+            "Id": 30000,
             "HttpPort": 8082,
             "GossipPort": 4402,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
-                "Tag": "master",
+                "Image": "orbsnetwork/node",
+                "Tag": "v0.8.0",
                 "Pull": true
             },
             "Config": {
                 "ethereum-endpoint": "http://172.31.1.100:8545",
-                "active-consensus-algo": 2,
                 "logger-file-truncation-interval": "15m",
                 "profiling": true
             }
