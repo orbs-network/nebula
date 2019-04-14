@@ -3,15 +3,13 @@ const { expect } = require('chai');
 const _ = require('lodash');
 
 const types = require('./../../constants/types');
-const { CoreService } = require('./../../lib/services/core/core');
-const { TerraformService } = require('./../../lib/services/terraform/terraform');
-const terraformProdAdapter = require('./../../lib/adapters/terraform/adapter');
-const { coreAdapter } = require('../../lib/adapters/core/adapter');
+const { Nebula } = require('./../../lib/services/nebula');
+
 const harness = require('./harness');
 const path = require('path');
-const cachePathForTests = path.join(__dirname, '../../../_terraform');
 
-const c = new CoreService(new TerraformService(terraformProdAdapter, cachePathForTests), coreAdapter);
+const nebula = new Nebula();
+nebula.setTerraformCachePath(path.join(__dirname, '../../_terraform'));
 
 const region = 'us-east-1';
 let preExistingElasticIp;
@@ -59,7 +57,7 @@ describe('nebula core api', () => {
             ip: preExistingElasticIp,
         };
 
-        const result = await c.createConstellation({
+        const result = await nebula.createConstellation({
             cloud,
             keys
         });
@@ -68,9 +66,10 @@ describe('nebula core api', () => {
         const pollingResult = await harness.eventuallyReady(preExistingElasticIp);
         expect(pollingResult).to.equal(true);
 
-        const destroyResult = await c.destroyConstellation({
-            spinContext: result.spinContext
+        const destroyResult = await nebula.destroyConstellation({
+            name: result.name
         });
+
         expect(destroyResult.error).to.equal(null);
         expect(destroyResult.ok).to.equal(true);
     });

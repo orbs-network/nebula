@@ -10,11 +10,10 @@ const unlink = util.promisify(fs.unlink);
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
 
-const { TerraformService } = require('./../../lib/services/terraform/terraform');
 const fixtures = require('./fixtures/nodes.json');
 const boyar = require('./fixtures/boyar.json');
 
-const tf = new TerraformService({});
+const { parseOutputs } = require('./../../lib/services/terraform');
 
 async function exec(cmd, opts) {
     console.log('[exec-call] $ ', cmd, opts);
@@ -223,7 +222,7 @@ module.exports = {
         });
 
         const outputsCharPosition = eipResult.stdout.indexOf('Outputs:');
-        const outputs = tf.parseOutputs(eipResult.stdout.substr(outputsCharPosition));
+        const outputs = parseOutputs(eipResult.stdout.substr(outputsCharPosition));
 
         const foobarIp = outputs.find(o => o.key === 'foobar.ip');
         const ebsVolume = outputs.find(o => o.key === 'ethereum.id');

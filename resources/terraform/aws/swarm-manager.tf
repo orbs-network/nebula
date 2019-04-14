@@ -49,9 +49,9 @@ apt-get install -y python-pip && pip install awscli
 docker swarm init
 
 mkdir -p /opt/orbs
-aws secretsmanager get-secret-value --region ${var.region} --secret-id orbs-network-node-keys-${var.context_id} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
+aws secretsmanager get-secret-value --region ${var.region} --secret-id orbs-network-node-keys-${var.name} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
 
-aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var.run_identifier}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-${var.run_identifier}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
+aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
 
 $(aws ecr get-login --no-include-email --region us-west-2)
 
@@ -60,7 +60,7 @@ crontab /tmp/crontab
 
 # Wait for everyone to join the swarm
 while true; do
-    [ $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | wc -l) -ge ${var.aws_orbs_worker_instance_count} ] && break
+    [ $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | wc -l) -ge ${var.instance_count} ] && break
     sleep 15
 done
 
@@ -86,7 +86,7 @@ TFEOF
 
 resource "aws_instance" "manager" {
   ami                  = "${data.aws_ami.ubuntu-18_04.id}"
-  instance_type        = "${var.aws_orbs_manager_instance_type}"
+  instance_type        = "${var.instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
   subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
@@ -95,7 +95,7 @@ resource "aws_instance" "manager" {
   user_data = "${local.manager_user_data}"
 
   tags = {
-    Name = "constellation-${var.run_identifier}-swarm-manager"
+    Name = "constellation-${var.name}-swarm-manager"
   }
 }
 
@@ -104,7 +104,7 @@ resource "aws_ebs_volume" "manager_storage" {
   availability_zone = "${aws_instance.manager.availability_zone}"
 
   tags {
-    Name = "docker-storage-${var.run_identifier}-manager"
+    Name = "docker-storage-${var.name}-manager"
   }
 }
 

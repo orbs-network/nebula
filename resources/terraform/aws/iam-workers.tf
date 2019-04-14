@@ -1,6 +1,6 @@
 # IAM Role resources for swarm workers
 resource "aws_iam_role" "swarm_worker" {
-  name               = "orbs-constellation-${var.run_identifier}-worker"
+  name               = "orbs-constellation-${var.name}-worker"
   assume_role_policy = "${data.aws_iam_policy_document.swarm_role.json}"
 }
 
@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "swarm_role" {
 }
 
 resource "aws_iam_policy" "swarm_worker" {
-  name   = "orbs-constellation-${var.run_identifier}-worker-policy"
+  name   = "orbs-constellation-${var.name}-worker-policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.swarm_worker.json}"
 }
@@ -59,12 +59,12 @@ data "aws_iam_policy_document" "swarm_worker" {
 }
 
 resource "aws_iam_policy_attachment" "swarm_worker" {
-  name       = "swarm-worker-${var.run_identifier}-iam-policy-attachment"
+  name       = "swarm-worker-${var.name}-iam-policy-attachment"
   roles      = ["${aws_iam_role.swarm_worker.name}"]
   policy_arn = "${aws_iam_policy.swarm_worker.arn}"
 }
 
 resource "aws_iam_instance_profile" "swarm_worker" {
-  name = "swarm-worker-${var.run_identifier}-profile"
+  name = "swarm-worker-${var.name}-profile"
   role = "${aws_iam_role.swarm_worker.name}"
 }

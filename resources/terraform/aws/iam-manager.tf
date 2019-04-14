@@ -1,7 +1,7 @@
 # IAM Role Swarm manager related resources
 
 resource "aws_iam_role" "swarm_manager" {
-  name               = "orbs-constellation-${var.run_identifier}-manager"
+  name               = "orbs-constellation-${var.name}-manager"
   assume_role_policy = "${data.aws_iam_policy_document.swarm_manager_role.json}"
 }
 
@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "swarm_manager_role" {
 }
 
 resource "aws_iam_policy" "swarm_manager" {
-  name   = "orbs-constellation-${var.run_identifier}-manager-policy"
+  name   = "orbs-constellation-${var.name}-manager-policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.swarm_manager.json}"
 }
@@ -60,12 +60,12 @@ data "aws_iam_policy_document" "swarm_manager" {
 }
 
 resource "aws_iam_policy_attachment" "swarm_manager" {
-  name       = "swarm-manager-${var.run_identifier}-iam-policy-attachment"
+  name       = "swarm-manager-${var.name}-iam-policy-attachment"
   roles      = ["${aws_iam_role.swarm_manager.name}"]
   policy_arn = "${aws_iam_policy.swarm_manager.arn}"
 }
 
 resource "aws_iam_instance_profile" "swarm_manager" {
-  name  = "swarm-manager-${var.run_identifier}-profile"
+  name  = "swarm-manager-${var.name}-profile"
   role = "${aws_iam_role.swarm_manager.name}"
 }

@@ -1,5 +1,5 @@
 locals {
-  secret_name = "orbs-network-node-keys-${var.context_id}"
+  secret_name = "orbs-network-node-keys-${var.name}"
 }
 
 resource "aws_secretsmanager_secret" "node_key_pair" {
