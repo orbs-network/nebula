@@ -5,8 +5,8 @@ chai.use(asserttype);
 
 const { expect } = chai;
 
-const { TerraformService } = require('./../../lib/services/terraform/terraform');
-const tf = new TerraformService({});
+const { Terraform } = require('./../../lib/services/terraform');
+const tf = new Terraform();
 
 describe('terraform service unit tests', () => {
     it('should parse terraform outputs correctly', () => {
