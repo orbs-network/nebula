@@ -44,7 +44,7 @@ describe('terraform service unit tests', () => {
                     "profile": "default"
                 },
                 "ssh": {
-                    "path": "/Users/kirill/.ssh/id_rsa.pub",
+                    "path": `${process.env.HOME}/.ssh/id_rsa.pub`,
                     "cidr": [
                     "0.0.0.0/0"
                     ]

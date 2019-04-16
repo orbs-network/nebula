@@ -48,7 +48,7 @@ describe('_create', () => {
         });
 
         expect(keys.ssh).to.deep.equal({
-            "path": "/Users/kirill/.ssh/id_rsa.pub",
+            "path": `${process.env.HOME}/.ssh/id_rsa.pub`,
             "cidr": ["0.0.0.0/0"],
         });
 
