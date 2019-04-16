@@ -25,6 +25,7 @@ describe('_create', () => {
             "ethereumTopologyContractAddress": "0xa8Ef7740D85B1c0c22E39aae896e829Af7c895A5",
             "ethereumEndpoint": "http://eth.orbs.com",
             "incomingSshCidrBlocks": ["0.0.0.0/0"],
+            "cachePath": "../terraform",
 
             // pretend we're in file mode
             "fileMode": true,
@@ -39,6 +40,7 @@ describe('_create', () => {
             "name": "mumbai-node4",
             "ip": "52.66.33.249",
             "bootstrapUrl": undefined,
+            "cachePath": process.cwd() + "/test/terraform",
           });
 
         expect(keys.aws).to.deep.equal({
