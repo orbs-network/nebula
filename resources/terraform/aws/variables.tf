@@ -47,10 +47,6 @@ variable "s3_boyar_config_url" {}
 
 variable "path_to_ssh_pubkey" {}
 
-variable "ethereum_chain" {
-  default = "mainnet"
-}
-
 variable "ethereum_topology_contract_address" {
   default = ""
 }
