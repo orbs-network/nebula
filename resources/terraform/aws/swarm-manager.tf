@@ -49,7 +49,17 @@ apt-get install -y python-pip && pip install awscli
 docker swarm init
 
 mkdir -p /opt/orbs
-aws secretsmanager get-secret-value --region ${var.region} --secret-id orbs-network-node-keys-${var.name} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
+aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.secret_name} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
+
+# Retrive SSL keys if possible
+
+mkdir -p /opt/orbs/ssl
+
+aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.ssl_cert_secret_name} --output text --query SecretBinary | base64 -d > /opt/orbs/ssl/ssl-cert.pem
+
+aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.ssl_private_key_secret_name} --output text --query SecretBinary | base64 -d > /opt/orbs/ssl/ssl-private-key.pem
+
+# Save docker swarm token to secretsmanager
 
 aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
 

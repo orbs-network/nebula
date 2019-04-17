@@ -56,10 +56,18 @@ variable "ethereum_endpoint" {
 }
 
 variable "boyar_version" {
-  default = "ae4a501b84bd4c6971233f64dff1727384b83676"
+  default = "v0.10.0"
 }
 
 variable "incoming_ssh_cidr_blocks" {
   default = []
   type = "list"
+}
+
+variable "ssl_certificate" {
+  default = "Cg=="
+}
+
+variable "ssl_private_key" {
+  default = "Cg=="
 }
