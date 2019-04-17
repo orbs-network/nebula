@@ -45,7 +45,7 @@ docker plugin install --grant-all-permissions rexray/ebs
 apt-get install -y python-pip && pip install awscli
 
 while true; do
-    docker swarm join --token $(aws secretsmanager get-secret-value --region ${var.region} --secret-id swarm-token-${var.run_identifier}-worker-${var.region} --output text --query SecretString) ${aws_instance.manager.private_ip} && break
+    docker swarm join --token $(aws secretsmanager get-secret-value --region ${var.region} --secret-id swarm-token-${var.name}-worker-${var.region} --output text --query SecretString) ${aws_instance.manager.private_ip} && break
     sleep 5
 done
 
@@ -53,9 +53,9 @@ TFEOF
 }
 
 resource "aws_instance" "worker" {
-  count                = "${var.aws_orbs_worker_instance_count}"
+  count                = "${var.instance_count}"
   ami                  = "${data.aws_ami.ubuntu-18_04.id}"
-  instance_type        = "${var.aws_orbs_worker_instance_type}"
+  instance_type        = "${var.instance_type}"
   security_groups      = ["${aws_security_group.swarm.id}"]
   key_name             = "${aws_key_pair.deployer.key_name}"
   iam_instance_profile = "${ aws_iam_instance_profile.swarm_worker.name }"
@@ -64,12 +64,12 @@ resource "aws_instance" "worker" {
   user_data = "${local.worker_user_data}"
 
   tags = {
-    Name = "constellation-${var.run_identifier}-swarm-worker-${count.index}"
+    Name = "constellation-${var.name}-swarm-worker-${count.index}"
   }
 }
 
 resource "aws_ebs_volume" "worker_storage" {
-  count             = "${var.aws_orbs_worker_instance_count}"
+  count             = "${var.instance_count}"
   size              = 50
   availability_zone = "${element(aws_instance.worker.*.availability_zone, count.index)}"
 
@@ -79,7 +79,7 @@ resource "aws_ebs_volume" "worker_storage" {
 }
 
 resource "aws_volume_attachment" "worker_storage_attachment" {
-  count        = "${var.aws_orbs_worker_instance_count}"
+  count        = "${var.instance_count}"
   device_name  = "/dev/sdh"
   force_detach = true
   volume_id    = "${element(aws_ebs_volume.worker_storage.*.id, count.index)}"

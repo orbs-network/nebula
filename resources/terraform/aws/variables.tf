@@ -13,42 +13,23 @@ variable "vpc_cidr_block" {
   default = "172.31.0.0/16"
 }
 
-variable "aws_ether_instance_type" {
-  default = "t2.large"
+variable "instance_type" {
+  default = "m4.xlarge"
 }
 
-variable "aws_ether_az" {
-  default = "us-east-1a"
-}
-
-variable "run_identifier" {
+variable "name" {
   default = ""
 }
 
-variable "aws_ami_id" {
-  default = "SOME_AMAZON_AMI_ID"
-}
-
-variable "aws_orbs_manager_instance_type" {
-  default = "t2.micro"
-}
-
-variable "aws_orbs_worker_instance_type" {
-  default = "t2.micro"
-}
-
-variable "aws_orbs_worker_instance_count" {
+variable "instance_count" {
   default = 2
 }
-
 
 variable "region" {
   default = "us-east-1"
 }
 
 variable "aws_profile" {}
-
-variable "context_id" {}
 
 variable "node_key_pair" {
   default = "e30K"
@@ -66,22 +47,13 @@ variable "s3_boyar_config_url" {}
 
 variable "path_to_ssh_pubkey" {}
 
-variable "ethereum_count" {
-  default = 1
-}
-
-variable "ethereum_chain" {
-  default = "mainnet"
-}
-
 variable "ethereum_topology_contract_address" {
   default = ""
 }
 
 variable "ethereum_endpoint" {
-  default = "http://172.31.100.100:8545"
+  default = ""
 }
-
 
 variable "boyar_version" {
   default = "ae4a501b84bd4c6971233f64dff1727384b83676"
