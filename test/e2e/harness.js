@@ -155,7 +155,7 @@ module.exports = {
             incomingSshCidrBlocks: ["0.0.0.0/0"],
             awsProfile: 'default',
             nodeSize: 't2.medium',
-            nodeCount: 2,
+            nodeCount: 0,
         };
 
         return nodes.map((node, index) => {

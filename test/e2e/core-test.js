@@ -52,7 +52,7 @@ describe('nebula core api', () => {
             type: types.clouds.aws,
             region,
             instanceType: 't2.medium',
-            nodeCount: 2,
+            nodeCount: 1,
             bucketPrefix,
             ip: preExistingElasticIp,
         };
