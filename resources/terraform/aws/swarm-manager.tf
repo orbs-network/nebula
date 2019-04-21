@@ -49,7 +49,20 @@ apt-get install -y python-pip && pip install awscli
 docker swarm init
 
 mkdir -p /opt/orbs
-aws secretsmanager get-secret-value --region ${var.region} --secret-id orbs-network-node-keys-${var.name} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
+aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.secret_name} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
+
+# Retrive SSL keys if possible
+
+mkdir -p /opt/orbs/ssl
+
+export SSL_CERT_PATH=/opt/orbs/ssl/ssl-cert.pem
+export SSL_PRIVATE_KEY_PATH=/opt/orbs/ssl/ssl-private-key.pem
+
+aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.ssl_cert_secret_name} --output text --query SecretBinary | base64 -d > $SSL_CERT_PATH
+
+aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.ssl_private_key_secret_name} --output text --query SecretBinary | base64 -d > $SSL_PRIVATE_KEY_PATH
+
+# Save docker swarm token to secretsmanager
 
 aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
 
@@ -79,7 +92,13 @@ if [ ! -z "${var.ethereum_topology_contract_address}" ]; then
   export ETHEREUM_PARAMS="--ethereum-endpoint ${var.ethereum_endpoint} --topology-contract-address ${var.ethereum_topology_contract_address}"
 fi
 
-HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS > /var/log/boyar.log &
+# Provision SSL if possible
+if [ ! -z "$(cat $SSL_CERT_PATH)" ] && [ ! -z "$(cat $SSL_PRIVATE_KEY_PATH)" ]; then
+  export SSL_PARAMS="--ssl-certificate $SSL_CERT_PATH --ssl-private-key $SSL_PRIVATE_KEY_PATH"
+fi
+
+# Boostrap everything with Boyar
+HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS > /var/log/boyar.log &
 
 TFEOF
 }
