@@ -13,8 +13,6 @@ const uuid = require('uuid');
 const fixtures = require('./fixtures/nodes.json');
 const boyar = require('./fixtures/boyar.json');
 
-const { parseOutputs } = require('./../../lib/services/terraform');
-
 async function exec(cmd, opts) {
     console.log('[exec-call] $ ', cmd, opts);
     let result;
@@ -206,59 +204,6 @@ module.exports = {
 
         return false;
     },
-    async createStandAloneIPAndVolume({ accessKey, secretKey, region, ethereumAZ }) {
-        // Write the variables file into place
-        const variableData = `
-        region     = "${region}"
-        ethAZ      = "${ethereumAZ}"
-        `;
-
-        await writeFile(path.join(targetDir, 'terraform.tfvars'), variableData);
-
-        await exec(`terraform init`, { cwd: targetDir });
-
-        const eipResult = await exec(`terraform apply -var-file=terraform.tfvars -auto-approve`, {
-            cwd: targetDir,
-        });
-
-        const outputsCharPosition = eipResult.stdout.indexOf('Outputs:');
-        const outputs = parseOutputs(eipResult.stdout.substr(outputsCharPosition));
-
-        const foobarIp = outputs.find(o => o.key === 'foobar.ip');
-        const ebsVolume = outputs.find(o => o.key === 'ethereum.id');
-        const preExistingElasticIp = foobarIp.value;
-        const ethereumEbsVolumeId = ebsVolume.value;
-
-        return {
-            preExistingElasticIp,
-            ethereumEbsVolumeId
-        };
-    },
-    async checkPlanForStandAloneIPAndVolume() {
-        const eipPlanResult = await exec(`terraform plan -var-file=terraform.tfvars`, {
-            cwd: targetDir,
-        });
-
-        return eipPlanResult.stdout;
-    },
-    async createEBSFingerprint({ spinContext, outputs }) {
-        const ip = outputs.find(o => o.key === 'ethereum.public_ip').value;
-        const command = `echo "${spinContext}" > /ethereum-persistency/.fingerprint`;
-        const addFingerprintResult = await this.remoteExec({ command, ip });
-
-        if (addFingerprintResult.exitCode !== 0) {
-            return {
-                ok: false,
-                error: addFingerprintResult.stderr,
-            };
-        }
-
-        return {
-            ok: true,
-            error: null,
-            result: addFingerprintResult,
-        };
-    },
     async checkEBSFingerprint({ outputs }) {
         const ip = outputs.find(o => o.key === 'ethereum.public_ip').value;
         const command = `cat /ethereum-persistency/.fingerprint`;
@@ -277,11 +222,5 @@ module.exports = {
             error: null,
             fingerprint: trim(checkFingerprintResult.stdout),
         };
-    },
-    async destroyStandAloneInfra() {
-        console.log('cleaning up the stand alone infra..');
-        await exec(`terraform destroy -var-file=terraform.tfvars -auto-approve`, {
-            cwd: targetDir,
-        });
-    },
+    }
 };
