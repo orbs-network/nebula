@@ -1,40 +1,25 @@
 # IAM Role Swarm manager related resources
 
-resource "aws_iam_role" "swarm_manager" {
-  name               = "orbs-constellation-${var.name}-manager"
-  assume_role_policy = "${data.aws_iam_policy_document.swarm_manager_role.json}"
-}
-
-data "aws_iam_policy_document" "swarm_manager_role" {
+data "aws_iam_policy_document" "swarm_manager_ecr" {
   statement {
-    actions = ["sts:AssumeRole"]
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage"
+    ]
 
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
+    resources = ["*"]
   }
 }
 
-resource "aws_iam_policy" "swarm_manager" {
-  name   = "orbs-constellation-${var.name}-manager-policy"
-  path   = "/"
-  policy = "${data.aws_iam_policy_document.swarm_manager.json}"
-}
-
-data "aws_iam_policy_document" "swarm_manager" {
+data "aws_iam_policy_document" "swarm_manager_ebs" {
   statement {
     actions = [
-      "secretsmanager:*",
-      "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
-      "secretsmanager:*",
-      "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
       "ec2:AttachVolume",
       "ec2:CreateVolume",
       "ec2:CreateSnapshot",
@@ -59,13 +44,69 @@ data "aws_iam_policy_document" "swarm_manager" {
   }
 }
 
-resource "aws_iam_policy_attachment" "swarm_manager" {
-  name       = "swarm-manager-${var.name}-iam-policy-attachment"
-  roles      = ["${aws_iam_role.swarm_manager.name}"]
-  policy_arn = "${aws_iam_policy.swarm_manager.arn}"
+data "aws_iam_policy_document" "swarm_manager_secrets" {
+  statement {
+    actions = [
+      "secretsmanager:*"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role" "swarm_manager" {
+  name               = "orbs-constellation-${var.name}-manager"
+  assume_role_policy = "${data.aws_iam_policy_document.swarm_manager_role.json}"
+}
+
+data "aws_iam_policy_document" "swarm_manager_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
 }
 
 resource "aws_iam_instance_profile" "swarm_manager" {
   name  = "swarm-manager-${var.name}-profile"
   role = "${aws_iam_role.swarm_manager.name}"
+}
+
+resource "aws_iam_policy" "swarm_manager_secrets" {
+  name   = "orbs-constellation-${var.name}-secrets-manager-policy"
+  path   = "/"
+  policy = "${data.aws_iam_policy_document.swarm_manager_secrets.json}"
+}
+
+resource "aws_iam_policy" "swarm_manager_ecr" {
+  name   = "orbs-constellation-${var.name}-ecr-manager-policy"
+  path   = "/"
+  policy = "${data.aws_iam_policy_document.swarm_manager_ecr.json}"
+}
+
+resource "aws_iam_policy" "swarm_manager_ebs" {
+  name   = "orbs-constellation-${var.name}-ebs-manager-policy"
+  path   = "/"
+  policy = "${data.aws_iam_policy_document.swarm_manager_ebs.json}"
+}
+
+resource "aws_iam_policy_attachment" "swarm_manager_ecr" {
+  name       = "swarm-manager-${var.name}-ecr-iam-policy-attachment"
+  roles      = ["${aws_iam_role.swarm_manager.name}"]
+  policy_arn = "${aws_iam_policy.swarm_manager_ecr.arn}"
+}
+
+resource "aws_iam_policy_attachment" "swarm_manager_ebs" {
+  name       = "swarm-manager-${var.name}-ebs-iam-policy-attachment"
+  roles      = ["${aws_iam_role.swarm_manager.name}"]
+  policy_arn = "${aws_iam_policy.swarm_manager_ebs.arn}"
+}
+
+resource "aws_iam_policy_attachment" "swarm_manager_secrets" {
+  name       = "swarm-manager-${var.name}-secrets-iam-policy-attachment"
+  roles      = ["${aws_iam_role.swarm_manager.name}"]
+  policy_arn = "${aws_iam_policy.swarm_manager_secrets.arn}"
 }
