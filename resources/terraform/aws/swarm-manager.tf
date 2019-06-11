@@ -66,6 +66,12 @@ aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.s
 
 aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
 
+# Remove access to secrets
+
+aws iam detach-role-policy --role-name orbs-constellation-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_manager_secrets.arn}
+
+# Log into docker hub
+
 $(aws ecr get-login --no-include-email --region us-west-2)
 
 echo '0 * * * * $(/usr/local/bin/aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
