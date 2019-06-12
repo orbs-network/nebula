@@ -53,6 +53,8 @@ done
 
 aws iam detach-role-policy --role-name orbs-constellation-${var.name}-worker --policy-arn ${aws_iam_policy.swarm_worker_secrets.arn}
 
+aws iam detach-role-policy --role-name orbs-constellation-${var.name}-worker --policy-arn ${aws_iam_policy.swarm_detach_role_policy.arn}
+
 TFEOF
 }
 

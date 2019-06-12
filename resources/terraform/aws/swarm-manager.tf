@@ -70,6 +70,8 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var
 
 aws iam detach-role-policy --role-name orbs-constellation-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_manager_secrets.arn}
 
+aws iam detach-role-policy --role-name orbs-constellation-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_detach_role_policy.arn}
+
 # Log into docker hub
 
 $(aws ecr get-login --no-include-email --region us-west-2)
