@@ -1,7 +1,7 @@
 // Settings
 variable "azs" {
   description = "List of availability zones"
-  type = "list"
+  type        = "list"
 }
 
 variable "cidr" {
@@ -22,7 +22,14 @@ variable "provisionersrc" {
 }
 
 // Outputs
-output "gateway-id" { value = "${ aws_internet_gateway.main.id }" }
-output "id" { value = "${ aws_vpc.main.id }" }
-output "subnet-ids-public" { value = ["${ aws_subnet.public.*.id }"] }
-output "route-table-id-main" { value = "${ aws_vpc.main.main_route_table_id }" }
+output "gateway-id" { value = "${aws_internet_gateway.main.id}" }
+output "id" { value = "${aws_vpc.main.id}" }
+output "subnet-ids-public" {
+  value = ["${aws_subnet.public.*.id}"]
+}
+
+output "first_subnet" {
+  value = "${aws_subnet.public[0]}"
+}
+
+output "route-table-id-main" { value = "${aws_vpc.main.main_route_table_id}" }

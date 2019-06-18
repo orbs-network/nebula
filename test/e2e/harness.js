@@ -156,10 +156,21 @@ module.exports = {
             nodeCount: 0,
         };
 
-        return nodes.map((node, index) => {
-            const { ip: publicIp } = elasticIPs
-                .filter(({ region }) => region === node.region)[index];
+        const regionIndexes = {};
 
+        return nodes.map((node) => {
+            let currentRegionIndex = 0;
+            if (node.region in regionIndexes) {
+                currentRegionIndex = regionIndexes[node.region];
+                currentRegionIndex++;
+                regionIndexes[node.region] = currentRegionIndex;
+            } else {
+                regionIndexes[node.region] = currentRegionIndex;
+            }
+
+            const { ip: publicIp } = elasticIPs
+                .filter(({ region }) => region === node.region)[currentRegionIndex];
+            
             node.name = node.name.replace('{circle_ci_build_number}', buildNumber);
 
             return Object.assign({}, node, commonProps, {

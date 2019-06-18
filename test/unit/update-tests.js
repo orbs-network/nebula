@@ -22,6 +22,6 @@ describe('_create', () => {
 
         expect(tempFileName).to.include("/tmp/boyar-mumbai-node4.config.json");
         expect(boyarConfig).not.to.be.empty;
-        expect(command.match(`aws s3 cp --region ap-south-1 --acl public-read --profile default /tmp/boyar-mumbai-node4.config.json-\\d* s3://boyar-mumbai-node4/boyar/config.json`)).lengthOf(1);
+        expect(command.match(`aws s3 cp --region ap-south-1 --acl public-read  /tmp/boyar-mumbai-node4.config.json-\\d* s3://boyar-mumbai-node4/boyar/config.json`)).lengthOf(1);
     });
 });

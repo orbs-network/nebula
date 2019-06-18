@@ -1,8 +1,8 @@
-output "manager.ip" {
+output "manager_ip" {
   value = "${aws_instance.manager.public_ip}"
 }
 
-output "manager.dns" {
+output "manager_dns" {
   value = "${aws_instance.manager.public_dns}"
 }
 
