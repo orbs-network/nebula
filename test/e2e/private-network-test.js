@@ -87,6 +87,7 @@ describe('nebula setup a private network', () => {
         const lastEndpoint = `${lastNode.publicIp}/vchains/10000`;
 
         console.log('********** NEBULA UPDATE FIRST 3 NODES TOPOLOGY BEGIN ***********');
+        
         const updateResults = await Promise.all(nodes.map((node) => update(node).catch(err => err)));
         const successfulUpdates = updateResults.filter(r => r.ok === true);
 

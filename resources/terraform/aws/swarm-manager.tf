@@ -112,12 +112,12 @@ TFEOF
 }
 
 resource "aws_instance" "manager" {
-  ami                  = "${data.aws_ami.ubuntu-18_04.id}"
-  instance_type        = "${var.instance_type}"
-  security_groups      = ["${aws_security_group.swarm.id}"]
-  key_name             = "${aws_key_pair.deployer.key_name}"
-  subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
-  iam_instance_profile = "${ aws_iam_instance_profile.swarm_manager.name }"
+  ami = "${data.aws_ami.ubuntu-18_04.id}"
+  instance_type = "${var.instance_type}"
+  security_groups = ["${aws_security_group.swarm.id}"]
+  key_name = "${aws_key_pair.deployer.key_name}"
+  subnet_id = "${module.vpc.first_subnet.id}"
+  iam_instance_profile = "${aws_iam_instance_profile.swarm_manager.name}"
 
   user_data = "${local.manager_user_data}"
 
@@ -127,17 +127,17 @@ resource "aws_instance" "manager" {
 }
 
 resource "aws_ebs_volume" "manager_storage" {
-  size              = 30
+  size = 30
   availability_zone = "${aws_instance.manager.availability_zone}"
 
-  tags {
+  tags = {
     Name = "docker-storage-${var.name}-manager"
   }
 }
 
 resource "aws_volume_attachment" "manager_storage_attachment" {
-  device_name  = "/dev/sdh"
+  device_name = "/dev/sdh"
   force_detach = true
-  volume_id    = "${aws_ebs_volume.manager_storage.id}"
-  instance_id  = "${aws_instance.manager.id}"
+  volume_id = "${aws_ebs_volume.manager_storage.id}"
+  instance_id = "${aws_instance.manager.id}"
 }

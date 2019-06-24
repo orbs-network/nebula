@@ -59,13 +59,13 @@ TFEOF
 }
 
 resource "aws_instance" "worker" {
-  count                = "${var.instance_count}"
-  ami                  = "${data.aws_ami.ubuntu-18_04.id}"
-  instance_type        = "${var.instance_type}"
-  security_groups      = ["${aws_security_group.swarm.id}"]
-  key_name             = "${aws_key_pair.deployer.key_name}"
-  iam_instance_profile = "${ aws_iam_instance_profile.swarm_worker.name }"
-  subnet_id            = "${ module.vpc.subnet-ids-public[0] }"
+  count = "${var.instance_count}"
+  ami = "${data.aws_ami.ubuntu-18_04.id}"
+  instance_type = "${var.instance_type}"
+  security_groups = ["${aws_security_group.swarm.id}"]
+  key_name = "${aws_key_pair.deployer.key_name}"
+  iam_instance_profile = "${aws_iam_instance_profile.swarm_worker.name}"
+  subnet_id = "${module.vpc.first_subnet.id}"
 
   user_data = "${local.worker_user_data}"
 
@@ -75,19 +75,19 @@ resource "aws_instance" "worker" {
 }
 
 resource "aws_ebs_volume" "worker_storage" {
-  count             = "${var.instance_count}"
-  size              = 50
+  count = "${var.instance_count}"
+  size = 50
   availability_zone = "${element(aws_instance.worker.*.availability_zone, count.index)}"
 
-  tags {
+  tags = {
     Name = "constellation-docker-storage"
   }
 }
 
 resource "aws_volume_attachment" "worker_storage_attachment" {
-  count        = "${var.instance_count}"
-  device_name  = "/dev/sdh"
+  count = "${var.instance_count}"
+  device_name = "/dev/sdh"
   force_detach = true
-  volume_id    = "${element(aws_ebs_volume.worker_storage.*.id, count.index)}"
-  instance_id  = "${element(aws_instance.worker.*.id, count.index)}"
+  volume_id = "${element(aws_ebs_volume.worker_storage.*.id, count.index)}"
+  instance_id = "${element(aws_instance.worker.*.id, count.index)}"
 }

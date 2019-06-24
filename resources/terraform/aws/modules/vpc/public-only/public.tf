@@ -1,7 +1,7 @@
 resource "aws_internet_gateway" "main" {
   vpc_id = "${ aws_vpc.main.id }"
 
-  tags {
+  tags = {
     Provisioner = "terraform"
     ProvisionerSrc = "${ var.provisionersrc }"
     Name = "${ var.name }"
@@ -10,7 +10,7 @@ resource "aws_internet_gateway" "main" {
 }
 
 resource "aws_subnet" "public" {
-  count = "${ length( var.azs ) }"
+  count = 4
 
   availability_zone = "${ element( var.azs, count.index ) }"
   cidr_block = "${ cidrsubnet(var.cidr, 4, count.index) }"
@@ -18,7 +18,7 @@ resource "aws_subnet" "public" {
 
   map_public_ip_on_launch = "true"
 
-  tags {
+  tags = {
     Provisioner = "terraform"
     ProvisionerSrc = "${ var.provisionersrc }"
     Name = "${ var.name }"
