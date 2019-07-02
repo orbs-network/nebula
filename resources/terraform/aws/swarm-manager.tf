@@ -85,6 +85,10 @@ while true; do
     sleep 15
 done
 
+# Remove access to worker secrets
+
+aws iam detach-role-policy --role-name orbs-constellation-${var.name}-worker --policy-arn ${aws_iam_policy.swarm_worker_secrets.arn}
+
 # Label workers
 for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | cut -d" " -f1); do
     docker node update --label-add worker=true $n
