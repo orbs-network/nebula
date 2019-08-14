@@ -29,11 +29,11 @@ For Nebula to work properly you should have the following setup:
 
 Nebula easily integrates into your terminal by installing the NPM package globally
 
-    $ npm install orbs-nebula -g
+    $ npm install @orbs-network/orbs-nebula -g
 
 or if using yarn
 
-    $ yarn global add orbs-nebula
+    $ yarn global add @orbs-network/orbs-nebula
 
 That is all that is required to install Nebula into your system!
 

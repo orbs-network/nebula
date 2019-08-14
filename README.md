@@ -65,9 +65,9 @@ The output of the key generator should be securely stored and used in the `orbs-
 
 To install Nebula run
 
-    npm install -g orbs-nebula
+    npm install -g @orbs-network/orbs-nebula
 
-If you have previously installed Nebula and you are performing a new deploy, we recommend updating it by running `npm update -g orbs-nebula`
+If you have previously installed Nebula and you are performing a new deploy, we recommend updating it by running `npm update -g @orbs-network/orbs-nebula`
 
 ### Configure the boilerplate JSON file
 
