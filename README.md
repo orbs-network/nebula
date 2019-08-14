@@ -69,8 +69,6 @@ To install Nebula run
 
 If you have previously installed Nebula and you are performing a new deploy, we recommend updating it by running `npm update -g orbs-nebula`
 
-__Your Nebula version should be 1.1.2 or higher__ (you can run `npm list -g orbs-nebula` to check your version)
-
 ### Configure the boilerplate JSON file
 
 The thing to do next is to create the `orbs-node.json` file and configure it as required for the new node.
@@ -85,7 +83,7 @@ The content of the `orbs-node.json` should be:
         "publicIp": "$NODE_AWS_IP",
         "region": "$NODE_AWS_REGION",
         "nodeSize": "m4.xlarge",
-        "nodeCount": 2,
+        "nodeCount": 0,
         "bootstrapUrl": "https://s3.amazonaws.com/orbs-bootstrap-prod/boyar/config.json",
         "ethereumChain": "mainnet",
         "ethereumTopologyContractAddress": "0x804c8336846d8206c95CEe24752D514210B5a240",
