@@ -3,4 +3,5 @@ private/
 testnet/
 build/
 .vscode/
+_terraform/
 .circleci/
