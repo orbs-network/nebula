@@ -10,10 +10,15 @@ while true; do
 done
 
 mkfs -t ext4 /dev/xvdh
-mkdir /var/lib/docker
+mkdir /mnt/data
 cp /etc/fstab /etc/fstab.bak
-echo '/dev/xvdh /var/lib/docker ext4 defaults,nofail 0 0' >> /etc/fstab
+echo '/dev/xvdh /mnt/data ext4 defaults,nofail 0 0' >> /etc/fstab
 mount -a
+
+mkdir -p /mnt/data/var/lib/docker
+mkdir -p /mnt/data/var/lib/containerd
+ln -s /mnt/data/var/lib/docker /var/lib/docker
+ln -s /mnt/data/var/lib/containerd /var/lib/containerd
 
 # Sysctl
 
