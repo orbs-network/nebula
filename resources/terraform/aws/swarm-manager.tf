@@ -10,10 +10,15 @@ while true; do
 done
 
 mkfs -t ext4 /dev/xvdh
-mkdir /var/lib/docker
+mkdir /mnt/data
 cp /etc/fstab /etc/fstab.bak
-echo '/dev/xvdh /var/lib/docker ext4 defaults,nofail 0 0' >> /etc/fstab
+echo '/dev/xvdh /mnt/data ext4 defaults,nofail 0 0' >> /etc/fstab
 mount -a
+
+mkdir -p /mnt/data/var/lib/docker
+mkdir -p /mnt/data/var/lib/containerd
+ln -s /mnt/data/var/lib/docker /var/lib/docker
+ln -s /mnt/data/var/lib/containerd /var/lib/containerd
 
 # Sysctl
 
@@ -110,7 +115,7 @@ if [ ! -z "$(cat $SSL_CERT_PATH)" ] && [ ! -z "$(cat $SSL_PRIVATE_KEY_PATH)" ]; 
 fi
 
 # Boostrap everything with Boyar
-HOME=/root nohup boyar --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS > /var/log/boyar.log &
+HOME=/root nohup boyar --log /var/log/boyar.log --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS &
 
 TFEOF
 }
