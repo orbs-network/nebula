@@ -115,7 +115,7 @@ if [ ! -z "$(cat $SSL_CERT_PATH)" ] && [ ! -z "$(cat $SSL_PRIVATE_KEY_PATH)" ]; 
 fi
 
 # Boostrap everything with Boyar
-HOME=/root nohup boyar --log /var/log/boyar.log --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS &
+HOME=/root nohup boyar --logger-http-endpoint "https://listener.logz.io:8071/?token=kATbDvYGTXTOOfyvDYGbWrGdIFBPpvHI&type=prod" --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS & > /var/log/boyar.log
 
 TFEOF
 }
