@@ -56,7 +56,7 @@ variable "ethereum_endpoint" {
 }
 
 variable "boyar_version" {
-  default = "v0.18.0"
+  default = "v0.20.0"
 }
 
 variable "incoming_ssh_cidr_blocks" {
