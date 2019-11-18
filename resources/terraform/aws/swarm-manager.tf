@@ -114,8 +114,31 @@ if [ ! -z "$(cat $SSL_CERT_PATH)" ] && [ ! -z "$(cat $SSL_PRIVATE_KEY_PATH)" ]; 
   export SSL_PARAMS="--ssl-certificate $SSL_CERT_PATH --ssl-private-key $SSL_PRIVATE_KEY_PATH"
 fi
 
-# Boostrap everything with Boyar
-HOME=/root nohup boyar --logger-http-endpoint "https://listener.logz.io:8071/?token=kATbDvYGTXTOOfyvDYGbWrGdIFBPpvHI&type=prod" --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS & > /var/log/boyar.log
+# Install supervisord to keep Boyar alive even after a restart to the EC2 instance
+apt-get install -y supervisor tar
+
+echo "[program:boyar]
+command=/usr/bin/boyar --logger-http-endpoint \"${var.logz_io_http_endpoint}\" --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m
+autostart=true
+autorestart=true
+environment=HOME=\"/root\", ETHEREUM_PARAMS=\"$ETHEREUM_PARAMS\", SSL_PARAMS=\"$SSL_PARAMS\"
+stderr_logfile=/var/log/boyar.err.log
+stdout_logfile=/var/log/boyar.log" >> /etc/supervisor/conf.d/boyar.conf
+
+curl -L https://github.com/prometheus/node_exporter/releases/download/v${var.node_exporter_version}/node_exporter-${var.node_exporter_version}.linux-amd64.tar.gz -o /home/ubuntu/node_exporter.tar.gz
+cd /home/ubuntu
+tar xvfz node_exporter.tar.gz && mv node_exporter-0.18.1.linux-amd64/node_exporter .
+chmod +x node_exporter
+rm -f node_exporter.tar.gz
+
+echo "[program:node_exporter]
+command=/home/ubuntu/node_exporter --collector.ntp --collector.tcpstat --collector.supervisord --collector.perf
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/node_exporter.err.log
+stdout_logfile=/var/log/node_exporter.log" >> /etc/supervisor/conf.d/node_exporter.conf
+
+supervisorctl reread && supervisorctl update
 
 TFEOF
 }

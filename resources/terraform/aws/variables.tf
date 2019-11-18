@@ -55,6 +55,10 @@ variable "ethereum_endpoint" {
   default = ""
 }
 
+variable "logz_io_http_endpoint" {
+  default = "https://listener.logz.io:8071/?token=kATbDvYGTXTOOfyvDYGbWrGdIFBPpvHI&type=prod"
+}
+
 variable "boyar_version" {
   default = "v0.20.0"
 }
@@ -70,4 +74,8 @@ variable "ssl_certificate" {
 
 variable "ssl_private_key" {
   default = "Cg=="
+}
+
+variable "node_exporter_version" {
+  default = "0.18.1"
 }
