@@ -33,22 +33,13 @@ resource "aws_security_group" "swarm" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  // Http ports
-  ingress {
-    from_port   = 8000
-    to_port     = 8999
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  // Gossip ports
+  // http & gossip ports (tcp)
   ingress {
     from_port   = 4000
-    to_port     = 4999
+    to_port     = 20000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
 
   // All outbound traffic from any port
   egress {
