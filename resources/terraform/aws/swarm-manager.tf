@@ -118,7 +118,7 @@ fi
 apt-get install -y supervisor tar
 
 echo "[program:boyar]
-command=/usr/bin/boyar --logger-http-endpoint \"${var.logz_io_http_endpoint}\" --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m
+command=/usr/bin/boyar --logger-http-endpoint \"${var.logz_io_http_endpoint}\" --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS
 autostart=true
 autorestart=true
 environment=HOME=\"/root\", ETHEREUM_PARAMS=\"$ETHEREUM_PARAMS\", SSL_PARAMS=\"$SSL_PARAMS\"
