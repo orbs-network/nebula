@@ -23,9 +23,9 @@ To complete this guide you will need the following set up:
   
   Use `brew install node` to get it installed
 
-- [Terraform](https://www.terraform.io/downloads.html) version 0.11
+- [Terraform](https://www.terraform.io/downloads.html)
   
-  Use `brew install terraform@0.11 && ln -s $(ls /usr/local/Cellar/terraform@0.11/*/bin/terraform) /usr/local/bin/terraform` to get it installed
+  Use `brew install terraform@` to get it installed
 - [Orbs Key Generator](https://www.github.com/orbs-network/orbs-key-generator)
 
   Use `brew install orbs-network/devtools/orbs-key-generator` to get it installed (requires a Mac)
