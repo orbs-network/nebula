@@ -132,7 +132,7 @@ chmod +x node_exporter
 rm -f node_exporter.tar.gz
 
 echo "[program:node_exporter]
-command=/home/ubuntu/node_exporter --collector.ntp --collector.tcpstat --collector.supervisord --collector.perf
+command=/home/ubuntu/node_exporter --collector.ntp --collector.tcpstat --collector.supervisord
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/node_exporter.err.log
