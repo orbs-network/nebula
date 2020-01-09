@@ -12,7 +12,8 @@ let elasticIPs = [],
     nebulaCreate4thNodeMarker = false;
 
 describe('nebula setup a private network', () => {
-    before(async () => {
+    before(async () => {        
+
         const regions = harness.fixtures.nodes.map(({ region }) => region);
         console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL SETUP START **********');
         console.log('Getting 4 Elastic IPs in the following regions: ', regions);

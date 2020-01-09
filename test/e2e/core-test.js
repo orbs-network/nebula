@@ -13,6 +13,11 @@ nebula.setTerraformCachePath(path.join(__dirname, '../../_terraform'));
 const region = 'us-east-1';
 let preExistingElasticIp;
 
+// @todo:
+//  1) Import edge cases from Boyar E2E
+//   Examples:
+//   - Disabled VC
+
 describe('nebula core api', () => {
     before(async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()

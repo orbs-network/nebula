@@ -1,0 +1,13 @@
+{
+    "name": "orbs-network-go-testkit",
+    "version": "1.0.0",
+    "description": "This project mimicks orbs network behavior",
+    "main": "index.js",
+    "scripts": {},
+    "author": "Itamar Arjuan",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.1"
+    },
+    "devDependencies": {}
+}

@@ -7,9 +7,9 @@
             "HttpPort": 8080,
             "GossipPort": 4400,
             "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
+                "ContainerNamePrefix": "itamararjuan",
+                "Image": "orbs-network-go",
+                "Tag": "testkit",
                 "Pull": true
             },
             "Config": {
@@ -23,9 +23,8 @@
             "HttpPort": 8081,
             "GossipPort": 4401,
             "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
+                "ContainerNamePrefix": "itamararjuan",
+                "Image": "orbs-network-go",
                 "Pull": true
             },
             "Config": {
@@ -39,9 +38,9 @@
             "HttpPort": 8082,
             "GossipPort": 4402,
             "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
+                "ContainerNamePrefix": "itamararjuan",
+                "Image": "orbs-network-go",
+                "Tag": "testkit",
                 "Pull": true
             },
             "Config": {

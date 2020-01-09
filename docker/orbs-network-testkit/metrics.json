@@ -1,0 +1,705 @@
+{
+    "BlockStorage.BlockHeight": {
+        "Name": "BlockStorage.BlockHeight",
+        "Value": 0
+    },
+    "BlockStorage.FileSystemSize.Bytes": {
+        "Name": "BlockStorage.FileSystemSize.Bytes",
+        "Value": 988648955
+    },
+    "BlockStorage.LastCommitted.TimeNano": {
+        "Name": "BlockStorage.LastCommitted.TimeNano",
+        "Value": 1578577520799869464
+    },
+    "BlockSync.CollectingAvailabilityResponsesState.BroadcastSendFailure.Count": {
+        "Name": "BlockSync.CollectingAvailabilityResponsesState.BroadcastSendFailure.Count",
+        "Value": 0
+    },
+    "BlockSync.CollectingAvailabilityResponsesState.BroadcastSendSuccess.Count": {
+        "Name": "BlockSync.CollectingAvailabilityResponsesState.BroadcastSendSuccess.Count",
+        "Value": 27114
+    },
+    "BlockSync.CollectingAvailabilityResponsesState.Duration.Millis": {
+        "Name": "BlockSync.CollectingAvailabilityResponsesState.Duration.Millis",
+        "Min": 973.078528,
+        "P50": 1006.632959,
+        "P95": 1006.632959,
+        "P99": 1006.632959,
+        "Max": 1006.632959,
+        "Avg": 989.855744,
+        "Samples": 65
+    },
+    "BlockSync.FinishedCollectingAvailabilityResponsesState.Duration.Millis": {
+        "Name": "BlockSync.FinishedCollectingAvailabilityResponsesState.Duration.Millis",
+        "Min": 0.005376,
+        "P50": 0.006399,
+        "P95": 0.013823,
+        "P99": 0.017407,
+        "Max": 0.019455,
+        "Avg": 0.007368861538461538,
+        "Samples": 65
+    },
+    "BlockSync.FinishedCollectingAvailabilityResponsesState.FinishedWithNoResponses.Count": {
+        "Name": "BlockSync.FinishedCollectingAvailabilityResponsesState.FinishedWithNoResponses.Count",
+        "Value": 27112
+    },
+    "BlockSync.FinishedCollectingAvailabilityResponsesState.FinishedWithSomeResponses.Count": {
+        "Name": "BlockSync.FinishedCollectingAvailabilityResponsesState.FinishedWithSomeResponses.Count",
+        "Value": 1
+    },
+    "BlockSync.IdleState.Duration.Millis": {
+        "Name": "BlockSync.IdleState.Duration.Millis",
+        "Min": 1946.157056,
+        "P50": 6174.015487,
+        "P95": 6174.015487,
+        "P99": 6174.015487,
+        "Max": 6174.015487,
+        "Avg": 4055.4757393587784,
+        "Samples": 131
+    },
+    "BlockSync.IdleState.ResetBackToIdle.Count": {
+        "Name": "BlockSync.IdleState.ResetBackToIdle.Count",
+        "Value": 40275
+    },
+    "BlockSync.IdleState.StartedBlockSync.Count": {
+        "Name": "BlockSync.IdleState.StartedBlockSync.Count",
+        "Value": 27112
+    },
+    "BlockSync.ProcessingBlocksState.BlocksReceived.PerSecond": {
+        "Name": "BlockSync.ProcessingBlocksState.BlocksReceived.PerSecond",
+        "Rate": 3.5e-323,
+        "Interval": 1000
+    },
+    "BlockSync.ProcessingBlocksState.CommittedBlocks.Count": {
+        "Name": "BlockSync.ProcessingBlocksState.CommittedBlocks.Count",
+        "Value": 5
+    },
+    "BlockSync.ProcessingBlocksState.Duration.Millis": {
+        "Name": "BlockSync.ProcessingBlocksState.Duration.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "BlockSync.ProcessingBlocksState.FailedToCommitBlocks.Count": {
+        "Name": "BlockSync.ProcessingBlocksState.FailedToCommitBlocks.Count",
+        "Value": 0
+    },
+    "BlockSync.ProcessingBlocksState.FailedToValidateBlocks.Count": {
+        "Name": "BlockSync.ProcessingBlocksState.FailedToValidateBlocks.Count",
+        "Value": 0
+    },
+    "BlockSync.ProcessingBlocksState.LastCommitted.TimeNano": {
+        "Name": "BlockSync.ProcessingBlocksState.LastCommitted.TimeNano",
+        "Value": 1578404635754889811
+    },
+    "BlockSync.StateTransitions.Count": {
+        "Name": "BlockSync.StateTransitions.Count",
+        "Value": 121615
+    },
+    "BlockSync.WaitingForBlocksState.Duration.Millis": {
+        "Name": "BlockSync.WaitingForBlocksState.Duration.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "BlockSync.WaitingForBlocksState.ReceivedBlocksFromByzantineSource.Count": {
+        "Name": "BlockSync.WaitingForBlocksState.ReceivedBlocksFromByzantineSource.Count",
+        "Value": 0
+    },
+    "BlockSync.WaitingForBlocksState.ReceivedBlocksFromExpectedSource.Count": {
+        "Name": "BlockSync.WaitingForBlocksState.ReceivedBlocksFromExpectedSource.Count",
+        "Value": 1
+    },
+    "BlockSync.WaitingForBlocksState.TimedOutWithoutReceivingBlocks.Count": {
+        "Name": "BlockSync.WaitingForBlocksState.TimedOutWithoutReceivingBlocks.Count",
+        "Value": 0
+    },
+    "ConsensusAlgo.Benchmark.FailedTicks.PerSecond": {
+        "Name": "ConsensusAlgo.Benchmark.FailedTicks.PerSecond",
+        "Rate": 0,
+        "Interval": 1000
+    },
+    "ConsensusAlgo.Benchmark.LastCommitted.TimeNano": {
+        "Name": "ConsensusAlgo.Benchmark.LastCommitted.TimeNano",
+        "Value": 0
+    },
+    "ConsensusAlgo.Benchmark.RoundTick.Millis": {
+        "Name": "ConsensusAlgo.Benchmark.RoundTick.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "ConsensusAlgo.Benchmark.TimedOutTicks.PerSecond": {
+        "Name": "ConsensusAlgo.Benchmark.TimedOutTicks.PerSecond",
+        "Rate": 0,
+        "Interval": 1000
+    },
+    "ConsensusAlgo.Benchmark.Voting.Millis": {
+        "Name": "ConsensusAlgo.Benchmark.Voting.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "ConsensusAlgo.LeanHelix.CurrentElection.Number": {
+        "Name": "ConsensusAlgo.LeanHelix.CurrentElection.Number",
+        "Value": 1
+    },
+    "ConsensusAlgo.LeanHelix.CurrentLeaderMemberId.Number": {
+        "Name": "ConsensusAlgo.LeanHelix.CurrentLeaderMemberId.Number",
+        "Value": "6e2cb5"
+    },
+    "ConsensusAlgo.LeanHelix.LastCommitted.TimeNano": {
+        "Name": "ConsensusAlgo.LeanHelix.LastCommitted.TimeNano",
+        "Value": 1578577525812360281
+    },
+    "ConsensusAlgo.LeanHelix.TimeSinceLastCommit.Millis": {
+        "Name": "ConsensusAlgo.LeanHelix.TimeSinceLastCommit.Millis",
+        "Min": 8589.934592,
+        "P50": 9126.805503,
+        "P95": 9126.805503,
+        "P99": 9126.805503,
+        "Max": 9126.805503,
+        "Avg": 8858.370048,
+        "Samples": 65
+    },
+    "ConsensusAlgo.LeanHelix.TimeSinceLastElection.Millis": {
+        "Name": "ConsensusAlgo.LeanHelix.TimeSinceLastElection.Millis",
+        "Min": 3892.314112,
+        "P50": 9126.805503,
+        "P95": 9126.805503,
+        "P99": 14495.514623,
+        "Max": 18253.611007,
+        "Avg": 9001.879772553846,
+        "Samples": 65
+    },
+    "ConsensusContext.CreateResultsBlockTime.Millis": {
+        "Name": "ConsensusContext.CreateResultsBlockTime.Millis",
+        "Min": 0.031744,
+        "P50": 0.043007,
+        "P95": 0.086015,
+        "P99": 0.086015,
+        "Max": 0.086015,
+        "Avg": 0.0498176,
+        "Samples": 30
+    },
+    "ConsensusContext.CreateTransactionsBlockTime.Millis": {
+        "Name": "ConsensusContext.CreateTransactionsBlockTime.Millis",
+        "Min": 3892.314112,
+        "P50": 5100.273663,
+        "P95": 5100.273663,
+        "P99": 5100.273663,
+        "Max": 5100.273663,
+        "Avg": 4496.293888,
+        "Samples": 30
+    },
+    "ConsensusContext.ProcessTransactionsSetInCreateResultsBlock.Millis": {
+        "Name": "ConsensusContext.ProcessTransactionsSetInCreateResultsBlock.Millis",
+        "Min": 0.0128,
+        "P50": 0.015871,
+        "P95": 0.047103,
+        "P99": 0.051199,
+        "Max": 0.051199,
+        "Avg": 0.021213866666666664,
+        "Samples": 30
+    },
+    "ConsensusContext.TransactionsEnteringBlock.PerSecond": {
+        "Name": "ConsensusContext.TransactionsEnteringBlock.PerSecond",
+        "Rate": 9.720108449378859e-64,
+        "Interval": 1000
+    },
+    "ConsensusContext.committeeMemberIds.Numbers": {
+        "Name": "ConsensusContext.committeeMemberIds.Numbers",
+        "Value": "c056dfc0d1fbc7479db11e61d1b0b57612bf7f17,6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9,a328846cd5b4979d68a8c58a9bdfeee657b34de7,d27e2e7398e2582f63d0800330010b3e58952ff6"
+    },
+    "ConsensusContext.committeeSize.Number": {
+        "Name": "ConsensusContext.committeeSize.Number",
+        "Value": 4
+    },
+    "Ethereum.Node.Endpoint.Address": {
+        "Name": "Ethereum.Node.Endpoint.Address",
+        "Value": "http://ropsten.orbs.com:8545"
+    },
+    "Ethereum.Node.LastBlock": {
+        "Name": "Ethereum.Node.LastBlock",
+        "Value": 6866960
+    },
+    "Ethereum.Node.Sync.Status": {
+        "Name": "Ethereum.Node.Sync.Status",
+        "Value": "success"
+    },
+    "Ethereum.Node.TransactionReceipts.Status": {
+        "Name": "Ethereum.Node.TransactionReceipts.Status",
+        "Value": "failed"
+    },
+    "Ethereum.TimestampBlockFinder.CacheHits.Count": {
+        "Name": "Ethereum.TimestampBlockFinder.CacheHits.Count",
+        "Value": 0
+    },
+    "Ethereum.TimestampBlockFinder.LastBlockFound.Number": {
+        "Name": "Ethereum.TimestampBlockFinder.LastBlockFound.Number",
+        "Value": 0
+    },
+    "Ethereum.TimestampBlockFinder.LastBlockFound.TimeStamp.UnixEpoch": {
+        "Name": "Ethereum.TimestampBlockFinder.LastBlockFound.TimeStamp.UnixEpoch",
+        "Value": 0
+    },
+    "Ethereum.TimestampBlockFinder.LastBlockInEthereum.Number": {
+        "Name": "Ethereum.TimestampBlockFinder.LastBlockInEthereum.Number",
+        "Value": 0
+    },
+    "Ethereum.TimestampBlockFinder.StepsRequired.Rate": {
+        "Name": "Ethereum.TimestampBlockFinder.StepsRequired.Rate",
+        "Rate": 0,
+        "Interval": 1000
+    },
+    "Ethereum.TimestampBlockFinder.TimeToFindBlock.Duration.Millis": {
+        "Name": "Ethereum.TimestampBlockFinder.TimeToFindBlock.Duration.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "Ethereum.TimestampBlockFinder.TotalTimesCalled.Count": {
+        "Name": "Ethereum.TimestampBlockFinder.TotalTimesCalled.Count",
+        "Value": 0
+    },
+    "Gossip.IncomingConnection.Active.Count": {
+        "Name": "Gossip.IncomingConnection.Active.Count",
+        "Value": 4
+    },
+    "Gossip.IncomingConnection.ListeningOnTCPPortErrors.Count": {
+        "Name": "Gossip.IncomingConnection.ListeningOnTCPPortErrors.Count",
+        "Value": 0
+    },
+    "Gossip.IncomingConnection.ListeningOnTCPPortSuccess.Count": {
+        "Name": "Gossip.IncomingConnection.ListeningOnTCPPortSuccess.Count",
+        "Value": 10
+    },
+    "Gossip.IncomingConnection.TransportErrors.Count": {
+        "Name": "Gossip.IncomingConnection.TransportErrors.Count",
+        "Value": 6
+    },
+    "Gossip.OutgoingConnection.Active.Count": {
+        "Name": "Gossip.OutgoingConnection.Active.Count",
+        "Value": 4
+    },
+    "Gossip.OutgoingConnection.EnqueueErrors.6e2cb5.Count": {
+        "Name": "Gossip.OutgoingConnection.EnqueueErrors.6e2cb5.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.EnqueueErrors.a32884.Count": {
+        "Name": "Gossip.OutgoingConnection.EnqueueErrors.a32884.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.EnqueueErrors.c056df.Count": {
+        "Name": "Gossip.OutgoingConnection.EnqueueErrors.c056df.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.EnqueueErrors.e93269.Count": {
+        "Name": "Gossip.OutgoingConnection.EnqueueErrors.e93269.Count",
+        "Value": 11180
+    },
+    "Gossip.OutgoingConnection.KeepaliveErrors.Count": {
+        "Name": "Gossip.OutgoingConnection.KeepaliveErrors.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.MessageSize.Bytes": {
+        "Name": "Gossip.OutgoingConnection.MessageSize.Bytes",
+        "Min": 0.000072,
+        "P50": 0.000271,
+        "P95": 0.001279,
+        "P99": 0.001407,
+        "Max": 0.001407,
+        "Avg": 0.0002811323155216285,
+        "Samples": 786
+    },
+    "Gossip.OutgoingConnection.Queue.Usage.6e2cb5.Percent": {
+        "Name": "Gossip.OutgoingConnection.Queue.Usage.6e2cb5.Percent",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.Queue.Usage.a32884.Percent": {
+        "Name": "Gossip.OutgoingConnection.Queue.Usage.a32884.Percent",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.Queue.Usage.c056df.Percent": {
+        "Name": "Gossip.OutgoingConnection.Queue.Usage.c056df.Percent",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.Queue.Usage.e93269.Percent": {
+        "Name": "Gossip.OutgoingConnection.Queue.Usage.e93269.Percent",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.SendError.6e2cb5.Count": {
+        "Name": "Gossip.OutgoingConnection.SendError.6e2cb5.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.SendError.a32884.Count": {
+        "Name": "Gossip.OutgoingConnection.SendError.a32884.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.SendError.c056df.Count": {
+        "Name": "Gossip.OutgoingConnection.SendError.c056df.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.SendError.e93269.Count": {
+        "Name": "Gossip.OutgoingConnection.SendError.e93269.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.SendErrors.Count": {
+        "Name": "Gossip.OutgoingConnection.SendErrors.Count",
+        "Value": 0
+    },
+    "Gossip.OutgoingConnection.SendQueueErrors.Count": {
+        "Name": "Gossip.OutgoingConnection.SendQueueErrors.Count",
+        "Value": 11180
+    },
+    "Gossip.Topic.BenchmarkConsensus.DroppedMessages": {
+        "Name": "Gossip.Topic.BenchmarkConsensus.DroppedMessages",
+        "Value": 0
+    },
+    "Gossip.Topic.BenchmarkConsensus.MessagesInQueue": {
+        "Name": "Gossip.Topic.BenchmarkConsensus.MessagesInQueue",
+        "Value": 0
+    },
+    "Gossip.Topic.BenchmarkConsensus.QueueSize": {
+        "Name": "Gossip.Topic.BenchmarkConsensus.QueueSize",
+        "Value": 20
+    },
+    "Gossip.Topic.BlockSync.DroppedMessages": {
+        "Name": "Gossip.Topic.BlockSync.DroppedMessages",
+        "Value": 0
+    },
+    "Gossip.Topic.BlockSync.MessagesInQueue": {
+        "Name": "Gossip.Topic.BlockSync.MessagesInQueue",
+        "Value": 0
+    },
+    "Gossip.Topic.BlockSync.QueueSize": {
+        "Name": "Gossip.Topic.BlockSync.QueueSize",
+        "Value": 10
+    },
+    "Gossip.Topic.LeanHelixConsensus.DroppedMessages": {
+        "Name": "Gossip.Topic.LeanHelixConsensus.DroppedMessages",
+        "Value": 0
+    },
+    "Gossip.Topic.LeanHelixConsensus.MessagesInQueue": {
+        "Name": "Gossip.Topic.LeanHelixConsensus.MessagesInQueue",
+        "Value": 0
+    },
+    "Gossip.Topic.LeanHelixConsensus.QueueSize": {
+        "Name": "Gossip.Topic.LeanHelixConsensus.QueueSize",
+        "Value": 100
+    },
+    "Gossip.Topic.TransactionRelay.DroppedMessages": {
+        "Name": "Gossip.Topic.TransactionRelay.DroppedMessages",
+        "Value": 0
+    },
+    "Gossip.Topic.TransactionRelay.Errors.Count": {
+        "Name": "Gossip.Topic.TransactionRelay.Errors.Count",
+        "Value": 0
+    },
+    "Gossip.Topic.TransactionRelay.MessagesInQueue": {
+        "Name": "Gossip.Topic.TransactionRelay.MessagesInQueue",
+        "Value": 0
+    },
+    "Gossip.Topic.TransactionRelay.QueueSize": {
+        "Name": "Gossip.Topic.TransactionRelay.QueueSize",
+        "Value": 200
+    },
+    "Node.Address": {
+        "Name": "Node.Address",
+        "Value": "d27e2e7398e2582f63d0800330010b3e58952ff6"
+    },
+    "OS.Process.CPU.PerCent": {
+        "Name": "OS.Process.CPU.PerCent",
+        "Value": 0
+    },
+    "OS.Process.Memory.Bytes": {
+        "Name": "OS.Process.Memory.Bytes",
+        "Value": 183668736
+    },
+    "Processor.Native.Compiler.Build.Time.Millis": {
+        "Name": "Processor.Native.Compiler.Build.Time.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "Processor.Native.Compiler.LastWarmUp.Time.Millis": {
+        "Name": "Processor.Native.Compiler.LastWarmUp.Time.Millis",
+        "Value": 5700
+    },
+    "Processor.Native.Compiler.LoadObject.Time.Millis": {
+        "Name": "Processor.Native.Compiler.LoadObject.Time.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "Processor.Native.Compiler.Source.Size.Bytes": {
+        "Name": "Processor.Native.Compiler.Source.Size.Bytes",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "Processor.Native.Compiler.Total.Compile.Time.Millis": {
+        "Name": "Processor.Native.Compiler.Total.Compile.Time.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "Processor.Native.Compiler.WriteToDisk.Time.Millis": {
+        "Name": "Processor.Native.Compiler.WriteToDisk.Time.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "Processor.Native.ContractCompilationTime.Millis": {
+        "Name": "Processor.Native.ContractCompilationTime.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "Processor.Native.DeployedContracts.Count": {
+        "Name": "Processor.Native.DeployedContracts.Count",
+        "Value": 0
+    },
+    "Processor.Native.ProcessCallTime.Millis": {
+        "Name": "Processor.Native.ProcessCallTime.Millis",
+        "Min": 0.026624,
+        "P50": 0.069631,
+        "P95": 0.212991,
+        "P99": 0.294911,
+        "Max": 0.344063,
+        "Avg": 0.08303288888888889,
+        "Samples": 144
+    },
+    "PublicAPI.Queries.PerSecond": {
+        "Name": "PublicAPI.Queries.PerSecond",
+        "Rate": 0,
+        "Interval": 1000
+    },
+    "PublicAPI.Transactions.PerSecond": {
+        "Name": "PublicAPI.Transactions.PerSecond",
+        "Rate": 3.5e-323,
+        "Interval": 1000
+    },
+    "PublicApi.GetTransactionStatusProcessingTime.Millis": {
+        "Name": "PublicApi.GetTransactionStatusProcessingTime.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "PublicApi.RunQueryProcessingTime.Millis": {
+        "Name": "PublicApi.RunQueryProcessingTime.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "PublicApi.SendTransactionProcessingTime.Millis": {
+        "Name": "PublicApi.SendTransactionProcessingTime.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "PublicApi.TotalTransactionsErrAddingToTxPool.Count": {
+        "Name": "PublicApi.TotalTransactionsErrAddingToTxPool.Count",
+        "Value": 0
+    },
+    "PublicApi.TotalTransactionsErrDuplicate.Count": {
+        "Name": "PublicApi.TotalTransactionsErrDuplicate.Count",
+        "Value": 0
+    },
+    "PublicApi.TotalTransactionsErrInvalidRequest.Count": {
+        "Name": "PublicApi.TotalTransactionsErrInvalidRequest.Count",
+        "Value": 0
+    },
+    "PublicApi.TotalTransactionsErrNilRequest.Count": {
+        "Name": "PublicApi.TotalTransactionsErrNilRequest.Count",
+        "Value": 0
+    },
+    "PublicApi.TotalTransactionsFromClients.Count": {
+        "Name": "PublicApi.TotalTransactionsFromClients.Count",
+        "Value": 247847
+    },
+    "Runtime.GCCPUPercentage.Number": {
+        "Name": "Runtime.GCCPUPercentage.Number",
+        "Value": 0
+    },
+    "Runtime.HeapAlloc.Bytes": {
+        "Name": "Runtime.HeapAlloc.Bytes",
+        "Value": 52450368
+    },
+    "Runtime.HeapIdle.Bytes": {
+        "Name": "Runtime.HeapIdle.Bytes",
+        "Value": 211058688
+    },
+    "Runtime.HeapInuse.Bytes": {
+        "Name": "Runtime.HeapInuse.Bytes",
+        "Value": 56492032
+    },
+    "Runtime.HeapObjects.Number": {
+        "Name": "Runtime.HeapObjects.Number",
+        "Value": 212893
+    },
+    "Runtime.HeapReleased.Bytes": {
+        "Name": "Runtime.HeapReleased.Bytes",
+        "Value": 209993728
+    },
+    "Runtime.HeapSys.Bytes": {
+        "Name": "Runtime.HeapSys.Bytes",
+        "Value": 267550720
+    },
+    "Runtime.NumGc.Number": {
+        "Name": "Runtime.NumGc.Number",
+        "Value": 3164
+    },
+    "Runtime.NumGoroutine.Number": {
+        "Name": "Runtime.NumGoroutine.Number",
+        "Value": 40
+    },
+    "Runtime.Uptime.Seconds": {
+        "Name": "Runtime.Uptime.Seconds",
+        "Value": 245595
+    },
+    "StateStorage.BlockHeight": {
+        "Name": "StateStorage.BlockHeight",
+        "Value": 558507
+    },
+    "StateStorage.ReadRequestedKeys.PerSecond": {
+        "Name": "StateStorage.ReadRequestedKeys.PerSecond",
+        "Rate": 0.6167569732734683,
+        "Interval": 1000
+    },
+    "StateStorage.WriteRequestedKeys.PerSecond": {
+        "Name": "StateStorage.WriteRequestedKeys.PerSecond",
+        "Rate": 3.5e-323,
+        "Interval": 1000
+    },
+    "StateStoragePersistence.TotalNumberOfContracts.Count": {
+        "Name": "StateStoragePersistence.TotalNumberOfContracts.Count",
+        "Value": 50
+    },
+    "StateStoragePersistence.TotalNumberOfKeys.Count": {
+        "Name": "StateStoragePersistence.TotalNumberOfKeys.Count",
+        "Value": 1881
+    },
+    "TransactionPool.BlockHeight": {
+        "Name": "TransactionPool.BlockHeight",
+        "Value": 558507
+    },
+    "TransactionPool.CommitRate.PerSecond": {
+        "Name": "TransactionPool.CommitRate.PerSecond",
+        "Rate": 7.143232252257614e-64,
+        "Interval": 1000
+    },
+    "TransactionPool.CommittedPool.PoolSize.Bytes": {
+        "Name": "TransactionPool.CommittedPool.PoolSize.Bytes",
+        "Value": 0
+    },
+    "TransactionPool.CommittedPool.Transactions.Count": {
+        "Name": "TransactionPool.CommittedPool.Transactions.Count",
+        "Value": 0
+    },
+    "TransactionPool.LastCommitted.TimeNano": {
+        "Name": "TransactionPool.LastCommitted.TimeNano",
+        "Value": 1578577520799869464
+    },
+    "TransactionPool.PendingPool.PoolSize.Bytes": {
+        "Name": "TransactionPool.PendingPool.PoolSize.Bytes",
+        "Value": 0
+    },
+    "TransactionPool.PendingPool.TimeSpentInQueue.Millis": {
+        "Name": "TransactionPool.PendingPool.TimeSpentInQueue.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "TransactionPool.PendingPool.Transactions.Count": {
+        "Name": "TransactionPool.PendingPool.Transactions.Count",
+        "Value": 0
+    },
+    "TransactionPool.ServiceTime.Millis": {
+        "Name": "TransactionPool.ServiceTime.Millis",
+        "Min": 0,
+        "P50": 0,
+        "P95": 0,
+        "P99": 0,
+        "Max": 0,
+        "Avg": 0,
+        "Samples": 0
+    },
+    "TransactionPool.TotalCommits.Count": {
+        "Name": "TransactionPool.TotalCommits.Count",
+        "Value": 673667
+    },
+    "TransactionPool.TransactionsEnteringPool.PerSecond": {
+        "Name": "TransactionPool.TransactionsEnteringPool.PerSecond",
+        "Rate": 4.79726931014116e-40,
+        "Interval": 1000
+    },
+    "Version.Commit": {
+        "Name": "Version.Commit",
+        "Value": "95d6d1aa049d566efdf76ec13d311f28c11282f0"
+    },
+    "Version.Semantic": {
+        "Name": "Version.Semantic",
+        "Value": "v1.3.6-95d6d1aa"
+    }
+}
