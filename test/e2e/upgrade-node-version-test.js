@@ -21,12 +21,6 @@ describe('nebula upgrade node version', () => {
 
         console.log('Got back the following IP allocation result from AWS:', elasticIPs);
 
-        const validIPsCount = elasticIPs.filter(o => o.ok === true).length;
-
-        if (validIPsCount !== 1) {
-            throw new Error('Not all Elastic IPs required were allocated');
-        }
-
         console.log('Creating nebula "node.json" file...');
         nodesJSONs = harness.getNodesJSONs({ elasticIPs }, [singleNode]);
         console.log('Got: ', nodesJSONs);

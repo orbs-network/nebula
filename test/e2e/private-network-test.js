@@ -21,14 +21,7 @@ describe('nebula setup a private network', () => {
 
         console.log('Got back the following IP allocations results from AWS:', elasticIPs);
 
-        const validIPsCount = elasticIPs.filter(o => o.ok === true).length;
-
-        if (validIPsCount < 4) {
-            // Not all IPs were allocated!
-            throw new Error('Not all Elastic IPs required were allocated');
-        }
-
-        console.log('Creating nebula "node.json" files...')
+        console.log('Creating nebula "node.json" files...');
         nodesJSONs = harness.getNodesJSONs({ elasticIPs });
         console.log('Got: ', nodesJSONs);
 

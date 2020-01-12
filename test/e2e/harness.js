@@ -74,7 +74,7 @@ module.exports = {
         return Promise.all(jsons.map((_, index) => unlink(path.join(__dirname, 'private-network/nodes', `node${index + 1}.json`))));
     },
     getElasticIPsInRegions(regions) {
-        return Promise.all(regions.map((region) => this.aws.getPublicIp(region)));
+        return Promise.all(regions.map(async (region) => ({region, ip: await this.aws.getPublicIp(region)})));
     },
     writeBoyarConfig() {
         const targetPath = path.join(__dirname, 'private-network/templates/boyar.json');
@@ -96,23 +96,11 @@ module.exports = {
                 region
             });
 
-            try {
-                const response = await ec2.allocateAddress({
-                    Domain: 'vpc'
-                }).promise();
+            const response = await ec2.allocateAddress({
+                Domain: 'vpc'
+            }).promise();
 
-                return {
-                    ok: true,
-                    region,
-                    ip: response.PublicIp,
-                };
-            } catch (err) {
-                return {
-                    ok: false,
-                    region,
-                    err,
-                };
-            }
+            return response.PublicIp;
         },
         async destroyPublicIp(region, ip) {
             console.log(`Attempting to destroy ${ip} in ${region}`);
