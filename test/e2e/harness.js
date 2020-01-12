@@ -109,29 +109,19 @@ module.exports = {
                 region,
             });
 
-            try {
-                const description = await ec2.describeAddresses({
-                    PublicIps: [ip],
-                }).promise();
+            const description = await ec2.describeAddresses({
+                PublicIps: [ip],
+            }).promise();
 
-                const result = await ec2.releaseAddress({
-                    AllocationId: description.Addresses[0].AllocationId
-                }).promise();
+            const result = await ec2.releaseAddress({
+                AllocationId: description.Addresses[0].AllocationId
+            }).promise();
 
-                return {
-                    ok: true,
-                    region,
-                    ip,
-                    result,
-                };
-            } catch (err) {
-                return {
-                    ok: false,
-                    region,
-                    ip,
-                    err,
-                };
-            }
+            return {
+                region,
+                ip,
+                result,
+            };
         }
     },
     getNodesJSONs({ elasticIPs, buildNumber = circleCiBuildNumber() }, nodes = fixtures.nodes) {
@@ -202,24 +192,5 @@ module.exports = {
         } while (poll && pollCount < 60);
 
         return false;
-    },
-    async checkEBSFingerprint({ outputs }) {
-        const ip = outputs.find(o => o.key === 'ethereum.public_ip').value;
-        const command = `cat /ethereum-persistency/.fingerprint`;
-        const checkFingerprintResult = await this.remoteExec({ command, ip });
-
-        if (checkFingerprintResult.exitCode !== 0) {
-            return {
-                ok: false,
-                fingerprint: null,
-                error: checkFingerprintResult.stderr,
-            };
-        }
-
-        return {
-            ok: true,
-            error: null,
-            fingerprint: trim(checkFingerprintResult.stdout),
-        };
     }
 };

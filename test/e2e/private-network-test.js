@@ -51,13 +51,9 @@ describe('nebula setup a private network', () => {
         });
 
         console.log('********** NEBULA CREATE 3 NODES OF PRIVATE BLOCKCHAIN BEGIN ***********');
-        const creations = nodes.map((node) => create(node).catch(err => err));
-        const results = await Promise.all(creations);
         nebulaCreationStepMarker = true;
+        await Promise.all(nodes.map(create));
         console.log('********** NEBULA CREATE 3 NODES OF PRIVATE BLOCKCHAIN END ***********');
-
-        const errornousCreations = results.filter(r => r.ok === false);
-        expect(errornousCreations.length, 'Expecting no failures creating the 3 nodes').to.equal(0);
 
         // Wait for the network to sync correctly
         await waitUntilSync(firstEndpoint, 10);
@@ -72,8 +68,7 @@ describe('nebula setup a private network', () => {
         harness.writeConfigurationFiles(nodesJSONs);
 
         console.log('********** NEBULA CREATE 4TH NODE BEGIN ***********');
-        const resultNode4 = await create({ file: path.join(basePath, 'node4.json') }).catch(err => err);
-        expect(resultNode4.ok).to.equal(true);
+        await create({ file: path.join(basePath, 'node4.json') });
         nebulaCreate4thNodeMarker = true;
         console.log('********** NEBULA CREATE 4TH NODE END ***********');
 
@@ -81,10 +76,7 @@ describe('nebula setup a private network', () => {
 
         console.log('********** NEBULA UPDATE FIRST 3 NODES TOPOLOGY BEGIN ***********');
         
-        const updateResults = await Promise.all(nodes.map((node) => update(node).catch(err => err)));
-        const successfulUpdates = updateResults.filter(r => r.ok === true);
-
-        expect(successfulUpdates.length, 'Expect all 3 updates to work correctly').to.equal(3);
+        await Promise.all(nodes.map(update));
         console.log('********** NEBULA UPDATE FIRST 3 NODES TOPOLOGY END ***********');
 
         // wait until the last node had synced with others
@@ -102,26 +94,18 @@ describe('nebula setup a private network', () => {
     });
 
     after(async () => {
-        console.log('*********** NEBULA NODES DESTRUCTION START **************');
+        let destructors = [];
+        console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL TEARDOWN START **********');
         if (nebulaCreationStepMarker) {
-            await Promise
-                .all(_.take(nodesJSONs, 3).map((node) => destroy(node).catch(err => err)));
+            destructors.push(... _.take(nodesJSONs, 3).map(destroy));
         }
         if (nebulaCreate4thNodeMarker) {
-            await destroy(_.last(nodesJSONs)).catch(err => err);
+            destructors.push(destroy(_.last(nodesJSONs)));
         }
-        console.log('*********** NEBULA NODES DESTRUCTION END **************');
-
-        console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL TEARDOWN START **********');
-        const validElasticIPs = elasticIPs.filter(o => o.ok === true);
-        console.log('Releasing the following Elastic IPs from our AWS account: ', validElasticIPs);
-        const elasticIPsReleaseResults = await Promise.all(validElasticIPs
-            .map(({ ip, region }) => harness.aws.destroyPublicIp(region, ip)));
-        console.log('Result of releasing Elastic IPs: ', elasticIPsReleaseResults);
-
-        console.log('Deleting "node.json" files...');
-        await harness.deleteNodesJSONsFromDisk(nodesJSONs);
-
+        console.log('Releasing the following Elastic IPs from our AWS account: ', elasticIPs);
+        destructors.push(... elasticIPs.map(({ ip, region }) => harness.aws.destroyPublicIp(region, ip)));
+        destructors.push(harness.deleteNodesJSONsFromDisk(nodesJSONs));
+        await Promise.all(destructors);
         console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL TEARDOWN FINISHED **********');
     });
 });

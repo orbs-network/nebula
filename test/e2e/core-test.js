@@ -57,17 +57,13 @@ describe('nebula core api', () => {
             cloud,
             keys
         });
-        expect(result.ok).to.equal(true);
 
         const pollingResult = await harness.eventuallyReady(preExistingElasticIp);
         expect(pollingResult).to.equal(true);
 
-        const destroyResult = await nebula.destroyConstellation({
+        await nebula.destroyConstellation({
             name: result.name
         });
-
-        expect(destroyResult.error).to.equal(null);
-        expect(destroyResult.ok).to.equal(true);
     });
 
     after(async () => {
