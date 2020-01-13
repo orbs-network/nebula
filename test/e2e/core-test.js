@@ -75,7 +75,8 @@ describe.only('nebula core api', () => {
             ip: preExistingElasticIp,
         };
 
-        const result = await nebula.createConstellation({
+        const result = await nebula.createConstellation({            
+            chains: boyarConfig.chains,
             cloud,
             keys
         });

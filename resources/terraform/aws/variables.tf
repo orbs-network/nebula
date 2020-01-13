@@ -35,16 +35,6 @@ variable "node_key_pair" {
   default = "e30K"
 }
 
-variable "boyar_config_source" {
-  default = "e30K"
-}
-
-variable "s3_bucket_name" {}
-
-variable "s3_boyar_key" {}
-
-variable "s3_boyar_config_url" {}
-
 variable "path_to_ssh_pubkey" {}
 
 variable "ethereum_topology_contract_address" {
@@ -65,7 +55,7 @@ variable "boyar_version" {
 
 variable "incoming_ssh_cidr_blocks" {
   default = []
-  type = "list"
+  type    = "list"
 }
 
 variable "ssl_certificate" {
@@ -78,4 +68,16 @@ variable "ssl_private_key" {
 
 variable "node_exporter_version" {
   default = "0.18.1"
+}
+
+variable "chains" {
+  type = list(object({
+    id = number    
+    gossip_port = number
+    http_port = number
+    docker = object({
+      image = string
+      tag = string
+    })
+  }))
 }

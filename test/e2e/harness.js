@@ -234,13 +234,6 @@ module.exports = {
                 console.log(`polling the cluster deployed service... [${pollCount}]`);
                 console.log('IP: ', ip);
 
-                // We test to see that Boyar is available in this manger node.
-                const boyarCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'test -e /usr/bin/boyar'`);
-                expect(boyarCheck.exitCode).to.equal(0);
-
-                const swarmLeaderCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'sudo docker node ls | grep Leader | wc -l'`);
-                expect(trim(swarmLeaderCheck.stdout)).to.equal('1');
-
                 for (let chain of boyar.chains) {
                     await assertVChainIsUp({
                         id: chain.Id,
@@ -256,7 +249,7 @@ module.exports = {
                 lastError = err;
                 console.log('the last error from our loop:', lastError);
                 pollCount++;
-                await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
+                await new Promise((resolve) => setTimeout(resolve, 2 * 1000));
             }
         }
 

@@ -44,14 +44,9 @@ add-apt-repository \
   stable"
 
 apt-get update
-apt-get install -y docker-ce
-docker plugin install --grant-all-permissions rexray/ebs
-
-curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-${var.boyar_version}.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
+apt-get install -y docker-ce jq
 
 apt-get install -y python-pip && pip install awscli
-
-docker swarm init
 
 mkdir -p /opt/orbs
 aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.secret_name} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
@@ -67,16 +62,6 @@ aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.s
 
 aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.ssl_private_key_secret_name} --output text --query SecretBinary | base64 -d > $SSL_PRIVATE_KEY_PATH
 
-# Save docker swarm token to secretsmanager
-
-aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker) || aws secretsmanager put-secret-value --region ${var.region} --secret-id swarm-token-${var.name}-worker-${var.region} --secret-string $(docker swarm join-token --quiet worker)
-
-# Remove access to secrets
-
-aws iam detach-role-policy --role-name orbs-constellation-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_manager_secrets.arn}
-
-aws iam detach-role-policy --role-name orbs-constellation-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_detach_role_policy.arn}
-
 # Log into docker hub
 
 $(aws ecr get-login --no-include-email --region us-west-2)
@@ -84,46 +69,38 @@ $(aws ecr get-login --no-include-email --region us-west-2)
 echo '0 * * * * $(/usr/local/bin/aws ecr get-login --no-include-email --region us-west-2)' > /tmp/crontab
 crontab /tmp/crontab
 
-# Wait for everyone to join the swarm
-while true; do
-    [ $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | wc -l) -ge ${var.instance_count} ] && break
-    sleep 15
-done
-
-# Remove access to worker secrets
-
-aws iam detach-role-policy --role-name orbs-constellation-${var.name}-worker --policy-arn ${aws_iam_policy.swarm_worker_secrets.arn}
-
-# Label workers
-for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | cut -d" " -f1); do
-    docker node update --label-add worker=true $n
-done
-
-# Label leader as manager
-for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep Leader | cut -d" " -f1); do
-    docker node update --label-add manager=true $n
-done
-
-# Extract topology from Ethereum if possible
-if [ ! -z "${var.ethereum_topology_contract_address}" ]; then
-  export ETHEREUM_PARAMS="--ethereum-endpoint ${var.ethereum_endpoint} --topology-contract-address ${var.ethereum_topology_contract_address}"
-fi
-
-# Provision SSL if possible
-if [ ! -z "$(cat $SSL_CERT_PATH)" ] && [ ! -z "$(cat $SSL_PRIVATE_KEY_PATH)" ]; then
-  export SSL_PARAMS="--ssl-certificate $SSL_CERT_PATH --ssl-private-key $SSL_PRIVATE_KEY_PATH"
-fi
-
 # Install supervisord to keep Boyar alive even after a restart to the EC2 instance
 apt-get install -y supervisor tar
+export node_address=$(cat /opt/orbs/keys.json | jq '."node-address"')
 
-echo "[program:boyar]
-command=/usr/bin/boyar --logger-http-endpoint \"${var.logz_io_http_endpoint}\" --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS
-autostart=true
-autorestart=true
-environment=HOME=\"/root\", ETHEREUM_PARAMS=\"$ETHEREUM_PARAMS\", SSL_PARAMS=\"$SSL_PARAMS\"
-stderr_logfile=/var/log/boyar.err.log
-stdout_logfile=/var/log/boyar.log" >> /etc/supervisor/conf.d/boyar.conf
+%{for chain in var.chains}
+
+echo "{
+  \"virtual-chain-id\": ${chain.id},
+  \"node-address\": $node_address,
+  \"active-consensus-algo\": 2,
+  \"genesis-validator-addresses\": [
+    $node_address,
+    \"d27e2e7398e2582f63d0800330010b3e58952ff6\",
+    \"6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9\",
+    \"c056dfc0d1fbc7479db11e61d1b0b57612bf7f17\"
+  ],
+  \"topology-nodes\": [
+    {\"address\":$node_address,\"ip\":\"127.0.0.1\",\"port\":4400}
+  ],
+  \"ethereum-endpoint\": \"http://192.168.199.6:8545\",
+  \"logger-full-log\": true,
+  \"processor-sanitize-deployed-contracts\": false,
+  \"profiling\": true
+}" > /opt/orbs/chain-${chain.id}-config.json
+
+docker run --name orbs-${chain.id} \
+  -v /opt/orbs/chain-${chain.id}-config.json:/opt/orbs/chain-${chain.id}-config.json:ro \
+  -v /opt/orbs/keys.json:/opt/orbs/keys.json:ro \
+  -d -p "${chain.gossip_port}:4400" \
+  -p "${chain.http_port}:8080" \
+  ${chain.docker.image}:${chain.docker.tag} /opt/orbs/orbs-node --config /opt/orbs/chain-${chain.id}-config.json --config /opt/orbs/keys.json
+%{endfor}
 
 curl -L https://github.com/prometheus/node_exporter/releases/download/v${var.node_exporter_version}/node_exporter-${var.node_exporter_version}.linux-amd64.tar.gz -o /home/ubuntu/node_exporter.tar.gz
 cd /home/ubuntu
@@ -143,12 +120,14 @@ supervisorctl reread && supervisorctl update
 TFEOF
 }
 
+
+
 resource "aws_instance" "manager" {
-  ami = "${data.aws_ami.ubuntu-18_04.id}"
-  instance_type = "${var.instance_type}"
-  security_groups = ["${aws_security_group.swarm.id}"]
-  key_name = "${aws_key_pair.deployer.key_name}"
-  subnet_id = "${module.vpc.first_subnet.id}"
+  ami                  = "${data.aws_ami.ubuntu-18_04.id}"
+  instance_type        = "${var.instance_type}"
+  security_groups      = ["${aws_security_group.swarm.id}"]
+  key_name             = "${aws_key_pair.deployer.key_name}"
+  subnet_id            = "${module.vpc.first_subnet.id}"
   iam_instance_profile = "${aws_iam_instance_profile.swarm_manager.name}"
 
   user_data = "${local.manager_user_data}"
@@ -159,7 +138,7 @@ resource "aws_instance" "manager" {
 }
 
 resource "aws_ebs_volume" "manager_storage" {
-  size = 50
+  size              = 50
   availability_zone = "${aws_instance.manager.availability_zone}"
 
   tags = {
@@ -168,8 +147,8 @@ resource "aws_ebs_volume" "manager_storage" {
 }
 
 resource "aws_volume_attachment" "manager_storage_attachment" {
-  device_name = "/dev/sdh"
+  device_name  = "/dev/sdh"
   force_detach = true
-  volume_id = "${aws_ebs_volume.manager_storage.id}"
-  instance_id = "${aws_instance.manager.id}"
+  volume_id    = "${aws_ebs_volume.manager_storage.id}"
+  instance_id  = "${aws_instance.manager.id}"
 }
