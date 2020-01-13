@@ -1,0 +1,27 @@
+
+{
+    "us-east-1": {
+        "address": "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
+        "privateKey": "901a1a0bfbe217593062a054e561e708707cb814a123474c25fd567a0fe088f8"
+    },
+    "eu-central-1": {
+        "address": "d27e2e7398e2582f63d0800330010b3e58952ff6",
+        "privateKey": "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253"
+    },
+    "ca-central-1": {
+        "address": "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
+        "privateKey": "426308c4d11a6348a62b4fdfb30e2cad70ab039174e2e8ea707895e4c644c4ec"
+    },
+    "ap-northeast-1": {
+        "address": "c056dfc0d1fbc7479db11e61d1b0b57612bf7f17",
+        "privateKey": "1e404ba4e421cedf58dcc3dddcee656569afc7904e209612f7de93e1ad710300"
+    },
+    "ap-northeast-2": {
+        "address": "fca8200d67df5d0180d47d7fda762f2f174bb7d0",
+        "privateKey": "0860f557af1b29639b680a5934e2080d204d08f753679e606f1bcb4b53d00efe"
+    },
+    "sa-east-1": {
+        "address": "c4bc32b3f8c6adce24e0ab2f163cf8ccfabd2e2c",
+        "privateKey": "a414d64a2246e394019f37544c17a8cae94b8f2104b9a5957c7af8691cb3302c"
+    }
+}

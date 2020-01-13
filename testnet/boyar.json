@@ -1,9 +1,12 @@
+
 {
     "network": [],
-    "orchestrator": {},
+    "orchestrator": {
+        "storage-driver": "rexray/ebs"
+    },
     "chains": [
         {
-            "Id": 10000,
+            "Id": 42,
             "HttpPort": 8080,
             "GossipPort": 4400,
             "DockerConfig": {
@@ -19,7 +22,7 @@
             }
         },
         {
-            "Id": 20000,
+            "Id": 1969,
             "HttpPort": 8081,
             "GossipPort": 4401,
             "DockerConfig": {
@@ -35,7 +38,7 @@
             }
         },
         {
-            "Id": 30000,
+            "Id": 2013,
             "HttpPort": 8082,
             "GossipPort": 4402,
             "DockerConfig": {
@@ -46,6 +49,7 @@
             },
             "Config": {
                 "ethereum-endpoint": "http://172.31.1.100:8545",
+                "active-consensus-algo": 2,
                 "logger-file-truncation-interval": "15m",
                 "profiling": true
             }
