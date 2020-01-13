@@ -59,21 +59,22 @@ describe('nebula upgrade node version', () => {
     });
 
     after(async () => {
-        let destructors = [];
-        console.log('*********** NEBULA UPGRADE VERSION TEST GLOBAL TEARDOWN START **************');
+        console.log('*********** NEBULA NODES DESTRUCTION START **************');
         if (nebulaCreationStepMarker) {
-            destructors.push(destroy(singleNode).catch(err => err));
+            await destroy(singleNode).catch(err => err);
         }
 
         console.log('*********** NEBULA NODES DESTRUCTION END **************');
 
         console.log('********* NEBULA UPGRADE VERSION TEST GLOBAL TEARDOWN START **********');
         console.log('Releasing the following Elastic IPs from our AWS account: ', elasticIPs);
-        destructors.push(elasticIPs.map(({ ip, region }) => harness.aws.destroyPublicIp(region, ip)));
+        const elasticIPsReleaseResults = await Promise.all(
+            elasticIPs.map(({ ip, region }) => harness.aws.destroyPublicIp(region, ip)));
+        console.log('Result of releasing Elastic IPs: ', elasticIPsReleaseResults);
 
-        destructors.push(harness.deleteNodesJSONsFromDisk(nodesJSONs));
+        console.log('Deleting "node.json" files...');
+        await harness.deleteNodesJSONsFromDisk(nodesJSONs);
 
-        await Promise.all(destructors);
         console.log('********* NEBULA UPGRADE VERSION TEST GLOBAL TEARDOWN FINISHED **********');
     });
 });
