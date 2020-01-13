@@ -64,27 +64,22 @@ function generateKeysConfig(nodes) {
     }, {});
 }
 
-function assertVChainIsUp({ ip, id, gossip, address }) {
+async function assertVChainIsUp({ ip, id, gossip, address }) {
     // Perform checks
     console.log('Investigating vchain', id);
-    return Promise.all([
-        assertGossipPortIsReachable(gossip, { host: `http://${ip}` }),
-        assertVchainHasMetrics({ ip, id, address }),
-    ]);
+    await assertGossipPortIsReachable(gossip, { host: ip });
+
+    await assertVchainHasMetrics({ ip, id, address });
 }
 
 function assertGossipPortIsReachable(port, { timeout = 1000, host } = {}) {
     return new Promise(((resolve, reject) => {
+        console.log(`attempting to connect to: ${host}:${port}`);
         const s = new net.Socket();
-
-        const onError = () => {
-            s.destroy();
-            reject();
-        };
-
+        
         s.setTimeout(timeout);
-        s.once('error', onError);
-        s.once('timeout', onError);
+        s.once('error', reject);
+        s.once('timeout', () => reject(new Error("Operation has timed out")));
 
         s.connect(port, host, () => {
             s.end();
@@ -100,12 +95,12 @@ async function assertVchainHasMetrics({ ip, id, /*address*/ }) {
     const result = await fetch(metricsUrl);
 
     expect(result.status).to.equal(200);
-    expect(result.headers.get('content-type')).to.equal('application/json');
+    expect(result.headers.get('content-type')).to.contain('application/json');
 
     const metrics = await result.json();
 
-    //expect(metrics["Node.Address"].Value).to.equal(address, "Node address is different than expected");    
-    expect(metrics["Version.Semantic"], "semver").to.match(/^[vV]/);
+    //expect(metrics["Node.Address"].Value).to.equal(address, "Node address is different than expected");
+    expect(metrics["Version.Semantic"].Value, "semver").to.match(/^[vV]/);
 }
 
 module.exports = {
@@ -246,12 +241,15 @@ module.exports = {
                 const swarmLeaderCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'sudo docker node ls | grep Leader | wc -l'`);
                 expect(trim(swarmLeaderCheck.stdout)).to.equal('1');
 
-                await Promise.all(boyar.chains.map(chain => assertVChainIsUp({
-                    id: chain.Id,
-                    ip,
-                    gossip: chain.GossipPort,
-                    address,
-                })));
+                for (let chain of boyar.chains) {
+                    await assertVChainIsUp({
+                        id: chain.Id,
+                        ip,
+                        gossip: chain.GossipPort,
+                        address,
+                    });
+                }
+
                 lastError = null;
                 poll = false;
             } catch (err) {
