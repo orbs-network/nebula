@@ -44,7 +44,7 @@ add-apt-repository \
   stable"
 
 apt-get update
-apt-get install -y docker-ce jq
+apt-get install -y docker-ce jq nginx
 
 apt-get install -y python-pip && pip install awscli
 
@@ -116,6 +116,33 @@ stderr_logfile=/var/log/node_exporter.err.log
 stdout_logfile=/var/log/node_exporter.log" >> /etc/supervisor/conf.d/node_exporter.conf
 
 supervisorctl reread && supervisorctl update
+
+echo "server {
+    listen 80;
+    listen [::]:80;
+    server_name localhost;
+
+    gzip on;
+    gzip_types      text/plain application/json;
+    gzip_proxied    any;
+    gzip_min_length 1000;
+
+    rewrite_log on;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    %{for chain in var.chains}
+    location ~* /vchains/${chain.id}/(.*) {
+        rewrite ^/vchains/${chain.id}/(.*)$ /\$1 break;
+        proxy_pass http://localhost:${chain.http_port};
+    }
+    %{endfor}
+}" > /etc/nginx/conf.d/orbs.conf
+
+rm -f /etc/nginx/sites-enabled/default
+
+systemctl restart nginx
 
 TFEOF
 }
