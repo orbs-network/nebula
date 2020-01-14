@@ -132,7 +132,7 @@ describe('terraform service unit tests', () => {
             //console.log(tf.createTerraformVariablesFile({ keys, cloud, chains, }))
 
             expect(tf.createTerraformVariablesFile({ keys, cloud, chains, })).to.equal(
-                `path_to_ssh_pubkey = "/Users/itamar/.ssh/id_rsa.pub"
+                `path_to_ssh_pubkey = "/home/circleci/.ssh/id_rsa.pub"
 incoming_ssh_cidr_blocks = ["0.0.0.0/0"]
 name = "mumbai-node4"
 aws_profile = "default"
