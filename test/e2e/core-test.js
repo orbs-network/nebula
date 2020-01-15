@@ -19,7 +19,7 @@ let nodeName;
 //   Examples:
 //   - Disabled VC
 
-describe.only('nebula core api', () => {
+describe('nebula core api', () => {
     before(async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         console.log('Allocating a public IP from AWS...');
