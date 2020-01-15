@@ -1,3 +1,4 @@
+
 {
     "network": [],
     "orchestrator": {
@@ -10,8 +11,8 @@
             "GossipPort": 4400,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
-                "Tag": "master",
+                "Image": "orbsnetwork/node",
+                "Tag": "v0.8.0",
                 "Pull": true
             },
             "Config": {
@@ -26,8 +27,8 @@
             "GossipPort": 4401,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
-                "Tag": "master",
+                "Image": "orbsnetwork/node",
+                "Tag": "v0.8.0",
                 "Pull": true
             },
             "Config": {
@@ -42,8 +43,8 @@
             "GossipPort": 4402,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "506367651493.dkr.ecr.us-west-2.amazonaws.com/orbs-network-v1",
-                "Tag": "master",
+                "Image": "orbsnetwork/node",
+                "Tag": "v0.8.0",
                 "Pull": true
             },
             "Config": {

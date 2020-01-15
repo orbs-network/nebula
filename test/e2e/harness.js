@@ -6,12 +6,15 @@ const fs = require('fs');
 const util = require('util');
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
+const fetch = require('node-fetch');
+const net = require('net');
 
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
 
 const fixtures = require('./fixtures/nodes.json');
 const boyar = require('./fixtures/boyar.json');
+const { expect } = require('chai');
 
 async function exec(cmd, opts) {
     console.log('[exec-call] $ ', cmd, opts);
@@ -59,6 +62,45 @@ function generateKeysConfig(nodes) {
             }
         });
     }, {});
+}
+
+async function assertVChainIsUp({ ip, id, gossip, address }) {
+    // Perform checks
+    console.log('Investigating vchain', id);
+    await assertGossipPortIsReachable(gossip, { host: ip });
+
+    await assertVchainHasMetrics({ ip, id, address });
+}
+
+function assertGossipPortIsReachable(port, { timeout = 1000, host } = {}) {
+    return new Promise(((resolve, reject) => {
+        console.log(`attempting to connect to: ${host}:${port}`);
+        const s = new net.Socket();
+        
+        s.setTimeout(timeout);
+        s.once('error', reject);
+        s.once('timeout', () => reject(new Error("Operation has timed out")));
+
+        s.connect(port, host, () => {
+            s.end();
+            console.log(`${host}:${port} is reachable using tcp!`);
+            resolve();
+        });
+    }));
+}
+
+async function assertVchainHasMetrics({ ip, id, /*address*/ }) {
+    const metricsUrl = `http://${ip}/vchains/${id}/metrics`;
+    console.log(`calling ${metricsUrl}`);
+    const result = await fetch(metricsUrl);
+
+    expect(result.status).to.equal(200);
+    expect(result.headers.get('content-type')).to.contain('application/json');
+
+    const metrics = await result.json();
+
+    //expect(metrics["Node.Address"].Value).to.equal(address, "Node address is different than expected");
+    expect(metrics["Version.Semantic"].Value, "semver").to.match(/^[vV]/);
 }
 
 module.exports = {
@@ -170,7 +212,7 @@ module.exports = {
 
             const { ip: publicIp } = elasticIPs
                 .filter(({ region }) => region === node.region)[currentRegionIndex];
-            
+
             node.name = node.name.replace('{circle_ci_build_number}', buildNumber);
 
             return Object.assign({}, node, commonProps, {
@@ -181,39 +223,46 @@ module.exports = {
     remoteExec({ command, ip }) {
         return exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} '${command}'`);
     },
-    async eventuallyReady(ip) {
+    async eventuallyReady({ ip, boyar, address }) {
         let pollCount = 0;
         let poll = true;
 
-        let boyarFlag = false;
-        let swarmLeaderFlag = false;
+        let lastError = new Error('Did not run once');
 
-        do {
-            console.log(`polling the cluster deployed service... [${pollCount}]`);
-            console.log('IP: ', ip);
+        while (poll && pollCount < 60) {
+            try {
+                console.log(`polling the cluster deployed service... [${pollCount}]`);
+                console.log('IP: ', ip);
 
-            // We test to see that Boyar is available in this manger node.
-            const boyarCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'test -e /usr/bin/boyar'`);
-            if (boyarCheck.exitCode === 0) {
-                console.log('Boyar check has passed! Boyar exists on the manager node!');
-                boyarFlag = true;
-            }
+                // We test to see that Boyar is available in this manger node.
+                const boyarCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'test -e /usr/bin/boyar'`);
+                expect(boyarCheck.exitCode).to.equal(0);
 
-            const swarmLeaderCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'sudo docker node ls | grep Leader | wc -l'`);
-            if (trim(swarmLeaderCheck.stdout) === '1') {
-                console.log('Swarm check passed! Found 1 leader in the cluster!');
-                swarmLeaderFlag = true;
-            }
+                const swarmLeaderCheck = await exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} 'sudo docker node ls | grep Leader | wc -l'`);
+                expect(trim(swarmLeaderCheck.stdout)).to.equal('1');
 
-            if (swarmLeaderFlag && boyarFlag) {
-                return true;
-            } else {
+                for (let chain of boyar.chains) {
+                    await assertVChainIsUp({
+                        id: chain.Id,
+                        ip,
+                        gossip: chain.GossipPort,
+                        address,
+                    });
+                }
+
+                lastError = null;
+                poll = false;
+            } catch (err) {
+                lastError = err;
+                console.log('the last error from our loop:', lastError);
                 pollCount++;
-                await new Promise((resolve) => setTimeout(resolve, 1500));
+                await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
             }
-        } while (poll && pollCount < 60);
+        }
 
-        return false;
+        if (lastError !== null) {
+            throw lastError;
+        }
     },
     async checkEBSFingerprint({ outputs }) {
         const ip = outputs.find(o => o.key === 'ethereum.public_ip').value;
