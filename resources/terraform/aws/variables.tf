@@ -70,14 +70,26 @@ variable "node_exporter_version" {
   default = "0.18.1"
 }
 
+variable "topology" {
+  type = list(object({
+    address = string
+    ip      = string
+    last    = number
+  }))
+}
+
 variable "chains" {
   type = list(object({
-    id = number    
+    id          = number
     gossip_port = number
-    http_port = number
+    http_port   = number
+    genesis_validator_addresses = list(object({
+      address = string
+      last    = number
+    }))
     docker = object({
       image = string
-      tag = string
+      tag   = string
     })
   }))
 }

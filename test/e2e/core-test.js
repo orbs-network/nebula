@@ -27,22 +27,71 @@ describe.only('nebula core api', () => {
         console.log('Got back:', result);
         expect(result.ok).to.equal(true);
         preExistingElasticIp = result.ip;
-        console.log('Global setup completed for nebula core API test!')
+        console.log('Global setup completed for nebula core API test!');
     });
 
     after(async () => {
-        const destroyResult = await nebula.destroyConstellation({
-            name: nodeName
-        });
+        if (!nodeName) {
+            const destroyResult = await nebula.destroyConstellation({
+                name: nodeName
+            });
 
-        expect(destroyResult.error).to.equal(null);
-        expect(destroyResult.ok).to.equal(true);
-
-        await harness.aws.destroyPublicIp(region, preExistingElasticIp);
+            expect(destroyResult.error).to.equal(null);
+            expect(destroyResult.ok).to.equal(true);
+        }
     });
+
+    after(() => harness.aws.destroyPublicIp(region, preExistingElasticIp));
+
+    function mockTopologyContract() {
+        let topology = {};
+        return {
+            ip2hex(ip) {
+                return (ip.split('.').reduce(function (ipInt, octet) { return (ipInt << 8) + parseInt(octet, 10) }, 0) >>> 0).toString(16);
+            },
+            setTopology(t) {
+                topology = {
+                    nodeAddresses: t.map(n => `0x${n.address}`),
+                    ipAddresses: t.map(n => `0x${this.ip2hex(n.ip)}`),
+                };
+            },
+            getNetworkTopology() {
+                return {
+                    call: async () => {
+                        return topology;
+                    }
+                };
+            }
+        }
+    }
 
     it('should provision and destroy a constellation', async () => {
         const bucketPrefix = 'boyar-discovery';
+        const mockTopology = mockTopologyContract();
+
+        const topology = [
+            {
+                address: '0c4e040fb7991f6aeb96e25708bf5a366d66c925',
+                ip: '3.134.6.50',
+            },
+            {
+                address: '7a11b8f6e739ca74d7c4fe3b8a2a8d213d83e768',
+                ip: '3.210.140.137',
+            }
+        ];
+
+        // {
+        //     nodeAddresses: [
+        //         `0x${address}`,
+        //         '0x0c4e040fb7991f6aeb96e25708bf5a366d66c925',
+        //         '0x7a11b8f6e739ca74d7c4fe3b8a2a8d213d83e768',
+        //     ],
+        //     ipAddresses: [
+        //         '0x7f000001', '0x03860632', '0x03d28c89',
+        //     ]
+        // }
+
+        mockTopology.setTopology(topology);
 
         const boyarConfig = require('./../../testnet/boyar');
         const address = 'd27e2e7398e2582f63d0800330010b3e58952ff6';
@@ -75,15 +124,17 @@ describe.only('nebula core api', () => {
             ip: preExistingElasticIp,
         };
 
-        const result = await nebula.createConstellation({            
+        const result = await nebula.createConstellation({
+            topologyProvider: mockTopology,
             chains: boyarConfig.chains,
             cloud,
             keys
         });
+
         expect(result.ok).to.equal(true);
         nodeName = result.name;
 
-        await harness.eventuallyReady({ ip: preExistingElasticIp, boyar: boyarConfig, address });        
+        await harness.eventuallyReady({ ip: preExistingElasticIp, boyar: boyarConfig, address, topology });
     });
 
 });

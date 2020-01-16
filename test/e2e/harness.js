@@ -16,6 +16,8 @@ const fixtures = require('./fixtures/nodes.json');
 const boyar = require('./fixtures/boyar.json');
 const { expect } = require('chai');
 
+const fingerprint = 'dsfjah342hfgsdfahfjkfhwkjh4324';
+
 async function exec(cmd, opts) {
     console.log('[exec-call] $ ', cmd, opts);
     let result;
@@ -64,15 +66,15 @@ function generateKeysConfig(nodes) {
     }, {});
 }
 
-async function assertVChainIsUp({ ip, id, gossip, address }) {
+async function assertVChainIsUp({ ip, id, gossip, topology }) {
     // Perform checks
     console.log('Investigating vchain', id);
-    await assertGossipPortIsReachable(gossip, { host: ip });
+    await assertGossipPortIsReachableAndSendsFingerprint(gossip, { host: ip });
 
-    await assertVchainHasMetrics({ ip, id, address });
+    await assertVchainHasMetricsAndReceivedFingerprint({ ip, id, topology });
 }
 
-function assertGossipPortIsReachable(port, { timeout = 1000, host } = {}) {
+function assertGossipPortIsReachableAndSendsFingerprint(port, { timeout = 1000, host } = {}) {
     return new Promise(((resolve, reject) => {
         console.log(`attempting to connect to: ${host}:${port}`);
         const s = new net.Socket();
@@ -82,6 +84,7 @@ function assertGossipPortIsReachable(port, { timeout = 1000, host } = {}) {
         s.once('timeout', () => reject(new Error("Operation has timed out")));
 
         s.connect(port, host, () => {
+            s.write(fingerprint);
             s.end();
             console.log(`${host}:${port} is reachable using tcp!`);
             resolve();
@@ -89,7 +92,7 @@ function assertGossipPortIsReachable(port, { timeout = 1000, host } = {}) {
     }));
 }
 
-async function assertVchainHasMetrics({ ip, id, /*address*/ }) {
+async function assertVchainHasMetricsAndReceivedFingerprint({ ip, id, topology }) {
     const metricsUrl = `http://${ip}/vchains/${id}/metrics`;
     console.log(`calling ${metricsUrl}`);
     const result = await fetch(metricsUrl);
@@ -101,6 +104,23 @@ async function assertVchainHasMetrics({ ip, id, /*address*/ }) {
 
     //expect(metrics["Node.Address"].Value).to.equal(address, "Node address is different than expected");
     expect(metrics["Version.Semantic"].Value, "semver").to.match(/^[vV]/);
+
+    expect(metrics["_testkit"].gossipData, "gossip content").to.equal(fingerprint);
+
+    const chainConfig = metrics["_testkit"].configs.find(c => c.path === `/opt/orbs/chain-${id}-config.json`);
+
+    expect(chainConfig).to.not.equal(undefined);
+    const configContent = chainConfig["topology-nodes"].contents;
+    expect(configContent["topology-nodes"].length).to.equal(topology.length);
+
+    const strippedNodes = configContent["topology-nodes"].filter(n => {
+        return {
+            address: n.address,
+            ip: n.ip,
+        };
+    });
+
+    expect(strippedNodes).to.eql(topology);
 }
 
 module.exports = {
@@ -223,7 +243,7 @@ module.exports = {
     remoteExec({ command, ip }) {
         return exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} '${command}'`);
     },
-    async eventuallyReady({ ip, boyar, address }) {
+    async eventuallyReady({ ip, boyar, address, topology }) {
         let pollCount = 0;
         let poll = true;
 
@@ -240,6 +260,7 @@ module.exports = {
                         ip,
                         gossip: chain.GossipPort,
                         address,
+                        topology,
                     });
                 }
 

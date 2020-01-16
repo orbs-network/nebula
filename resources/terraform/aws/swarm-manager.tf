@@ -78,18 +78,19 @@ export node_address=$(cat /opt/orbs/keys.json | jq '."node-address"')
 echo "{
   \"virtual-chain-id\": ${chain.id},
   \"node-address\": $node_address,
-  \"active-consensus-algo\": 2,
+  \"active-consensus-algo\": 2,  
   \"genesis-validator-addresses\": [
-    $node_address,
-    \"d27e2e7398e2582f63d0800330010b3e58952ff6\",
-    \"6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9\",
-    \"c056dfc0d1fbc7479db11e61d1b0b57612bf7f17\"
+    %{for validator in chain.genesis_validator_addresses}
+      \"${validator.address}\" %{if validator.last != 1},%{endif}
+    %{endfor}
   ],
   \"topology-nodes\": [
-    {\"address\":$node_address,\"ip\":\"127.0.0.1\",\"port\":4400}
+    %{for peer in var.topology}
+      {\"address\":\"${peer.address}\",\"ip\":\"${peer.ip}\",\"port\":${chain.gossip_port}} %{if peer.last != 1},%{endif}
+    %{endfor}
   ],
   \"ethereum-endpoint\": \"http://192.168.199.6:8545\",
-  \"logger-full-log\": true,
+  \"logger-full-log\": false,
   \"processor-sanitize-deployed-contracts\": false,
   \"profiling\": true
 }" > /opt/orbs/chain-${chain.id}-config.json

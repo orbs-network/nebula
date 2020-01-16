@@ -37,6 +37,31 @@ describe('terraform service unit tests', () => {
         expect(result.length).to.equal(0);
     });
 
+    it('should parse a topology correctly', () => {
+        const result = tf.processRawTopology({
+            nodeAddresses: [
+                '0x0c4e040fb7991f6aeb96e25708bf5a366d66c925',
+                '0x7a11b8f6e739ca74d7c4fe3b8a2a8d213d83e768',
+            ],
+            ipAddresses: [
+                '0x03860632', '0x03d28c89',
+            ]
+        });
+
+        expect(result).to.eql([
+            {
+                address: '0c4e040fb7991f6aeb96e25708bf5a366d66c925',
+                ip: '3.134.6.50',
+                last: 0,
+            },
+            {
+                address: '7a11b8f6e739ca74d7c4fe3b8a2a8d213d83e768',
+                ip: '3.210.140.137',
+                last: 1,
+            }
+        ]);
+    });
+
     describe("createTerraformVariablesFile", () => {
         it("default call", () => {
             const keys = {
