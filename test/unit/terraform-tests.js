@@ -62,7 +62,7 @@ describe('terraform service unit tests', () => {
         ]);
     });
 
-    describe("createTerraformVariablesFile", () => {
+    describe.skip("createTerraformVariablesFile", () => {
         it("default call", () => {
             const keys = {
                 "aws": {
