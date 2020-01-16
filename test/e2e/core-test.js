@@ -12,6 +12,12 @@ nebula.setTerraformCachePath(path.join(__dirname, '../../_terraform'));
 
 const region = 'us-east-1';
 let preExistingElasticIp;
+let nodeName;
+
+// @todo:
+//  1) Import edge cases from Boyar E2E
+//   Examples:
+//   - Disabled VC
 
 describe('nebula core api', () => {
     before(async () => {
@@ -21,10 +27,23 @@ describe('nebula core api', () => {
         console.log('Global setup completed for nebula core API test!');
     });
 
+    after(async () => {
+        const destroyResult = await nebula.destroyConstellation({
+            name: nodeName
+        });
+
+        expect(destroyResult.error).to.equal(null);
+        expect(destroyResult.ok).to.equal(true);
+
+        await harness.aws.destroyPublicIp(region, preExistingElasticIp);
+    });
+
     it('should provision and destroy a constellation', async () => {
         const bucketPrefix = 'boyar-discovery';
 
         const boyarConfig = require('./../../testnet/boyar');
+        const address = 'd27e2e7398e2582f63d0800330010b3e58952ff6';
+
         const keys = {
             aws: {
                 profile: 'default',
@@ -35,7 +54,7 @@ describe('nebula core api', () => {
             },
             orbs: {
                 nodeKeys: {
-                    address: "d27e2e7398e2582f63d0800330010b3e58952ff6",
+                    address,
                     privateKey: "87a210586f57890ae3642c62ceb58f0f0a54e787891054a5a54c80e1da418253",
                     leader: "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
                 },
@@ -57,18 +76,11 @@ describe('nebula core api', () => {
             cloud,
             keys
         });
+        nodeName = result.name;
 
-        const pollingResult = await harness.eventuallyReady(preExistingElasticIp);
-        expect(pollingResult).to.equal(true);
-
-        await nebula.destroyConstellation({
-            name: result.name
-        });
+        await harness.eventuallyReady({ ip: preExistingElasticIp, boyar: boyarConfig, address });
     });
 
-    after(async () => {
-        await harness.aws.destroyPublicIp(region, preExistingElasticIp);
-    });
 });
 
 
