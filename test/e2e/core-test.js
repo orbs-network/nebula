@@ -7,7 +7,7 @@ const { Nebula } = require('./../../lib/services/nebula');
 const harness = require('./harness');
 const path = require('path');
 
-const nebula = new Nebula();
+const nebula = new Nebula({});
 nebula.setTerraformCachePath(path.join(__dirname, '../../_terraform'));
 
 const region = 'us-east-1';
@@ -31,17 +31,17 @@ describe('nebula core api', () => {
     });
 
     after(async () => {
-        const destroyResult = await nebula.destroyConstellation({
-            name: nodeName
-        });
-
-        expect(destroyResult.error).to.equal(null);
-        expect(destroyResult.ok).to.equal(true);
-
-        await harness.aws.destroyPublicIp(region, preExistingElasticIp);
+        if (nodeName && nodeName.length > 0) {
+            await nebula.destroyConstellation({
+                region,
+                name: nodeName
+            });
+        }
     });
 
-    it('should provision and destroy a constellation', async () => {
+    after(() => harness.aws.destroyPublicIp(region, preExistingElasticIp));
+
+    it.only('should provision and destroy a constellation', async () => {
         const bucketPrefix = 'boyar-discovery';
 
         const boyarConfig = require('./../../testnet/boyar');
@@ -69,6 +69,7 @@ describe('nebula core api', () => {
         const cloud = {
             type: types.clouds.aws,
             region,
+            backend: true,
             instanceType: 't2.medium',
             nodeCount: 1,
             bucketPrefix,
@@ -82,9 +83,8 @@ describe('nebula core api', () => {
         expect(result.ok).to.equal(true);
         nodeName = result.name;
 
-        await harness.eventuallyReady({ ip: preExistingElasticIp, boyar: boyarConfig, address });        
+        await harness.eventuallyReady({ ip: preExistingElasticIp, boyar: boyarConfig, address });
     });
-
 });
 
 
