@@ -11,7 +11,7 @@ const nebula = new Nebula({});
 const terraformBasepath = path.join(__dirname, '../../_terraform');
 nebula.setTerraformCachePath(terraformBasepath);
 
-const ciUniqueIdentifier = ('CI' in process.env) ? `${process.env.CIRCLE_BRANCH}-${process.env.CIRCLE_BUILD_NUM}` : 'first';
+const ciUniqueIdentifier = ('CI' in process.env) ? `${process.env.CIRCLE_BRANCH.replace(/\//g, '-')}-${process.env.CIRCLE_BUILD_NUM}` : 'first';
 
 const region = 'us-east-1';
 let preExistingElasticIp;
