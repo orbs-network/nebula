@@ -73,7 +73,7 @@ describe('nebula core api', () => {
     after(() => harness.cleanUpTerraformProject({ basePath: terraformBasepath, dirName: `${cloud.name}-aside`, shouldCleanup }));
     after(() => harness.aws.destroyPublicIp(region, preExistingElasticIp));
 
-    it.only('should provision and destroy a constellation', async () => {
+    it('should provision and destroy a constellation', async () => {
         const result = await nebula.createConstellation({
             cloud: Object.assign({}, cloud, {
                 ip: preExistingElasticIp,
