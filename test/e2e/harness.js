@@ -76,7 +76,7 @@ function assertGossipPortIsReachable(port, { timeout = 1000, host } = {}) {
     return new Promise(((resolve, reject) => {
         console.log(`attempting to connect to: ${host}:${port}`);
         const s = new net.Socket();
-        
+
         s.setTimeout(timeout);
         s.once('error', reject);
         s.once('timeout', () => reject(new Error("Operation has timed out")));
@@ -219,6 +219,20 @@ module.exports = {
                 publicIp
             });
         });
+    },
+    cleanUpTerraformProject({ basePath, dirName, shouldCleanup }) {
+        if (shouldCleanup) {
+            const currentProjectPath = path.join(basePath, dirName);
+            console.log(`Cleaning up Terraform project at path: ${currentProjectPath}`);
+            return exec(`cd ${currentProjectPath} && terraform destroy -var-file terraform.tfvars -auto-approve`);
+        }
+
+        return Promise.resolve();
+    },
+    renameTerraformProjectToAside({ basePath, dirName }) {
+        const currentProjectPath = path.join(basePath, dirName);
+        console.log(`Renaming the Terraform folder ${currentProjectPath} to ${currentProjectPath}-aside`);
+        return exec(`mv ${currentProjectPath} ${currentProjectPath}-aside`);
     },
     remoteExec({ command, ip }) {
         return exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} '${command}'`);
