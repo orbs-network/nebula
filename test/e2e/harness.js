@@ -110,10 +110,10 @@ async function assertVchainHasMetricsAndReceivedFingerprint({ ip, id, topology }
     const chainConfig = metrics["_testkit"].configs.find(c => c.path === `/opt/orbs/chain-${id}-config.json`);
 
     expect(chainConfig).to.not.equal(undefined);
-    const configContent = chainConfig["topology-nodes"].contents;
+    const configContent = chainConfig.contents;
     expect(configContent["topology-nodes"].length).to.equal(topology.length);
 
-    const strippedNodes = configContent["topology-nodes"].filter(n => {
+    const strippedNodes = configContent["topology-nodes"].map(n => {
         return {
             address: n.address,
             ip: n.ip,

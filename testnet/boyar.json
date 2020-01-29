@@ -23,8 +23,8 @@
             "GossipPort": 4400,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "itamararjuan/orbs-network-go",
-                "Tag": "testkit",
+                "Image": "orbsnetwork/node",
+                "Tag": "v0.8.0",
                 "Pull": true
             },
             "Config": {

@@ -94,6 +94,16 @@ describe.only('nebula core api', () => {
         mockTopology.setTopology(topology);
 
         const boyarConfig = require('./../../testnet/boyar');
+        // we use a custom testkit instead of a VC container, later used for assertion in `harness.eventuallyReady()`
+        boyarConfig.chains = boyarConfig.chains.map(chain => ({
+            ...chain,
+            DockerConfig : {
+                "ContainerNamePrefix": "orbs-network",
+                "Image": "itamararjuan/orbs-network-go",
+                "Tag": "testkit",
+                "Pull": true
+            }
+        }));
         const address = 'd27e2e7398e2582f63d0800330010b3e58952ff6';
 
         const keys = {
