@@ -21,12 +21,6 @@ describe('nebula upgrade node version', () => {
 
         console.log('Got back the following IP allocation result from AWS:', elasticIPs);
 
-        const validIPsCount = elasticIPs.filter(o => o.ok === true).length;
-
-        if (validIPsCount !== 1) {
-            throw new Error('Not all Elastic IPs required were allocated');
-        }
-
         console.log('Creating nebula "node.json" file...');
         nodesJSONs = harness.getNodesJSONs({ elasticIPs }, [singleNode]);
         console.log('Got: ', nodesJSONs);
@@ -73,10 +67,9 @@ describe('nebula upgrade node version', () => {
         console.log('*********** NEBULA NODES DESTRUCTION END **************');
 
         console.log('********* NEBULA UPGRADE VERSION TEST GLOBAL TEARDOWN START **********');
-        const validElasticIPs = elasticIPs.filter(o => o.ok === true);
-        console.log('Releasing the following Elastic IPs from our AWS account: ', validElasticIPs);
-        const elasticIPsReleaseResults = await Promise.all(validElasticIPs
-            .map(({ ip, region }) => harness.aws.destroyPublicIp(region, ip)));
+        console.log('Releasing the following Elastic IPs from our AWS account: ', elasticIPs);
+        const elasticIPsReleaseResults = await Promise.all(
+            elasticIPs.map(({ ip, region }) => harness.aws.destroyPublicIp(region, ip)));
         console.log('Result of releasing Elastic IPs: ', elasticIPsReleaseResults);
 
         console.log('Deleting "node.json" files...');

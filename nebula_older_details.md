@@ -235,7 +235,7 @@ const keys = {
 nebulaSdk.createConstellation({ cloud, keys })
 .then((result) => {
     console.log(result); // ->
-    // { ok: true, 
+    // { 
     //   spinContext: '65b2c790-125b-11e9-b828-8781a9e90148',
     //   manager: {
     //     ip: '1.2.3.4'
