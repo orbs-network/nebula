@@ -1,0 +1,1 @@
+{"version":3,"file":"generate-config.js","sourceRoot":"","sources":["../../../../src/lib/cli/options/generate-config.ts"],"names":[],"mappings":";;AAAA,SAAS,qBAAqB,CAAC,KAAK;IAChC,OAAO,KAAK;SACP,MAAM,CAAC,aAAa,CAAC;SACrB,IAAI,CAAC,MAAM,CAAC,CAAC;AACtB,CAAC;AAED,kBAAe;IACX,qBAAqB;CACxB,CAAC"}
