@@ -60,7 +60,7 @@ variable "logz_io_http_endpoint" {
 }
 
 variable "boyar_version" {
-  default = "v0.21.0"
+  default = "v0.22.0"
 }
 
 variable "incoming_ssh_cidr_blocks" {
