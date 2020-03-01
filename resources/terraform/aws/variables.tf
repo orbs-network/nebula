@@ -79,8 +79,3 @@ variable "ssl_private_key" {
 variable "node_exporter_version" {
   default = "0.18.1"
 }
-
-variable "efs_id" {
-  type    = "string"
-  default = "fs-14a20bf9"
-}
