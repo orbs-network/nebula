@@ -60,7 +60,7 @@ variable "logz_io_http_endpoint" {
 }
 
 variable "boyar_version" {
-  default = "v0.22.0"
+  default = "v1.0.0-alpha"
 }
 
 variable "incoming_ssh_cidr_blocks" {
@@ -78,4 +78,9 @@ variable "ssl_private_key" {
 
 variable "node_exporter_version" {
   default = "0.18.1"
+}
+
+variable "efs_id" {
+  type    = "string"
+  default = "fs-14a20bf9"
 }
