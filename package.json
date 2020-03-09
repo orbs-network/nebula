@@ -1,6 +1,6 @@
 {
   "name": "@orbs-network/orbs-nebula",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Nebula is a tool to provision new Orbs Hybrid Blockchain Constellations",
   "main": "index.js",
   "scripts": {
