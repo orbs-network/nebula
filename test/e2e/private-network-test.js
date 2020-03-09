@@ -38,7 +38,7 @@ describe('nebula setup a private network', () => {
         console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL SETUP FINISHED **********');
     });
 
-    it('should provision a 3 node network and then join a 4th node', async () => {
+    it.only('should provision a 3 node network and then join a 4th node', async () => {
         const _3_nodes = _.take(nodesJSONs, 3);
         const lastNode = _.last(nodesJSONs);
 

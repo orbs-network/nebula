@@ -3,11 +3,15 @@ const { expect } = require('chai');
 
 const types = require('./../../constants/types');
 const { Nebula } = require('./../../lib/services/nebula');
+const { Terraform } = require('./../../lib/services/terraform');
+
+const terraformAdapter = new Terraform({});
 
 const harness = require('./harness');
 const path = require('path');
 
-const nebula = new Nebula({});
+const nebula = new Nebula({ terraformAdapter });
+
 const terraformBasepath = path.join(__dirname, '../../_terraform');
 nebula.setTerraformCachePath(terraformBasepath);
 
