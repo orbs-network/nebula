@@ -62,15 +62,12 @@ const cloud = {
 
 let shouldCleanup = true;
 
-describe('nebula core api', () => {
+describe.only('nebula core api', () => {
     before(async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         console.log('Allocating a public IP from AWS...');
-        const result = await harness.aws.getPublicIp(region);
-        console.log('Got back:', result);
-        expect(result.ok).to.equal(true);
-        preExistingElasticIp = result.ip;
-        console.log('Global setup completed for nebula core API test!')
+        preExistingElasticIp = await harness.aws.getPublicIp(region);
+        console.log('Global setup completed for nebula core API test!');
     });
 
     after(() => harness.cleanUpTerraformProject({ basePath: terraformBasepath, dirName: cloud.name, shouldCleanup }));
@@ -78,14 +75,12 @@ describe('nebula core api', () => {
     after(() => harness.aws.destroyPublicIp(region, preExistingElasticIp));
 
     it('should provision and destroy a constellation', async () => {
-        const result = await nebula.createConstellation({
+        await nebula.createConstellation({
             cloud: Object.assign({}, cloud, {
                 ip: preExistingElasticIp,
             }),
             keys
         });
-
-        expect(result.ok).to.equal(true);
 
         await harness.eventuallyReady({ ip: preExistingElasticIp, boyar: boyarConfig, address });
 

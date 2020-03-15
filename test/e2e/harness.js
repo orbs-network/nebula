@@ -116,7 +116,7 @@ module.exports = {
         return Promise.all(jsons.map((_, index) => unlink(path.join(__dirname, 'private-network/nodes', `node${index + 1}.json`))));
     },
     getElasticIPsInRegions(regions) {
-        return Promise.all(regions.map((region) => this.aws.getPublicIp(region)));
+        return Promise.all(regions.map(async (region) => ({ region, ip: await this.aws.getPublicIp(region) })));
     },
     writeBoyarConfig() {
         const targetPath = path.join(__dirname, 'private-network/templates/boyar.json');
@@ -138,23 +138,11 @@ module.exports = {
                 region
             });
 
-            try {
-                const response = await ec2.allocateAddress({
-                    Domain: 'vpc'
-                }).promise();
+            const response = await ec2.allocateAddress({
+                Domain: 'vpc'
+            }).promise();
 
-                return {
-                    ok: true,
-                    region,
-                    ip: response.PublicIp,
-                };
-            } catch (err) {
-                return {
-                    ok: false,
-                    region,
-                    err,
-                };
-            }
+            return response.PublicIp;
         },
         async destroyPublicIp(region, ip) {
             console.log(`Attempting to destroy ${ip} in ${region}`);
@@ -163,29 +151,19 @@ module.exports = {
                 region,
             });
 
-            try {
-                const description = await ec2.describeAddresses({
-                    PublicIps: [ip],
-                }).promise();
+            const description = await ec2.describeAddresses({
+                PublicIps: [ip],
+            }).promise();
 
-                const result = await ec2.releaseAddress({
-                    AllocationId: description.Addresses[0].AllocationId
-                }).promise();
+            const result = await ec2.releaseAddress({
+                AllocationId: description.Addresses[0].AllocationId
+            }).promise();
 
-                return {
-                    ok: true,
-                    region,
-                    ip,
-                    result,
-                };
-            } catch (err) {
-                return {
-                    ok: false,
-                    region,
-                    ip,
-                    err,
-                };
-            }
+            return {
+                region,
+                ip,
+                result,
+            };
         }
     },
     getNodesJSONs({ elasticIPs, buildNumber = circleCiBuildNumber() }, nodes = fixtures.nodes) {
@@ -229,21 +207,25 @@ module.exports = {
 
         return Promise.resolve();
     },
-    renameTerraformProjectToAside({ basePath, dirName }) {
+    async renameTerraformProjectToAside({ basePath, dirName }) {
         const currentProjectPath = path.join(basePath, dirName);
         console.log(`Renaming the Terraform folder ${currentProjectPath} to ${currentProjectPath}-aside`);
-        return exec(`mv ${currentProjectPath} ${currentProjectPath}-aside`);
+        const result = await exec(`rm -rf ${currentProjectPath}-aside && mv ${currentProjectPath} ${currentProjectPath}-aside`);
+        if (result.exitCode !== 0) {
+            throw new Error(`The following exec failed: "rm -rf ${currentProjectPath}-aside && mv ${currentProjectPath} ${currentProjectPath}-aside"`);
+        }
+
+        return Promise.resolve();
     },
     remoteExec({ command, ip }) {
         return exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} '${command}'`);
     },
     async eventuallyReady({ ip, boyar, address }) {
         let pollCount = 0;
-        let poll = true;
 
         let lastError = new Error('Did not run once');
 
-        while (poll && pollCount < 60) {
+        while (lastError !== null && pollCount < 60) {
             try {
                 console.log(`polling the cluster deployed service... [${pollCount}]`);
                 console.log('IP: ', ip);
@@ -265,7 +247,6 @@ module.exports = {
                 }
 
                 lastError = null;
-                poll = false;
             } catch (err) {
                 lastError = err;
                 console.log('the last error from our loop:', lastError);
@@ -278,23 +259,4 @@ module.exports = {
             throw lastError;
         }
     },
-    async checkEBSFingerprint({ outputs }) {
-        const ip = outputs.find(o => o.key === 'ethereum.public_ip').value;
-        const command = `cat /ethereum-persistency/.fingerprint`;
-        const checkFingerprintResult = await this.remoteExec({ command, ip });
-
-        if (checkFingerprintResult.exitCode !== 0) {
-            return {
-                ok: false,
-                fingerprint: null,
-                error: checkFingerprintResult.stderr,
-            };
-        }
-
-        return {
-            ok: true,
-            error: null,
-            fingerprint: trim(checkFingerprintResult.stdout),
-        };
-    }
 };
