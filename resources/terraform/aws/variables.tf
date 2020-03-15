@@ -60,7 +60,7 @@ variable "logz_io_http_endpoint" {
 }
 
 variable "boyar_version" {
-  default = "v1.0.0-alpha"
+  default = "v1.0.0-beta"
 }
 
 variable "boyar_management_config" {
