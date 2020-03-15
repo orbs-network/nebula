@@ -119,9 +119,9 @@ if [ ! -z "$(cat $SSL_CERT_PATH)" ] && [ ! -z "$(cat $SSL_PRIVATE_KEY_PATH)" ]; 
 fi
 
 export MANAGEMENT_CONFIG_PATH=/opt/orbs/management-config.json
-echo <<-EOF
+cat <<-EOF > $MANAGEMENT_CONFIG_PATH
 ${var.boyar_management_config}
-EOF > $MANAGEMENT_CONFIG_PATH
+EOF
 
 export MANAGEMENT_CONFIG_PARAMS="${var.boyar_management_config == "" ? "" : "--management-config $MANAGEMENT_CONFIG_PATH"}"
 
@@ -132,7 +132,7 @@ echo "[program:boyar]
 command=/usr/bin/boyar --logger-http-endpoint \"${var.logz_io_http_endpoint}\" --config-url ${var.s3_boyar_config_url} --keys /opt/orbs/keys.json --daemonize --max-reload-time-delay 0m $ETHEREUM_PARAMS $SSL_PARAMS $MANAGEMENT_CONFIG_PARAMS
 autostart=true
 autorestart=true
-environment=HOME=\"/root\", ETHEREUM_PARAMS=\"$ETHEREUM_PARAMS\", SSL_PARAMS=\"$SSL_PARAMS\", MANAGEMENT_CONFIG_PARAMS="$MANAGEMENT_CONFIG_PARAMS"
+environment=HOME=\"/root\", ETHEREUM_PARAMS=\"$ETHEREUM_PARAMS\", SSL_PARAMS=\"$SSL_PARAMS\", MANAGEMENT_CONFIG_PARAMS=\"$MANAGEMENT_CONFIG_PARAMS\"
 stderr_logfile=/var/log/boyar.err.log
 stdout_logfile=/var/log/boyar.log" >> /etc/supervisor/conf.d/boyar.conf
 
