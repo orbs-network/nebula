@@ -25,7 +25,7 @@ To complete this guide you will need the following set up:
 
 - [Terraform](https://www.terraform.io/downloads.html)
   
-  Use `brew install terraform@` to get it installed
+  Use `brew install terraform` to get it installed
 - [Orbs Key Generator](https://www.github.com/orbs-network/orbs-key-generator)
 
   Use `brew install orbs-network/devtools/orbs-key-generator` to get it installed (requires a Mac)
