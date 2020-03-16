@@ -47,6 +47,10 @@ sudo apt-get update
 sudo apt-get install -y docker-ce
 docker plugin install --grant-all-permissions rexray/ebs
 
+apt-get install -y nfs-common
+mkdir -p /var/efs
+mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ${aws_efs_mount_target.block_storage_mount_point.dns_name}:/ /var/efs
+
 apt-get install -y python-pip && pip install awscli
 
 while true; do
