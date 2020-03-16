@@ -36,6 +36,7 @@ describe('_create', () => {
             "type": "aws",
             "region": "ap-south-1",
             "instanceType": "m4.large",
+            "backend": false,
             "nodeCount": 0,
             "name": "mumbai-node4",
             "ip": "52.66.33.249",
