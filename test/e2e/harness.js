@@ -116,7 +116,7 @@ module.exports = {
         return Promise.all(jsons.map((_, index) => unlink(path.join(__dirname, 'private-network/nodes', `node${index + 1}.json`))));
     },
     getElasticIPsInRegions(regions) {
-        return Promise.all(regions.map(async (region) => ({region, ip: await this.aws.getPublicIp(region)})));
+        return Promise.all(regions.map(async (region) => ({ region, ip: await this.aws.getPublicIp(region) })));
     },
     writeBoyarConfig() {
         const targetPath = path.join(__dirname, 'private-network/templates/boyar.json');
@@ -197,6 +197,25 @@ module.exports = {
                 publicIp
             });
         });
+    },
+    cleanUpTerraformProject({ basePath, dirName, shouldCleanup }) {
+        if (shouldCleanup) {
+            const currentProjectPath = path.join(basePath, dirName);
+            console.log(`Cleaning up Terraform project at path: ${currentProjectPath}`);
+            return exec(`cd ${currentProjectPath} && terraform destroy -var-file terraform.tfvars -auto-approve`);
+        }
+
+        return Promise.resolve();
+    },
+    async renameTerraformProjectToAside({ basePath, dirName }) {
+        const currentProjectPath = path.join(basePath, dirName);
+        console.log(`Renaming the Terraform folder ${currentProjectPath} to ${currentProjectPath}-aside`);
+        const result = await exec(`rm -rf ${currentProjectPath}-aside && mv ${currentProjectPath} ${currentProjectPath}-aside`);
+        if (result.exitCode !== 0) {
+            throw new Error(`The following exec failed: "rm -rf ${currentProjectPath}-aside && mv ${currentProjectPath} ${currentProjectPath}-aside"`);
+        }
+
+        return Promise.resolve();
     },
     remoteExec({ command, ip }) {
         return exec(`ssh -o StrictHostKeyChecking=no ubuntu@${ip} '${command}'`);

@@ -1,12 +1,13 @@
 {
   "name": "@orbs-network/orbs-nebula",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "Nebula is a tool to provision new Orbs Hybrid Blockchain Constellations",
   "main": "index.js",
   "scripts": {
     "test:unit": "mocha test/unit/*",
     "lint": "eslint . --ext .js",
     "test:e2e": "mocha --no-timeouts test/e2e/*",
+    "test:comp": "mocha test/component/*",
     "test": "npm run lint && npm run test:unit && npm run test:e2e"
   },
   "bin": {
