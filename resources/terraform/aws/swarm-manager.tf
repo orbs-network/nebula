@@ -53,6 +53,10 @@ apt-get install -y python-pip && pip install awscli
 
 docker swarm init
 
+apt-get install -y nfs-common
+mkdir -p /var/efs
+mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ${aws_efs_mount_target.block_storage_mount_point.dns_name}:/ /var/efs
+
 mkdir -p /opt/orbs
 aws secretsmanager get-secret-value --region ${var.region} --secret-id ${local.secret_name} --output text --query SecretBinary | base64 -d > /opt/orbs/keys.json
 

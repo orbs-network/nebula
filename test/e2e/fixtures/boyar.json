@@ -1,6 +1,23 @@
 {
     "network": [],
-    "orchestrator": {},
+    "orchestrator": {
+        "storage-driver": "local",
+        "storage-mount-type": "bind"
+    },
+    "services": {
+        "signer": {
+            "Port": 7777,
+            "DockerConfig": {
+                "ContainerNamePrefix": "orbs-node",
+                "Image": "orbsnetwork/signer",
+                "Tag": "experimental",
+                "Pull": true
+            },
+            "Config": {
+                "api": "v1"
+            }
+        }
+    },
     "chains": [
         {
             "Id": 10000,
@@ -9,45 +26,24 @@
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
                 "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
+                "Tag": "v1.3.10",
                 "Pull": true
             },
             "Config": {
-                "ethereum-endpoint": "http://172.31.1.100:8545",
-                "logger-file-truncation-interval": "15m",
-                "profiling": true
-            }
-        },
-        {
-            "Id": 20000,
-            "HttpPort": 8081,
-            "GossipPort": 4401,
-            "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
-                "Pull": true
-            },
-            "Config": {
-                "ethereum-endpoint": "http://172.31.1.100:8545",
-                "logger-file-truncation-interval": "15m",
-                "profiling": true
-            }
-        },
-        {
-            "Id": 30000,
-            "HttpPort": 8082,
-            "GossipPort": 4402,
-            "DockerConfig": {
-                "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
-                "Tag": "v0.8.0",
-                "Pull": true
-            },
-            "Config": {
-                "ethereum-endpoint": "http://172.31.1.100:8545",
-                "logger-file-truncation-interval": "15m",
-                "profiling": true
+                "genesis-validator-addresses": [
+                    "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
+                    "d27e2e7398e2582f63d0800330010b3e58952ff6",
+                    "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
+                    "c056dfc0d1fbc7479db11e61d1b0b57612bf7f17"
+                ],
+                "logger-http-endpoint": "http://ec2-34-222-245-15.us-west-2.compute.amazonaws.com:5000",
+                "ethereum-endpoint": "http://ropsten.orbs.com:8545",
+                "ethereum-finality-blocks-component": 10,
+                "active-consensus-algo": 2,
+                "logger-file-truncation-interval": "24h",
+                "consensus-context-triggers-enabled": true,
+                "profiling": true,
+                "processor-sanitize-deployed-contracts": false
             }
         }
     ]
