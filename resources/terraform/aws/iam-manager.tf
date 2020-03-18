@@ -42,11 +42,6 @@ resource "aws_iam_role_policy_attachment" "swarm_manager_ecr" {
   policy_arn = "${aws_iam_policy.swarm_ecr.arn}"
 }
 
-resource "aws_iam_role_policy_attachment" "swarm_manager_ebs" {
-  role      = "${aws_iam_role.swarm_manager.name}"
-  policy_arn = "${aws_iam_policy.swarm_ebs.arn}"
-}
-
 resource "aws_iam_role_policy_attachment" "swarm_manager_secrets" {
   role      = "${aws_iam_role.swarm_manager.name}"
   policy_arn = "${aws_iam_policy.swarm_manager_secrets.arn}"

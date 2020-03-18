@@ -45,7 +45,6 @@ sudo add-apt-repository \
 
 sudo apt-get update
 sudo apt-get install -y docker-ce
-docker plugin install --grant-all-permissions rexray/ebs
 
 apt-get install -y nfs-common
 mkdir -p /var/efs

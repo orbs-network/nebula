@@ -45,7 +45,6 @@ add-apt-repository \
 
 apt-get update
 apt-get install -y docker-ce
-docker plugin install --grant-all-permissions rexray/ebs
 
 curl -L https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-${var.boyar_version}.bin -o /usr/bin/boyar && chmod +x /usr/bin/boyar
 

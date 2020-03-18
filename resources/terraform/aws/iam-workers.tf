@@ -37,11 +37,6 @@ resource "aws_iam_policy" "swarm_worker_secrets" {
   policy = "${data.aws_iam_policy_document.swarm_worker_secrets.json}"
 }
 
-resource "aws_iam_role_policy_attachment" "swarm_worker_ebs" {
-  role      = "${aws_iam_role.swarm_worker.name}"
-  policy_arn = "${aws_iam_policy.swarm_ebs.arn}"
-}
-
 resource "aws_iam_role_policy_attachment" "swarm_worker_ecr" {
   role      = "${aws_iam_role.swarm_worker.name}"
   policy_arn = "${aws_iam_policy.swarm_ecr.arn}"
