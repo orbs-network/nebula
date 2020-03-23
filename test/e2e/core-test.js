@@ -27,7 +27,7 @@ let preExistingElasticIp;
 
 const bucketPrefix = 'boyar-discovery';
 
-const boyarConfig = require('./../../testnet/boyar');
+const boyarConfig = require(path.join(__dirname, '../../testnet/boyar.json'));
 const address = 'd27e2e7398e2582f63d0800330010b3e58952ff6';
 
 const keys = {
@@ -45,7 +45,7 @@ const keys = {
             leader: "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
         },
         boyarConfig,
-        ethereum: true
+        ethereum: false
     }
 };
 
@@ -62,11 +62,30 @@ const cloud = {
 
 let shouldCleanup = true;
 
-describe.only('nebula core api', () => {
+describe('nebula core api', () => {
     before(async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         console.log('Allocating a public IP from AWS...');
         preExistingElasticIp = await harness.aws.getPublicIp(region);
+        console.log('Address allocated is:', preExistingElasticIp);
+
+        const network = [
+            {
+                address: "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
+                ip: preExistingElasticIp,
+            },
+            {
+                address: "d27e2e7398e2582f63d0800330010b3e58952ff6",
+                ip: "3.123.50.149"
+            },
+            {
+                address: "6e2cb55e4cbe97bf5b1e731d51cc2c285d83cbf9",
+                ip: "34.255.219.212"
+            }
+        ];
+
+        console.log('network topology with our IP is:', network);
+        keys.orbs.boyarConfig.network = network;
         console.log('Global setup completed for nebula core API test!');
     });
 
@@ -83,7 +102,6 @@ describe.only('nebula core api', () => {
         });
 
         await harness.eventuallyReady({ ip: preExistingElasticIp, boyar: boyarConfig, address });
-
         await harness.renameTerraformProjectToAside({ basePath: terraformBasepath, dirName: cloud.name });
 
         const destroyResult = await nebula.destroyConstellation({
