@@ -129,6 +129,8 @@ module.exports = {
         const ipsTargetPath = path.join(basePath, 'ips.json');
         const keysTargetPath = path.join(basePath, 'keys.json');
 
+        console.log('about to write IPs and Keys: ', nodes);
+
         fs.writeFileSync(ipsTargetPath, JSON.stringify(generateIpsConfig(nodes), 2, 2));
         fs.writeFileSync(keysTargetPath, JSON.stringify(generateKeysConfig(nodes), 2, 2));
     },
@@ -154,6 +156,9 @@ module.exports = {
             const description = await ec2.describeAddresses({
                 PublicIps: [ip],
             }).promise();
+
+            console.log(`ips allocated within region ${region}:`);
+            console.log(description.Addresses);
 
             const result = await ec2.releaseAddress({
                 AllocationId: description.Addresses[0].AllocationId
@@ -241,7 +246,7 @@ module.exports = {
                     await assertVChainIsUp({
                         id: chain.Id,
                         ip,
-                        gossip: chain.GossipPort,
+                        gossip: chain.ExternalPort,
                         address,
                     });
                 }

@@ -6,6 +6,8 @@ const harness = require('./harness');
 const { waitUntilSync, getBlockHeight } = require('./../../lib/metrics');
 const { create, destroy, update } = require('./../../lib/cli/cli');
 
+const basePath = path.join(__dirname, 'private-network/nodes');
+
 let elasticIPs = [],
     nodesJSONs = [],
     nebulaCreationStepMarker = false,
@@ -43,7 +45,7 @@ describe('nebula setup a private network', () => {
         // We create the paths to the JSON files created before since
         // that's the way to trigger create() the right way so that all file paths
         // will be resolved according to file mode. (nebula create -f <path-to-json>)
-        const basePath = path.join(__dirname, 'private-network/nodes');
+
         const nodes = [1, 2, 3].map((n) => {
             return {
                 file: path.join(basePath, `node${n}.json`)
@@ -55,9 +57,12 @@ describe('nebula setup a private network', () => {
         await Promise.all(nodes.map(create));
         console.log('********** NEBULA CREATE 3 NODES OF PRIVATE BLOCKCHAIN END ***********');
 
+        const pollInterval = 30 * 1000;
+        const pollTimeout = 30 * 60 * 1000;
+
         // Wait for the network to sync correctly
-        await waitUntilSync(firstEndpoint, 10);
-        const blockHeight = await getBlockHeight(firstEndpoint);
+        await waitUntilSync(firstEndpoint, 10, pollInterval, pollTimeout);
+        let blockHeight = await getBlockHeight(firstEndpoint);
 
         expect(blockHeight, 'block height should advance').to.be.gte(10);
 
@@ -75,46 +80,46 @@ describe('nebula setup a private network', () => {
         const lastEndpoint = `${lastNode.publicIp}/vchains/10000`;
 
         console.log('********** NEBULA UPDATE FIRST 3 NODES TOPOLOGY BEGIN ***********');
-        
         await Promise.all(nodes.map(update));
         console.log('********** NEBULA UPDATE FIRST 3 NODES TOPOLOGY END ***********');
 
-        // wait until the last node had synced with others
-        await waitUntilSync(lastEndpoint, 30);
+        blockHeight = await getBlockHeight(firstEndpoint);
 
-        // check again that the first node keeps advancing too
-        const firstNodeBlockHeight = await getBlockHeight(firstEndpoint);
-        expect(firstNodeBlockHeight, "block height should advance with 4th node added").to.be.gte(30);
+        // wait until the last node had synced with others
+        await waitUntilSync(lastEndpoint, blockHeight + 3, pollInterval, pollTimeout);
 
         // check again that the last node advances, not just syncs
-        await waitUntilSync(lastEndpoint, firstNodeBlockHeight + 10);
-
-        const lastNodeBlockHeight = await getBlockHeight(lastEndpoint);
-        expect(lastNodeBlockHeight, "block height should advance with 4th node added").to.be.gte(firstNodeBlockHeight + 10);
+        await waitUntilSync(lastEndpoint, blockHeight + 5, pollInterval, pollTimeout);
     });
 
     after(async () => {
         let destructors = [];
         console.log('*********** NEBULA NODES DESTRUCTION START **************');
+
         if (nebulaCreationStepMarker) {
-            destructors.push(... _.take(nodesJSONs, 3).map(destroy));
+            let nodes = [1, 2, 3].map((n) => {
+                return {
+                    file: path.join(basePath, `node${n}.json`)
+                };
+            });
+
+            destructors.push(..._.take(nodes, 3).map(destroy));
         }
+
         if (nebulaCreate4thNodeMarker) {
-            destructors.push(destroy(_.last(nodesJSONs)));
+            destructors.push(destroy({ file: path.join(basePath, 'node4.json') }));
         }
         await Promise.all(destructors);
         console.log('*********** NEBULA NODES DESTRUCTION END **************');
+    });
 
-        console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL TEARDOWN START **********');
+    after(async () => {
         const validElasticIPs = elasticIPs.filter(o => o.ok === true);
         console.log('Releasing the following Elastic IPs from our AWS account: ', validElasticIPs);
         const elasticIPsReleaseResults = await Promise.all(validElasticIPs
             .map(({ ip, region }) => harness.aws.destroyPublicIp(region, ip)));
         console.log('Result of releasing Elastic IPs: ', elasticIPsReleaseResults);
-
-        console.log('Deleting "node.json" files...');
-        await harness.deleteNodesJSONsFromDisk(nodesJSONs);
-
-        console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL TEARDOWN FINISHED **********');
     });
+
+    after(() => harness.deleteNodesJSONsFromDisk(nodesJSONs));
 });

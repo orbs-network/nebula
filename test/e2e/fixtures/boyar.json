@@ -6,28 +6,33 @@
     },
     "services": {
         "signer": {
-            "Port": 7777,
-            "DockerConfig": {
-                "ContainerNamePrefix": "orbs-node",
-                "Image": "orbsnetwork/signer",
-                "Tag": "experimental",
-                "Pull": true
-            },
-            "Config": {
-                "api": "v1"
-            }
+          "InternalPort": 7777,
+          "DockerConfig": {
+            "ContainerNamePrefix": "orbs-node",
+            "Image":  "orbsnetwork/signer",
+            "Tag":    "experimental",
+            "Pull":   true            
+          },
+          "Config": {
+            "api": "v1"
+          }
         }
     },
     "chains": [
         {
             "Id": 10000,
-            "HttpPort": 8080,
-            "GossipPort": 4400,
+            "InternalHttpPort": 8080,
+            "InternalPort": 4400,
+            "ExternalPort": 4400,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
                 "Image": "orbsnetwork/node",
                 "Tag": "v1.3.10",
-                "Pull": true
+                "Pull": true,
+                "Volumes": {
+                    "Blocks": 20,
+                    "Logs": 1
+                }
             },
             "Config": {
                 "genesis-validator-addresses": [
@@ -36,14 +41,14 @@
                     "a328846cd5b4979d68a8c58a9bdfeee657b34de7",
                     "c056dfc0d1fbc7479db11e61d1b0b57612bf7f17"
                 ],
-                "logger-http-endpoint": "http://ec2-34-222-245-15.us-west-2.compute.amazonaws.com:5000",
-                "ethereum-endpoint": "http://ropsten.orbs.com:8545",
-                "ethereum-finality-blocks-component": 10,
+                "processor-plugin-path": "/opt/orbs/plugins/orbs-javascript-plugin",
                 "active-consensus-algo": 2,
-                "logger-file-truncation-interval": "24h",
+                "ethereum-finality-blocks-component": 10,
+                "logger-file-truncation-interval": "1w",
                 "consensus-context-triggers-enabled": true,
+                "processor-sanitize-deployed-contracts": false,
                 "profiling": true,
-                "processor-sanitize-deployed-contracts": false
+                "block-sync-num-blocks-in-batch": 1000
             }
         }
     ]
