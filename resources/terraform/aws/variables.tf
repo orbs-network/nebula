@@ -63,6 +63,10 @@ variable "boyar_version" {
   default = "v1.0.0-beta"
 }
 
+variable "boyar_management_config" {
+  default = ""
+}
+
 variable "incoming_ssh_cidr_blocks" {
   default = []
   type = "list"

@@ -26,6 +26,17 @@ describe('_create', () => {
             "ethereumEndpoint": "http://eth.orbs.com",
             "incomingSshCidrBlocks": ["0.0.0.0/0"],
             "cachePath": "../terraform",
+            "managementConfig": {
+                "services": {
+                    "management-service": {
+                        "DockerConfig": {
+                            "Image":  "orbsnetwork/management-service",
+                            "Tag":    "G-0-N",
+                            "Pull":   true
+                        }
+                    }
+                }
+            },
 
             // pretend we're in file mode
             "fileMode": true,
@@ -42,6 +53,17 @@ describe('_create', () => {
             "ip": "52.66.33.249",
             "bootstrapUrl": undefined,
             "cachePath": process.cwd() + "/test/terraform",
+            "managementConfig": {
+                "services": {
+                    "management-service": {
+                        "DockerConfig": {
+                            "Image":  "orbsnetwork/management-service",
+                            "Tag":    "G-0-N",
+                            "Pull":   true
+                        }
+                    }
+                }
+            },
           });
 
         expect(keys.aws).to.deep.equal({
