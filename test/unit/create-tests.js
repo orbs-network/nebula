@@ -51,6 +51,7 @@ describe('_create', () => {
             "nodeCount": 0,
             "name": "mumbai-node4",
             "ip": "52.66.33.249",
+            "ephemeralStorage": false,
             "bootstrapUrl": undefined,
             "cachePath": process.cwd() + "/test/terraform",
             "managementConfig": {
