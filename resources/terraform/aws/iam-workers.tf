@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "swarm_role" {
 }
 
 resource "aws_iam_role" "swarm_worker" {
-  name               = "orbs-constellation-${var.name}-worker"
+  name               = "orbs-${var.name}-worker"
   assume_role_policy = "${data.aws_iam_policy_document.swarm_role.json}"
 }
 
@@ -32,7 +32,7 @@ resource "aws_iam_instance_profile" "swarm_worker" {
 }
 
 resource "aws_iam_policy" "swarm_worker_secrets" {
-  name   = "orbs-constellation-${var.name}-secrets-worker-policy"
+  name   = "orbs-${var.name}-secrets-worker-policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.swarm_worker_secrets.json}"
 }

@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "swarm_manager_secrets" {
 }
 
 resource "aws_iam_role" "swarm_manager" {
-  name               = "orbs-constellation-${var.name}-manager"
+  name               = "orbs-${var.name}-manager"
   assume_role_policy = "${data.aws_iam_policy_document.swarm_manager_role.json}"
 }
 
@@ -32,7 +32,7 @@ resource "aws_iam_instance_profile" "swarm_manager" {
 }
 
 resource "aws_iam_policy" "swarm_manager_secrets" {
-  name   = "orbs-constellation-${var.name}-secrets-manager-policy"
+  name   = "orbs-${var.name}-secrets-manager-policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.swarm_manager_secrets.json}"
 }

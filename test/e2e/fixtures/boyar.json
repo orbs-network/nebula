@@ -27,7 +27,7 @@
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
                 "Image": "orbsnetwork/node",
-                "Tag": "v1.3.10",
+                "Tag": "v1.3.12",
                 "Pull": true,
                 "Volumes": {
                     "Blocks": 20,
