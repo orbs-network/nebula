@@ -82,6 +82,7 @@ The content of the `orbs-node.json` should be:
         "orbsAddress": "$ORBS_PUBLIC_NODE_ADDRESS",
         "publicIp": "$NODE_AWS_IP",
         "backend": true,
+        "ephemeralStorage": false,
         "region": "$NODE_AWS_REGION",
         "nodeSize": "m4.xlarge",
         "nodeCount": 1,
@@ -108,6 +109,10 @@ Other parameters (no need to change them):
 The `cachePath` configuration tells nebula where to store the terraform installation meta-data created during the deploy stage. It is required in cases where you wish to remove the node from AWS. You should store these files and back them up so you can run maintenance if required.
 
 The `awsProfile` configuration can be changed if you are using multiple aws configurations and want a specific one to be applied.
+
+The `ephemeralStorage` option (default value: `false`) provides an ability to make the provisioned EFS disk for block storage become ephemeral meaning it will be 
+destroyed upon destroying the node. (aka nebula destroy) 
+this is usually not preferred by validators unless you wish to re-sync the entire storage on every node upgrade/maintenance.
 
 ## Some warning as to updating your node configuration JSON file
 While the configuration is quite easily changeable, please do remember that any modification to your configuration file MUST be done while the node is DOWN.

@@ -53,19 +53,19 @@ data "aws_iam_policy_document" "swarm_detach_role" {
 }
 
 resource "aws_iam_policy" "swarm_ecr" {
-  name   = "orbs-constellation-${var.name}-ecr-policy"
+  name   = "orbs-${var.name}-ecr-policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.swarm_ecr.json}"
 }
 
 resource "aws_iam_policy" "swarm_ebs" {
-  name   = "orbs-constellation-${var.name}-ebs-policy"
+  name   = "orbs-${var.name}-ebs-policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.swarm_ebs.json}"
 }
 
 resource "aws_iam_policy" "swarm_detach_role_policy" {
-  name   = "orbs-constellation-${var.name}-detach-role-policy"
+  name   = "orbs-${var.name}-detach-role-policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.swarm_detach_role.json}"
 }

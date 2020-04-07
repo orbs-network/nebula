@@ -77,9 +77,9 @@ aws secretsmanager create-secret --region ${var.region} --name swarm-token-${var
 
 # Remove access to secrets
 
-aws iam detach-role-policy --role-name orbs-constellation-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_manager_secrets.arn}
+aws iam detach-role-policy --role-name orbs-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_manager_secrets.arn}
 
-aws iam detach-role-policy --role-name orbs-constellation-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_detach_role_policy.arn}
+aws iam detach-role-policy --role-name orbs-${var.name}-manager --policy-arn ${aws_iam_policy.swarm_detach_role_policy.arn}
 
 # Log into docker hub
 
@@ -96,7 +96,7 @@ done
 
 # Remove access to worker secrets
 
-aws iam detach-role-policy --role-name orbs-constellation-${var.name}-worker --policy-arn ${aws_iam_policy.swarm_worker_secrets.arn}
+aws iam detach-role-policy --role-name orbs-${var.name}-worker --policy-arn ${aws_iam_policy.swarm_worker_secrets.arn}
 
 # Label workers
 for n in $(docker node ls --format '{{.ID}} {{.ManagerStatus}}' | grep -v Leader | cut -d" " -f1); do
@@ -165,7 +165,7 @@ resource "aws_instance" "manager" {
   user_data = "${local.manager_user_data}"
 
   tags = {
-    Name = "constellation-${var.name}-swarm-manager"
+    Name = "${var.name}-swarm-manager"
   }
 }
 

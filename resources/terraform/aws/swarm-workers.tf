@@ -73,7 +73,7 @@ resource "aws_instance" "worker" {
   user_data = "${local.worker_user_data}"
 
   tags = {
-    Name = "constellation-${var.name}-swarm-worker-${count.index}"
+    Name = "${var.name}-swarm-worker-${count.index}"
   }
 }
 
@@ -83,7 +83,7 @@ resource "aws_ebs_volume" "worker_storage" {
   availability_zone = "${element(aws_instance.worker.*.availability_zone, count.index)}"
 
   tags = {
-    Name = "constellation-docker-storage"
+    Name = "docker-storage"
   }
 }
 
