@@ -83,7 +83,7 @@ The content of the `orbs-node.json` should be:
         "publicIp": "$NODE_AWS_IP",
         "region": "$NODE_AWS_REGION",
         "nodeSize": "m4.xlarge",
-        "nodeCount": 0,
+        "nodeCount": 1,
         "bootstrapUrl": "https://s3.amazonaws.com/orbs-bootstrap-prod/boyar/config.json",
         "ethereumChain": "mainnet",
         "ethereumTopologyContractAddress": "0x804c8336846d8206c95CEe24752D514210B5a240",
