@@ -25,7 +25,37 @@ To complete this guide you will need the following set up:
 
 - [Terraform](https://www.terraform.io/downloads.html)
   
-  Use `brew install terraform` to get it installed
+  Nebula currently supports the latest Terraform (v0.12.x) and have been tested on version v0.12.23
+  for most scenarios. We recommend installating this specific version to have a fail-proof experience.
+
+  For macOS:
+
+  Download Terraform by running this command in your Terminal:
+  `wget https://releases.hashicorp.com/terraform/0.12.23/terraform_0.12.23_darwin_amd64.zip`
+
+  Then unzip it:
+  `unzip terraform_0.12.23_darwin_amd64.zip`
+
+  Grant it executable permissions:
+  `chmod +x terraform && sudo mv terraform /usr/local/bin/`
+
+  Make sure it's installed by typing in:
+  `terraform --version` - you should see the version printed out
+
+  For Linux:
+
+  Download Terraform by running this command in your Terminal:
+  `curl -O https://releases.hashicorp.com/terraform/0.12.23/terraform_0.12.23_darwin_amd64.zip`
+
+  Then unzip it: (If unzip is not installed, install it by running `apt-get install unzip`)
+  `unzip terraform_0.12.23_darwin_amd64.zip`
+
+  Grant it executable permissions:
+  `chmod +x terraform && sudo mv terraform /usr/local/bin/`
+
+  Make sure it's installed by typing in:
+  `terraform --version` - you should see the version printed out
+
 - [Orbs Key Generator](https://www.github.com/orbs-network/orbs-key-generator)
 
   Use `brew install orbs-network/devtools/orbs-key-generator` to get it installed (requires a Mac)
