@@ -59,9 +59,7 @@ variable "logz_io_http_endpoint" {
   default = "https://listener.logz.io:8071/?token=kATbDvYGTXTOOfyvDYGbWrGdIFBPpvHI&type=prod"
 }
 
-variable "boyar_version" {
-  default = "v1.0.0-gamma"
-}
+variable "boyarUrl" { }
 
 variable "boyar_management_config" {
   default = ""
