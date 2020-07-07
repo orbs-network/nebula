@@ -62,7 +62,9 @@ const cloud = {
 
 let shouldCleanup = true;
 
-describe('nebula core api', () => {
+describe.only('nebula core api', () => {
+    before(() => harness.clenaupTerraformProjectFromOlderRuns({ basePath: terraformBasepath, dirName: cloud.name }));
+
     before(async () => {
         // First we will create an Elastic IP outside the scope of createConstellation()
         console.log('Allocating a public IP from AWS...');
