@@ -25,6 +25,7 @@ describe('_create', () => {
             "ethereumTopologyContractAddress": "0xa8Ef7740D85B1c0c22E39aae896e829Af7c895A5",
             "ethereumEndpoint": "http://eth.orbs.com",
             "incomingSshCidrBlocks": ["0.0.0.0/0"],
+            "bootstrapUrl": "http://localhost:7666/node/management",
             "cachePath": "../terraform",
             "managementConfig": {
                 "services": {
@@ -52,7 +53,8 @@ describe('_create', () => {
             "name": "mumbai-node4",
             "ip": "52.66.33.249",
             "ephemeralStorage": false,
-            "bootstrapUrl": undefined,
+            "bootstrapUrl": "http://localhost:7666/node/management",
+            "boyarTargetUrl": "https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-v1.0.0.bin",
             "cachePath": process.cwd() + "/test/terraform",
             "managementConfig": {
                 "services": {

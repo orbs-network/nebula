@@ -136,6 +136,7 @@ describe('terraform service unit tests', () => {
                 "ip": "52.66.33.249",
                 "bootstrapUrl": undefined,
                 "cachePath": process.cwd() + "/test/terraform",
+                "boyarTargetUrl": "https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-v1.0.0.bin",
             };
 
             console.log(tf.createTerraformVariablesFile({ keys, cloud }))
@@ -146,6 +147,7 @@ incoming_ssh_cidr_blocks = ["0.0.0.0/0"]
 name = "mumbai-node4"
 aws_profile = "default"
 region = "ap-south-1"
+boyarUrl = "https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-v1.0.0.bin"
 instance_type = "m4.large"
 instance_count = 0
 boyar_config_source = <<EOF
