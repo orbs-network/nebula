@@ -1,6 +1,6 @@
 #!/bin/bash
 
-yarn test
+yarn run test:unit
 SUCCESS=$?
 echo "running tests"
 
