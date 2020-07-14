@@ -36,7 +36,7 @@ resource "aws_security_group" "swarm" {
   // http & gossip ports (tcp)
   ingress {
     from_port   = 4000
-    to_port     = 20000
+    to_port     = 60000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

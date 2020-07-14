@@ -204,6 +204,10 @@ module.exports = {
             });
         });
     },
+    async clenaupTerraformProjectFromOlderRuns({ basePath, dirName }) {
+        const currentProjectPath = path.join(basePath, dirName);
+        await exec(`rm -rf ${currentProjectPath}; rm -rf ${currentProjectPath}-aside`);
+    },
     cleanUpTerraformProject({ basePath, dirName, shouldCleanup }) {
         if (shouldCleanup) {
             const currentProjectPath = path.join(basePath, dirName);

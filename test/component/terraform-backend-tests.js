@@ -6,6 +6,12 @@ const terraformAdapter = require('./mock-terraform-adapter');
 const region = 'us-east-1';
 const name = 'my-node';
 
+let fsMock = {
+    writeFile() { return Promise.resolve() },
+    readFile() { return Promise.resolve() },
+    deleteFile() { return Promise.resolve() },
+};
+
 describe('terraform aws adapter component tests', () => {
     it('should trigger the aws adapter if conditions are met to create a backend bucket', async () => {
         let awsAdapter = {
@@ -34,12 +40,17 @@ describe('terraform aws adapter component tests', () => {
                         let data = {};
 
                         callbackFunc(null, data);
+                    },
+                    putObject(params, callbackFunc) {
+                        console.log('put object called', params);
+                        let data = {};
+                        callbackFunc(null, data);
                     }
                 };
             }
         };
 
-        let nebula = new Nebula({ terraformAdapter, awsAdapter });
+        let nebula = new Nebula({ terraformAdapter, awsAdapter, fsMock });
 
         let cloud = {
             region,
@@ -115,53 +126,19 @@ describe('terraform aws adapter component tests', () => {
             }
         };
 
-        let nebula = new Nebula({ terraformAdapter, awsAdapter });
+        let nebula = new Nebula({ terraformAdapter, awsAdapter, fsMock });
 
-        await nebula.destroyConstellation({ name, region });
-
-        expect(awsAdapter.deleteBucketCalled).to.equal(true);
-    });
-
-    it('should trigger the aws adapter when a constellation is destroyed in order to clear the bucket', async () => {
-        let awsAdapter = {
-            listBucketsCalled: false,
-            createBucketCalled: false,
-            deleteBucketCalled: false,
-            config: {
-                update() {
-                }
-            },
-            S3: function () {
-                return {
-                    listBuckets(params, callbackFunc) {
-                        awsAdapter.listBucketsCalled = true;
-                        console.log('called listBuckets with', params);
-                        let data = {
-                            Buckets: [
-                                { Name: 'some-bucket' },
-                                { Name: `orbs-${region}-${name}` },
-                            ]
-                        };
-                        callbackFunc(null, data);
-                    },
-                    createBucket() {
-                        awsAdapter.createBucketCalled = true;
-                    },
-                    deleteBucket() {
-                        awsAdapter.deleteBucketCalled = true;
-                    }
-                };
-            }
+        let cloud = {
+            region,
+            name,
+            backend: true,
         };
 
-        let nebula = new Nebula({ terraformAdapter, awsAdapter });
+        let keys = {
+        };
 
-        // If we send no region - we expect destroyConstellation to avoid calling any of the methods above
-        // in our AWS adapter
-        await nebula.destroyConstellation({ name });
+        await nebula.destroyConstellation({ cloud, keys });
 
-        expect(awsAdapter.listBucketsCalled).to.equal(false);
-        expect(awsAdapter.createBucketCalled).to.equal(false);
-        expect(awsAdapter.deleteBucketCalled).to.equal(false);
+        expect(awsAdapter.deleteBucketCalled).to.equal(true);
     });
 });

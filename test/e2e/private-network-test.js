@@ -13,7 +13,12 @@ let elasticIPs = [],
     nebulaCreationStepMarker = false,
     nebulaCreate4thNodeMarker = false;
 
-describe('nebula setup a private network', () => {
+/**
+ * We don't run this test in CI that's why it's skipped.
+ * It's too long and should be used only in case you want to run a more complete suite.
+ */
+
+describe.skip('nebula setup a private network', () => {
     before(async () => {
         const regions = harness.fixtures.nodes.map(({ region }) => region);
         console.log('********* NEBULA PRIVATE BLOCKCHAIN TEST GLOBAL SETUP START **********');
