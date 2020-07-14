@@ -7,7 +7,7 @@
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-node",
                 "Image": "orbsnetwork/signer",
-                "Tag": "experimental",
+                "Tag": "v2.0.0-alpha-8655fed5",
                 "Pull": true
             },
             "Config": {
@@ -23,7 +23,7 @@
             "ExternalPort": 4400,
             "DockerConfig": {
                 "ContainerNamePrefix": "orbs-network",
-                "Image": "orbsnetwork/node",
+                "Image": "orbsnetworkstaging/node",
                 "Tag": "v1.3.14-88d3b9ac",
                 "Pull": true,
                 "Volumes": {
