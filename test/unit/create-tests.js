@@ -6,6 +6,7 @@ chai.use(asserttype);
 const { expect } = chai;
 
 const { _create } = require("../../lib/cli/handlers/create");
+const { boyarDefaultVersion } = require("../../lib/services/nebula");
 
 describe('_create', () => {
     it('generates keys and cloud objects from input', () => {
@@ -54,7 +55,7 @@ describe('_create', () => {
             "ip": "52.66.33.249",
             "ephemeralStorage": false,
             "bootstrapUrl": "http://localhost:7666/node/management",
-            "boyarTargetUrl": "https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-v1.0.0.bin",
+            "boyarTargetUrl": `https://s3.amazonaws.com/orbs-network-releases/infrastructure/boyar/boyar-${boyarDefaultVersion}.bin`,
             "cachePath": process.cwd() + "/test/terraform",
             "managementConfig": {
                 "services": {
