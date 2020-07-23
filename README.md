@@ -1,8 +1,10 @@
-# Orbs Nebula
+# Orbs Nebula (for Orbs V1)
 
 &nbsp;
 
 **Important: If you're a validator trying to launch an Orbs node - please read the [instructions here](https://github.com/orbs-network/validator-instructions).**
+
+**Deprecation Notice:** Nebula is compatible with the deprecated Orbs V1 network. If you're working with the up-to-date V2 network, switch to the replacement tool [Polygon](https://github.com/orbs-network/polygon).
 
 &nbsp;
 
